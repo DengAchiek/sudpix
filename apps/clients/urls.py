@@ -8,10 +8,13 @@ from .views import (
     DownloadAssetView,
     DownloadsView,
     FilesView,
+    PaymentProcessingView,
+    PaymentStatusView,
     PaymentsView,
     ProjectDetailView,
     ProjectsView,
     RemoveFromCartView,
+    RetryPaymentPromptView,
 )
 
 app_name = "client"
@@ -27,5 +30,8 @@ urlpatterns = [
     path("cart/", CartView.as_view(), name="cart"),
     path("checkout/", CheckoutView.as_view(), name="checkout"),
     path("payments/", PaymentsView.as_view(), name="payments"),
+    path("payments/<int:payment_id>/processing/", PaymentProcessingView.as_view(), name="payment_processing"),
+    path("payments/<int:payment_id>/status/", PaymentStatusView.as_view(), name="payment_status"),
+    path("payments/<int:payment_id>/retry/", RetryPaymentPromptView.as_view(), name="retry_payment"),
     path("downloads/", DownloadsView.as_view(), name="downloads"),
 ]

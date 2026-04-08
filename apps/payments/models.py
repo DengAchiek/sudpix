@@ -91,3 +91,21 @@ class Payment(models.Model):
             self.Status.PENDING: "bg-amber-500/15 text-amber-300",
             self.Status.FAILED: "bg-red-500/15 text-red-300",
         }.get(self.status, "bg-white/10 text-soft/80")
+
+    @property
+    def status_message(self):
+        if self.status == self.Status.CONFIRMED:
+            if self.reference:
+                return f"Payment confirmed. Receipt: {self.reference}."
+            return "Payment confirmed. Your files are now unlocked for download."
+        if self.status == self.Status.FAILED:
+            return (
+                self.result_desc
+                or self.gateway_response_message
+                or "Payment did not complete. You can try again."
+            )
+        return (
+            self.result_desc
+            or self.gateway_response_message
+            or "Waiting for payment confirmation from M-Pesa."
+        )

@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Processing | SudPix{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Payment In Progress</p>
+      <h1 class="mt-2 font-display text-3xl font-bold sm:text-4xl">Complete payment to unlock your download</h1>
+      <p class="mt-3 max-w-3xl text-soft/75">Approve the M-Pesa prompt on your phone. SudPix will keep checking the payment and unlock your files automatically once confirmation is received.</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a href="{% url 'client:payments' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">View Payment History</a>
+      <a href="{% url 'client:downloads' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">Open Downloads</a>
+    </div>
+  </div>
+
+  <div class="mt-10 grid gap-8 lg:grid-cols-[1fr_0.85fr]" data-payment-processing data-status-url="{% url 'client:payment_status' payment.id %}" data-downloads-url="{% url 'client:downloads' %}">
+    <section class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <div class="rounded-3xl border border-white/10 bg-primary p-5">
+        <p class="text-sm font-semibold text-gold">Payment Summary</p>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-muted">Amount</p>
+            <p data-payment-amount class="mt-2 text-2xl font-bold">{{ payment.formatted_amount }}</p>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-muted">Status</p>
+            <div class="mt-2">
+              <span data-payment-status-label class="rounded-full px-3 py-1 text-xs font-semibold {{ payment.status_badge_class }}">{{ payment.get_status_display }}</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-muted">Method</p>
+            <p class="mt-2 text-base font-semibold">{{ payment.get_method_display }}</p>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-muted">Phone</p>
+            <p class="mt-2 text-base font-semibold">{{ payment.phone_number|default:"Not provided yet" }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 rounded-3xl border border-white/10 bg-primary p-5">
+        <p class="text-sm font-semibold text-gold">Live Status</p>
+        <p data-payment-status-message class="mt-3 text-sm leading-7 text-soft/75">{{ payment.status_message }}</p>
+        <p data-payment-status-hint class="mt-4 text-xs uppercase tracking-[0.2em] text-muted">
+          {% if payment.status == 'confirmed' %}
+          Your files are unlocked.
+          {% elif payment.status == 'failed' %}
+          Payment did not complete.
+          {% else %}
+          Waiting for M-Pesa confirmation.
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="{% url 'client:downloads' %}" data-download-action class="rounded-full {% if payment.status == 'confirmed' %}bg-accent text-white shadow-glow{% else %}border border-white/15 text-soft/70 pointer-events-none opacity-60{% endif %} px-6 py-3 font-semibold">
+          Download Files
+        </a>
+        {% if payment.method == 'mpesa' and payment.status != 'confirmed' %}
+        <button type="button" data-payment-poll class="rounded-full border border-white/15 px-6 py-3 font-semibold hover:border-gold/50 hover:text-gold">
+          Check Payment Again
+        </button>
+        {% endif %}
+      </div>
+
+      {% if payment.method == 'mpesa' and payment.status != 'confirmed' %}
+      <form method="post" action="{% url 'client:retry_payment' payment.id %}" class="mt-6 rounded-3xl border border-white/10 bg-primary p-5">
+        {% csrf_token %}
+        <p class="text-sm font-semibold text-gold">Resend M-Pesa Prompt</p>
+        <p class="mt-2 text-sm leading-7 text-soft/75">If the first prompt expired or was dismissed, enter the phone number again and send a fresh payment request.</p>
+        <div class="mt-4 grid gap-4 sm:grid-cols-[1fr_auto]">
+          <input
+            type="text"
+            name="phone_number"
+            value="{{ payment.phone_number }}"
+            class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 placeholder:text-muted focus:border-accent focus:outline-none"
+            placeholder="254700000000"
+          />
+          <button type="submit" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Resend Prompt</button>
+        </div>
+      </form>
+      {% endif %}
+    </section>
+
+    <aside class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <p class="text-sm font-semibold text-gold">Files In This Payment</p>
+      <div class="mt-5 space-y-4">
+        {% for media_file in selected_assets %}
+        <div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-primary p-4">
+          <img src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" class="h-16 w-16 rounded-2xl object-cover">
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-semibold">{{ media_file.title }}</p>
+            <p class="mt-1 text-sm text-soft/65">{{ media_file.project.title }} • {{ media_file.get_kind_display }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if payment.reference %}
+      <div class="mt-6 rounded-3xl border border-green-400/25 bg-green-500/10 p-5">
+        <p class="text-sm font-semibold text-green-300">Receipt Reference</p>
+        <p data-payment-reference class="mt-2 text-lg font-bold text-white">{{ payment.reference }}</p>
+      </div>
+      {% else %}
+      <div class="mt-6 rounded-3xl border border-white/10 bg-primary p-5">
+        <p class="text-sm font-semibold text-gold">Receipt Reference</p>
+        <p data-payment-reference class="mt-2 text-sm text-soft/65">The receipt number will appear here after confirmation.</p>
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  (function() {
+    var root = document.querySelector("[data-payment-processing]");
+    if (!root) {
+      return;
+    }
+
+    var statusUrl = root.dataset.statusUrl;
+    var downloadsUrl = root.dataset.downloadsUrl;
+    var statusLabel = root.querySelector("[data-payment-status-label]");
+    var statusMessage = root.querySelector("[data-payment-status-message]");
+    var statusHint = root.querySelector("[data-payment-status-hint]");
+    var amountNode = root.querySelector("[data-payment-amount]");
+    var downloadAction = root.querySelector("[data-download-action]");
+    var receiptNode = root.querySelector("[data-payment-reference]");
+    var manualPoll = root.querySelector("[data-payment-poll]");
+    var timer = null;
+
+    function updateDownloadButton(enabled) {
+      if (!downloadAction) {
+        return;
+      }
+      if (enabled) {
+        downloadAction.href = downloadsUrl;
+        downloadAction.classList.remove("border", "border-white/15", "text-soft/70", "pointer-events-none", "opacity-60");
+        downloadAction.classList.add("bg-accent", "text-white", "shadow-glow");
+      } else {
+        downloadAction.removeAttribute("href");
+        downloadAction.classList.remove("bg-accent", "text-white", "shadow-glow");
+        downloadAction.classList.add("border", "border-white/15", "text-soft/70", "pointer-events-none", "opacity-60");
+      }
+    }
+
+    function renderStatus(payload) {
+      if (statusLabel) {
+        statusLabel.textContent = payload.status_label;
+        statusLabel.className = "rounded-full px-3 py-1 text-xs font-semibold";
+        if (payload.status === "confirmed") {
+          statusLabel.classList.add("bg-green-500/15", "text-green-300");
+        } else if (payload.status === "failed") {
+          statusLabel.classList.add("bg-red-500/15", "text-red-300");
+        } else {
+          statusLabel.classList.add("bg-amber-500/15", "text-amber-300");
+        }
+      }
+
+      if (statusMessage) {
+        statusMessage.textContent = payload.status_message;
+      }
+
+      if (statusHint) {
+        if (payload.status === "confirmed") {
+          statusHint.textContent = "Your files are unlocked. Redirecting to downloads...";
+        } else if (payload.status === "failed") {
+          statusHint.textContent = "Payment did not complete. You can resend the M-Pesa prompt below.";
+        } else {
+          statusHint.textContent = "Waiting for M-Pesa confirmation.";
+        }
+      }
+
+      if (amountNode) {
+        amountNode.textContent = payload.formatted_amount;
+      }
+
+      if (receiptNode && payload.reference) {
+        receiptNode.textContent = payload.reference;
+      }
+
+      updateDownloadButton(payload.download_ready);
+
+      if (payload.status === "confirmed") {
+        if (timer) {
+          window.clearInterval(timer);
+          timer = null;
+        }
+        window.setTimeout(function() {
+          window.location.href = payload.downloads_url;
+        }, 1800);
+      } else if (payload.status === "failed" && timer) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    async function fetchStatus() {
+      try {
+        var response = await fetch(statusUrl, {
+          headers: {
+            "X-Requested-With": "XMLHttpRequest"
+          }
+        });
+        if (!response.ok) {
+          return;
+        }
+        var payload = await response.json();
+        renderStatus(payload);
+      } catch (error) {
+        // Keep the current status visible and allow the next poll to retry silently.
+      }
+    }
+
+    if (manualPoll) {
+      manualPoll.addEventListener("click", fetchStatus);
+    }
+
+    fetchStatus();
+    if (statusLabel && statusLabel.textContent.trim() === "Pending") {
+      timer = window.setInterval(fetchStatus, 4000);
+    }
+  })();
+</script>
+{% endblock %}

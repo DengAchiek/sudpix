@@ -203,11 +203,12 @@ class ClientPortalTests(TestCase):
         self.assertContains(response, "Press Download below to start payment")
         self.assertContains(response, ">Download<", html=False)
         self.assertNotContains(response, "Submit Payment Request")
+        self.assertContains(response, "M-Pesa")
+        self.assertNotContains(response, ">Card<", html=False)
 
-    def test_checkout_creates_pending_payment_for_selected_files(self):
+    def test_checkout_rejects_unsupported_manual_payment_methods(self):
         self.client.force_login(self.user)
         CartItem.objects.create(user=self.user, media_asset=self.locked_photo)
-        CartItem.objects.create(user=self.user, media_asset=self.locked_video)
 
         response = self.client.post(
             reverse("client:checkout"),
@@ -217,13 +218,9 @@ class ClientPortalTests(TestCase):
             },
         )
 
-        self.assertRedirects(response, reverse("client:payments"))
-        payment = Payment.objects.exclude(pk=self.confirmed_payment.pk).get()
-        self.assertEqual(payment.status, Payment.Status.PENDING)
-        self.assertEqual(payment.project, self.locked_project)
-        self.assertEqual(payment.amount, Decimal("580.00"))
-        self.assertEqual(set(payment.media_assets.all()), {self.locked_photo, self.locked_video})
-        self.assertFalse(CartItem.objects.filter(user=self.user).exists())
+        self.assertRedirects(response, reverse("client:checkout"))
+        self.assertEqual(Payment.objects.exclude(pk=self.confirmed_payment.pk).count(), 0)
+        self.assertTrue(CartItem.objects.filter(user=self.user, media_asset=self.locked_photo).exists())
 
     @patch("apps.clients.views.initiate_stk_push")
     def test_checkout_mpesa_sends_phone_prompt(self, mock_initiate_stk_push):
@@ -251,13 +248,41 @@ class ClientPortalTests(TestCase):
             },
         )
 
-        self.assertRedirects(response, reverse("client:payments"))
         payment = Payment.objects.exclude(pk=self.confirmed_payment.pk).get()
+        self.assertRedirects(response, reverse("client:payment_processing", args=[payment.pk]))
         self.assertEqual(payment.method, Payment.Method.MPESA)
         self.assertEqual(payment.status, Payment.Status.PENDING)
         self.assertEqual(payment.phone_number, "254712345678")
         mock_initiate_stk_push.assert_called_once()
         self.assertFalse(CartItem.objects.filter(user=self.user).exists())
+
+    def test_payment_processing_page_renders_for_payment_owner(self):
+        self.client.force_login(self.user)
+        processing_payment = Payment.objects.create(
+            user=self.user,
+            project=self.locked_project,
+            amount=Decimal("80.00"),
+            method=Payment.Method.MPESA,
+            status=Payment.Status.PENDING,
+            phone_number="254712345678",
+        )
+        processing_payment.media_assets.add(self.locked_photo)
+
+        response = self.client.get(reverse("client:payment_processing", args=[processing_payment.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Complete payment to unlock your download")
+        self.assertContains(response, "Resend M-Pesa Prompt")
+        self.assertContains(response, self.locked_photo.title)
+
+    def test_payment_status_endpoint_returns_owner_payment_state(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("client:payment_status", args=[self.confirmed_payment.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], Payment.Status.CONFIRMED)
+        self.assertTrue(response.json()["download_ready"])
 
     def test_checkout_mpesa_requires_configuration_before_creating_payment(self):
         self.client.force_login(self.user)
@@ -307,6 +332,22 @@ class ClientPortalTests(TestCase):
         response = self.client.get(reverse("client:download_file", args=[self.locked_photo.id]))
 
         self.assertRedirects(response, reverse("client:cart"))
+
+    def test_download_file_redirects_pending_payment_to_processing(self):
+        self.client.force_login(self.user)
+        pending_payment = Payment.objects.create(
+            user=self.user,
+            project=self.locked_project,
+            amount=Decimal("80.00"),
+            method=Payment.Method.MPESA,
+            status=Payment.Status.PENDING,
+            phone_number="254712345678",
+        )
+        pending_payment.media_assets.add(self.locked_photo)
+
+        response = self.client.get(reverse("client:download_file", args=[self.locked_photo.id]))
+
+        self.assertRedirects(response, reverse("client:payment_processing", args=[pending_payment.pk]))
 
     def test_download_file_returns_uploaded_asset_for_unlocked_owner(self):
         self.client.force_login(self.user)

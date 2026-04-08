@@ -28,6 +28,7 @@ CLIENT_VISIBLE_MEDIA_KINDS = (
     MediaAsset.Kind.PHOTO,
     MediaAsset.Kind.VIDEO,
 )
+CLIENT_CHECKOUT_PAYMENT_METHODS = (Payment.Method.MPESA,)
 
 
 class PortalAccessMixin(LoginRequiredMixin):
@@ -134,6 +135,13 @@ class CheckoutView(PortalAccessMixin, TemplateView):
             return redirect("client:files")
 
         payment_method = request.POST.get("payment_method", Payment.Method.MPESA)
+        if payment_method not in CLIENT_CHECKOUT_PAYMENT_METHODS:
+            messages.error(
+                request,
+                "M-Pesa is the active payment method for client downloads right now.",
+            )
+            return redirect("client:checkout")
+
         if payment_method not in Payment.Method.values:
             payment_method = Payment.Method.MPESA
 
@@ -158,30 +166,19 @@ class CheckoutView(PortalAccessMixin, TemplateView):
         )
         payment.media_assets.add(*selected_asset_ids)
 
-        if payment_method == Payment.Method.MPESA:
-            try:
-                initiate_stk_push(
-                    payment=payment,
-                    request=request,
-                    account_reference=build_payment_account_reference(payment),
-                    transaction_desc="SudPix file payment",
-                )
-            except (MpesaConfigurationError, MpesaGatewayError) as exc:
-                payment.status = Payment.Status.FAILED
-                payment.result_desc = str(exc)
-                payment.save(update_fields=["status", "result_desc"])
-                messages.error(request, str(exc))
-                return redirect("client:checkout")
-
-            CartItem.objects.filter(
-                user=request.user,
-                media_asset_id__in=selected_asset_ids,
-            ).delete()
-            messages.success(
-                request,
-                "An M-Pesa payment prompt has been sent to your phone. Complete it to unlock your download.",
+        try:
+            initiate_stk_push(
+                payment=payment,
+                request=request,
+                account_reference=build_payment_account_reference(payment),
+                transaction_desc="SudPix file payment",
             )
-            return redirect("client:payments")
+        except (MpesaConfigurationError, MpesaGatewayError) as exc:
+            payment.status = Payment.Status.FAILED
+            payment.result_desc = str(exc)
+            payment.save(update_fields=["status", "result_desc"])
+            messages.error(request, str(exc))
+            return redirect("client:checkout")
 
         CartItem.objects.filter(
             user=request.user,
@@ -189,9 +186,9 @@ class CheckoutView(PortalAccessMixin, TemplateView):
         ).delete()
         messages.success(
             request,
-            "Your download request has been recorded and is now awaiting payment verification.",
+            "An M-Pesa payment prompt has been sent to your phone. Complete it to unlock your download.",
         )
-        return redirect("client:payments")
+        return redirect("client:payment_processing", payment_id=payment.pk)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -207,7 +204,11 @@ class CheckoutView(PortalAccessMixin, TemplateView):
         context["selected_file_count"] = payment_context["selected_file_count"]
         context["selected_photo_count"] = payment_context["selected_photo_count"]
         context["selected_video_count"] = payment_context["selected_video_count"]
-        context["payment_methods"] = Payment.Method.choices
+        context["payment_methods"] = [
+            (value, label)
+            for value, label in Payment.Method.choices
+            if value in CLIENT_CHECKOUT_PAYMENT_METHODS
+        ]
         return context
 
 
@@ -219,6 +220,88 @@ class PaymentsView(PortalAccessMixin, TemplateView):
         context.update(self.get_portal_context())
         context["payments"] = list(get_payment_queryset(self.request.user))
         return context
+
+
+class PaymentProcessingView(PortalAccessMixin, TemplateView):
+    template_name = "client/payment_processing.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.get_portal_context())
+        payment = get_payment_for_user_or_404(self.request.user, self.kwargs["payment_id"])
+        context["payment"] = payment
+        context["selected_assets"] = list(payment.media_assets.all())
+        return context
+
+
+class PaymentStatusView(PortalAccessMixin, View):
+    def get(self, request, payment_id):
+        payment = get_payment_for_user_or_404(request.user, payment_id)
+        return JsonResponse(
+            {
+                "id": payment.id,
+                "status": payment.status,
+                "status_label": payment.get_status_display(),
+                "status_message": payment.status_message,
+                "formatted_amount": payment.formatted_amount,
+                "reference": payment.reference,
+                "downloads_url": reverse("client:downloads"),
+                "payments_url": reverse("client:payments"),
+                "download_ready": payment.status == Payment.Status.CONFIRMED,
+                "can_retry": payment.method == Payment.Method.MPESA and payment.status != Payment.Status.CONFIRMED,
+            }
+        )
+
+
+class RetryPaymentPromptView(PortalAccessMixin, View):
+    def post(self, request, payment_id):
+        payment = get_payment_for_user_or_404(request.user, payment_id)
+        if payment.method != Payment.Method.MPESA:
+            messages.error(request, "Only M-Pesa prompts can be resent from the client portal.")
+            return redirect("client:payments")
+
+        if payment.status == Payment.Status.CONFIRMED:
+            messages.success(request, "This payment is already confirmed and your files are unlocked.")
+            return redirect("client:downloads")
+
+        phone_number = request.POST.get("phone_number", "").strip() or payment.phone_number
+        try:
+            phone_number, _ = prepare_stk_push_request(phone_number, request)
+        except (MpesaConfigurationError, MpesaGatewayError) as exc:
+            messages.error(request, str(exc))
+            return redirect("client:payment_processing", payment_id=payment.pk)
+
+        payment.phone_number = phone_number
+        payment.status = Payment.Status.PENDING
+        payment.result_code = None
+        payment.result_desc = ""
+        payment.reference = ""
+        payment.save(
+            update_fields=[
+                "phone_number",
+                "status",
+                "result_code",
+                "result_desc",
+                "reference",
+            ]
+        )
+
+        try:
+            initiate_stk_push(
+                payment=payment,
+                request=request,
+                account_reference=build_payment_account_reference(payment),
+                transaction_desc="SudPix file payment",
+            )
+        except (MpesaConfigurationError, MpesaGatewayError) as exc:
+            payment.status = Payment.Status.FAILED
+            payment.result_desc = str(exc)
+            payment.save(update_fields=["status", "result_desc"])
+            messages.error(request, str(exc))
+            return redirect("client:payment_processing", payment_id=payment.pk)
+
+        messages.success(request, "A fresh M-Pesa payment prompt has been sent to your phone.")
+        return redirect("client:payment_processing", payment_id=payment.pk)
 
 
 class DownloadsView(PortalAccessMixin, TemplateView):
@@ -254,6 +337,16 @@ class AddToCartView(PortalAccessMixin, View):
             return redirect("client:downloads")
 
         if media_file.id in payment_context["pending_asset_ids"]:
+            pending_payment = get_latest_pending_payment(request.user, media_file)
+            if pending_payment:
+                pending_url = reverse("client:payment_processing", args=[pending_payment.pk])
+                if is_async_gallery_request(request):
+                    return JsonResponse({"redirect_url": pending_url})
+                messages.info(
+                    request,
+                    "This file is already included in a payment request awaiting verification.",
+                )
+                return redirect(pending_url)
             if is_async_gallery_request(request):
                 return JsonResponse({"redirect_url": reverse("client:payments")})
             messages.info(
@@ -290,6 +383,13 @@ class DownloadAssetView(PortalAccessMixin, View):
         media_file = get_object_or_404(get_media_queryset(request.user), pk=file_id)
 
         if not asset_is_unlocked(request.user, media_file.id):
+            pending_payment = get_latest_pending_payment(request.user, media_file)
+            if pending_payment:
+                messages.info(
+                    request,
+                    "This file is still waiting for payment confirmation. Complete the M-Pesa prompt to continue.",
+                )
+                return redirect("client:payment_processing", payment_id=pending_payment.pk)
             messages.warning(
                 request,
                 "Complete payment for this file before the download can begin.",
@@ -524,3 +624,15 @@ def get_latest_confirmed_payment(user, media_file):
         if media_file.id in get_payment_asset_ids(payment):
             return payment
     return None
+
+
+def get_latest_pending_payment(user, media_file):
+    payments = get_payment_queryset(user).filter(status=Payment.Status.PENDING)
+    for payment in payments:
+        if media_file.id in get_payment_asset_ids(payment):
+            return payment
+    return None
+
+
+def get_payment_for_user_or_404(user, payment_id):
+    return get_object_or_404(get_payment_queryset(user), pk=payment_id)
