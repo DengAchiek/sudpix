@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+
+{% block title %}My Files | SudPix{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Client Files</p>
+      <h1 class="mt-2 font-display text-3xl font-bold sm:text-4xl">Your Photos & Videos</h1>
+      <p class="mt-3 text-soft/75">
+        {% if selected_project %}
+        Browse every photo and video prepared for {{ selected_project.title }}, tap the ones you want, then use Download to pay and unlock them.
+        {% else %}
+        Browse every photo and video prepared for you by the SudPix team, tap the ones you want, then use Download to pay and unlock them.
+        {% endif %}
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a href="{% url 'client:dashboard' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">Back to Dashboard</a>
+      <a href="{% url 'bookings:create' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">Book a Service</a>
+      <a href="{% url 'client:cart' %}" class="rounded-full bg-accent px-5 py-3 font-semibold text-white shadow-glow">Download Selection</a>
+    </div>
+  </div>
+
+  <div class="mt-10 grid gap-8 lg:grid-cols-[300px_1fr]">
+    <aside class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <p class="text-sm font-semibold text-gold">Filters</p>
+      <div class="mt-5 space-y-3 text-sm">
+        <a href="{% url 'client:files' %}{% if selected_project %}?project={{ selected_project.slug }}{% endif %}" class="block rounded-2xl px-4 py-3 font-semibold {% if active_kind == 'all' %}border border-gold/30 bg-gold/10 text-gold{% else %}border border-white/10 bg-white/5 text-soft/80{% endif %}">All Files</a>
+        <a href="{% url 'client:files' %}?{% if selected_project %}project={{ selected_project.slug }}&{% endif %}kind=photo" class="block rounded-2xl px-4 py-3 font-semibold {% if active_kind == 'photo' %}border border-gold/30 bg-gold/10 text-gold{% else %}border border-white/10 bg-white/5 text-soft/80{% endif %}">Photos</a>
+        <a href="{% url 'client:files' %}?{% if selected_project %}project={{ selected_project.slug }}&{% endif %}kind=video" class="block rounded-2xl px-4 py-3 font-semibold {% if active_kind == 'video' %}border border-gold/30 bg-gold/10 text-gold{% else %}border border-white/10 bg-white/5 text-soft/80{% endif %}">Videos</a>
+      </div>
+
+      <div class="mt-8 rounded-3xl border border-white/10 bg-primary p-5">
+        <p class="text-sm font-semibold text-gold">File Summary</p>
+        <div class="mt-4 space-y-3 text-sm text-soft/75">
+          <div class="flex items-center justify-between"><span>Photos</span><span>{{ photo_files_count }}</span></div>
+          <div class="flex items-center justify-between"><span>Videos</span><span>{{ video_files_count }}</span></div>
+          <div class="flex items-center justify-between"><span>Ready to download</span><span>{{ downloadable_files_count }}</span></div>
+        </div>
+      </div>
+
+      <div class="mt-8 rounded-3xl border border-white/10 bg-primary p-5">
+        <p class="text-sm font-semibold text-gold">Selection Summary</p>
+        <div class="mt-4 space-y-3 text-sm text-soft/75">
+          <div class="flex items-center justify-between"><span>Selected files</span><span data-selected-files-count>{{ selected_files_count }}</span></div>
+          <div class="flex items-center justify-between"><span>Selected photos</span><span data-selected-photos-count>{{ selected_photos_count }}</span></div>
+          <div class="flex items-center justify-between"><span>Selected videos</span><span data-selected-videos-count>{{ selected_videos_count }}</span></div>
+        </div>
+        <a href="{% url 'client:cart' %}" class="mt-5 block rounded-full bg-accent px-5 py-3 text-center font-semibold text-white">Download Selection</a>
+      </div>
+
+      <div class="mt-8 rounded-3xl border border-white/10 bg-primary p-5">
+        <p class="text-sm font-semibold text-gold">Folders</p>
+        <div class="mt-4 space-y-3 text-sm text-soft/75">
+          <a href="{% url 'client:files' %}" class="block rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">
+            All Files
+          </a>
+          {% for project in projects %}
+          <a href="{% url 'client:files' %}?project={{ project.slug }}" class="block rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">
+            {{ project.title }}
+          </a>
+          {% empty %}
+          <p>No files available yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </aside>
+
+    <div>
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {% for media_file in files %}
+        {% if media_file.is_download_unlocked and media_file.has_downloadable_file %}
+        <article class="group relative overflow-hidden rounded-[1.75rem] bg-secondary {% if media_file.is_download_unlocked and media_file.has_downloadable_file %}border border-green-400/30{% elif media_file.has_pending_payment %}border border-amber-400/30{% elif media_file.is_selected %}border border-gold/40 shadow-glow{% else %}border border-white/10{% endif %}">
+          <img class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" />
+          <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
+            <div class="flex flex-wrap gap-2">
+              {% if media_file.kind == 'video' %}
+              <span class="inline-flex rounded-full border border-white/15 bg-primary/85 px-3 py-1 text-xs font-semibold text-soft">Video</span>
+              {% endif %}
+              {% if media_file.is_download_unlocked and media_file.has_downloadable_file %}
+              <span class="inline-flex rounded-full border border-green-400/25 bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-300">Ready</span>
+              {% elif media_file.has_pending_payment %}
+              <span class="inline-flex rounded-full border border-amber-400/25 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-200">Payment Pending</span>
+              {% endif %}
+            </div>
+
+            <span class="flex h-11 w-11 items-center justify-center rounded-full border {% if media_file.is_download_unlocked and media_file.has_downloadable_file %}border-green-400/25 bg-green-500/15 text-green-300{% elif media_file.is_selected %}border-gold/40 bg-gold/15 text-gold{% elif media_file.has_pending_payment %}border-amber-400/25 bg-amber-500/15 text-amber-200{% else %}border-white/20 bg-primary/75 text-soft/60{% endif %}">
+              {% if media_file.is_download_unlocked and media_file.has_downloadable_file %}
+              <svg aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
+              {% elif media_file.is_selected %}
+              <svg aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
+              {% elif media_file.has_pending_payment %}
+              <span aria-hidden="true" class="h-2.5 w-2.5 rounded-full bg-current"></span>
+              {% else %}
+              <span aria-hidden="true" class="h-4 w-4 rounded-full border border-current/80"></span>
+              {% endif %}
+            </span>
+          </div>
+
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-primary via-primary/75 to-transparent"></div>
+          <span class="sr-only">{{ media_file.title }}</span>
+
+          <div class="absolute inset-x-4 bottom-4">
+            {% if media_file.is_download_unlocked and media_file.has_downloadable_file %}
+            <a href="{% url 'client:download_file' media_file.id %}?next={{ request.get_full_path|urlencode }}" aria-label="Download {{ media_file.title }}" class="block rounded-full border border-green-400/25 bg-green-500/15 px-4 py-3 text-center text-sm font-semibold text-green-200">Download</a>
+            {% endif %}
+          </div>
+        </article>
+        {% elif media_file.has_pending_payment %}
+        <article class="group relative overflow-hidden rounded-[1.75rem] border border-amber-400/30 bg-secondary">
+          <img class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" />
+          <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
+            <div class="flex flex-wrap gap-2">
+              {% if media_file.kind == 'video' %}
+              <span class="inline-flex rounded-full border border-white/15 bg-primary/85 px-3 py-1 text-xs font-semibold text-soft">Video</span>
+              {% endif %}
+              <span class="inline-flex rounded-full border border-amber-400/25 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-200">Payment Pending</span>
+            </div>
+
+            <span class="flex h-11 w-11 items-center justify-center rounded-full border border-amber-400/25 bg-amber-500/15 text-amber-200">
+              <span aria-hidden="true" class="h-2.5 w-2.5 rounded-full bg-current"></span>
+            </span>
+          </div>
+
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-primary via-primary/75 to-transparent"></div>
+          <span class="sr-only">{{ media_file.title }}</span>
+
+          <div class="absolute inset-x-4 bottom-4">
+            <a href="{% url 'client:payments' %}" aria-label="View payment for {{ media_file.title }}" class="block rounded-full border border-amber-400/25 bg-amber-500/15 px-4 py-3 text-center text-sm font-semibold text-amber-100">View Payment</a>
+          </div>
+        </article>
+        {% else %}
+        <form
+          method="post"
+          action="{% if media_file.is_selected %}{% url 'client:remove_file' media_file.id %}{% else %}{% url 'client:select_file' media_file.id %}{% endif %}"
+          class="group relative block overflow-hidden rounded-[1.75rem] bg-secondary transition duration-300 {% if media_file.is_selected %}border border-gold/40 shadow-glow{% else %}border border-white/10 hover:border-gold/30 hover:shadow-glow{% endif %}"
+          data-gallery-form
+          data-selected="{% if media_file.is_selected %}true{% else %}false{% endif %}"
+          data-select-url="{% url 'client:select_file' media_file.id %}"
+          data-remove-url="{% url 'client:remove_file' media_file.id %}"
+          data-select-label="Select {{ media_file.title }} for download"
+          data-remove-label="Remove {{ media_file.title }} from selection"
+        >
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+          <button
+            type="submit"
+            class="block w-full text-left"
+            data-gallery-toggle
+            aria-label="{% if media_file.is_selected %}Remove {{ media_file.title }} from selection{% else %}Select {{ media_file.title }} for download{% endif %}"
+          >
+            <img class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" />
+            <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
+              <div class="flex flex-wrap gap-2">
+                {% if media_file.kind == 'video' %}
+                <span class="inline-flex rounded-full border border-white/15 bg-primary/85 px-3 py-1 text-xs font-semibold text-soft">Video</span>
+                {% endif %}
+              </div>
+
+              <span data-gallery-indicator class="flex h-11 w-11 items-center justify-center rounded-full border {% if media_file.is_selected %}border-gold/40 bg-gold/15 text-gold{% else %}border-white/20 bg-primary/75 text-soft/60{% endif %}">
+                <svg data-gallery-icon-selected aria-hidden="true" class="h-5 w-5 {% if not media_file.is_selected %}hidden{% endif %}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span data-gallery-icon-empty aria-hidden="true" class="h-4 w-4 rounded-full border border-current/80 {% if media_file.is_selected %}hidden{% endif %}"></span>
+              </span>
+            </div>
+
+            <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-primary via-primary/75 to-transparent"></div>
+            <span class="sr-only">{{ media_file.title }}</span>
+
+            <div class="absolute inset-x-4 bottom-4">
+              <span data-gallery-action-label class="block rounded-full px-4 py-3 text-center text-sm font-semibold transition {% if media_file.is_selected %}border border-gold/35 bg-primary/80 text-gold{% else %}bg-accent text-white shadow-glow{% endif %}">
+                {% if media_file.is_selected %}Selected{% else %}Select{% endif %}
+              </span>
+            </div>
+          </button>
+        </form>
+        {% endif %}
+        {% empty %}
+        <div class="rounded-[1.5rem] border border-dashed border-white/10 bg-secondary p-8 md:col-span-2 xl:col-span-3">
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">No Files Yet</p>
+          <h2 class="mt-3 text-2xl font-bold">Your files will appear here once they are ready.</h2>
+          <p class="mt-4 text-sm leading-7 text-soft/75">Try switching the folder filter or check back after the SudPix team prepares your files in the portal.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  (function() {
+    var forms = document.querySelectorAll("[data-gallery-form]");
+    if (!forms.length || !window.fetch) {
+      return;
+    }
+
+    var availableTileClass = "group relative block overflow-hidden rounded-[1.75rem] border border-white/10 bg-secondary transition duration-300 hover:border-gold/30 hover:shadow-glow";
+    var selectedTileClass = "group relative block overflow-hidden rounded-[1.75rem] border border-gold/40 bg-secondary shadow-glow transition duration-300";
+    var availableIndicatorClass = "flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-primary/75 text-soft/60";
+    var selectedIndicatorClass = "flex h-11 w-11 items-center justify-center rounded-full border border-gold/40 bg-gold/15 text-gold";
+    var availableActionClass = "block rounded-full bg-accent px-4 py-3 text-center text-sm font-semibold text-white shadow-glow transition";
+    var selectedActionClass = "block rounded-full border border-gold/35 bg-primary/80 px-4 py-3 text-center text-sm font-semibold text-gold transition";
+
+    function getCookie(name) {
+      var cookieValue = null;
+      if (!document.cookie) {
+        return cookieValue;
+      }
+
+      document.cookie.split(";").forEach(function(cookie) {
+        var trimmed = cookie.trim();
+        if (trimmed.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
+        }
+      });
+      return cookieValue;
+    }
+
+    function setSummaryCount(selector, value) {
+      document.querySelectorAll(selector).forEach(function(element) {
+        element.textContent = value;
+      });
+    }
+
+    function renderSelectionCounts(payload) {
+      setSummaryCount("[data-selected-files-count]", payload.selected_files_count);
+      setSummaryCount("[data-selected-photos-count]", payload.selected_photo_count);
+      setSummaryCount("[data-selected-videos-count]", payload.selected_video_count);
+    }
+
+    function applySelectedState(form, selected) {
+      var indicator = form.querySelector("[data-gallery-indicator]");
+      var selectedIcon = form.querySelector("[data-gallery-icon-selected]");
+      var emptyIcon = form.querySelector("[data-gallery-icon-empty]");
+      var actionLabel = form.querySelector("[data-gallery-action-label]");
+      var button = form.querySelector("[data-gallery-toggle]");
+
+      form.dataset.selected = selected ? "true" : "false";
+      form.action = selected ? form.dataset.removeUrl : form.dataset.selectUrl;
+      form.className = selected ? selectedTileClass : availableTileClass;
+      indicator.className = selected ? selectedIndicatorClass : availableIndicatorClass;
+      selectedIcon.classList.toggle("hidden", !selected);
+      emptyIcon.classList.toggle("hidden", selected);
+      actionLabel.className = selected ? selectedActionClass : availableActionClass;
+      actionLabel.textContent = selected ? "Selected" : "Select";
+      button.setAttribute(
+        "aria-label",
+        selected ? form.dataset.removeLabel : form.dataset.selectLabel,
+      );
+    }
+
+    forms.forEach(function(form) {
+      form.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        if (form.dataset.busy === "true") {
+          return;
+        }
+
+        form.dataset.busy = "true";
+        form.classList.add("pointer-events-none", "opacity-80");
+
+        var formData = new FormData(form);
+
+        fetch(form.action, {
+          method: "POST",
+          body: formData,
+          credentials: "same-origin",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": getCookie("csrftoken") || formData.get("csrfmiddlewaretoken") || "",
+          },
+        })
+          .then(function(response) {
+            if (!response.ok) {
+              throw new Error("Selection request failed.");
+            }
+            return response.json();
+          })
+          .then(function(payload) {
+            if (payload.redirect_url) {
+              window.location.href = payload.redirect_url;
+              return;
+            }
+
+            applySelectedState(form, Boolean(payload.selected));
+            renderSelectionCounts(payload);
+          })
+          .catch(function() {
+            form.submit();
+          })
+          .finally(function() {
+            form.dataset.busy = "false";
+            form.classList.remove("pointer-events-none", "opacity-80");
+          });
+      });
+    });
+  })();
+</script>
+{% endblock %}

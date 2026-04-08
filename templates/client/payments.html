@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Payments | SudPix{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+  <div>
+    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Client Portal</p>
+    <h1 class="mt-2 font-display text-3xl font-bold sm:text-4xl">Payment History</h1>
+    <p class="mt-3 text-soft/75">Track every payment request and confirmation tied to the files you selected for download.</p>
+  </div>
+
+  <div class="mt-10 overflow-hidden rounded-[1.75rem] border border-white/10 bg-secondary">
+    <div class="border-b border-white/10 px-6 py-5">
+      <div class="grid gap-4 text-sm font-semibold text-soft/80 md:grid-cols-5">
+        <div>Date</div>
+        <div>Folder</div>
+        <div>Files</div>
+        <div>Method</div>
+        <div>Status</div>
+      </div>
+    </div>
+
+    <div class="divide-y divide-white/10">
+      {% for payment in payments %}
+      <div class="grid gap-4 px-6 py-5 text-sm text-soft/75 md:grid-cols-5">
+        <div>{{ payment.created_at|date:"d M Y" }}</div>
+        <div>{{ payment.project_label }}</div>
+        <div>{{ payment.selected_file_label }}</div>
+        <div>{{ payment.get_method_display }} • {{ payment.formatted_amount }}</div>
+        <div>
+          <span class="rounded-full px-3 py-1 text-xs font-semibold {{ payment.status_badge_class }}">{{ payment.get_status_display }}</span>
+        </div>
+      </div>
+      {% empty %}
+      <div class="px-6 py-8 text-sm text-soft/70">
+        No payment activity yet. Once you submit a file payment request, it will appear here.
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

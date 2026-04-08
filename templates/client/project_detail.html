@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Project Details | SudPix{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Project Details</p>
+      <h1 class="mt-2 font-display text-3xl font-bold sm:text-4xl">{{ project.title }}</h1>
+      <p class="mt-3 text-soft/75">{{ project.description|default:"Browse your photos and videos, then complete payment to unlock downloads for this group." }}</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a href="{% url 'client:projects' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">Back to Projects</a>
+      <a href="{% url 'client:checkout' %}?project={{ project.slug }}" class="rounded-full bg-accent px-5 py-3 font-semibold text-white shadow-glow">Unlock Downloads</a>
+    </div>
+  </div>
+
+  <div class="mt-10 grid gap-8 lg:grid-cols-[320px_1fr]">
+    <aside class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <p class="text-sm font-semibold text-gold">Project Overview</p>
+      <div class="mt-5 space-y-4 text-sm text-soft/75">
+        <p><span class="font-semibold text-soft">Status:</span> {{ project.get_status_display }}</p>
+        <p><span class="font-semibold text-soft">Date:</span> {{ project.shoot_date|date:"d F Y"|default:"Date to be confirmed" }}</p>
+        <p><span class="font-semibold text-soft">Photos:</span> {{ project.photo_count }}</p>
+        <p><span class="font-semibold text-soft">Videos:</span> {{ project.video_count }}</p>
+      </div>
+
+      <div class="mt-8 rounded-3xl border border-white/10 bg-primary p-5">
+        <p class="text-sm font-semibold text-gold">Quick Filters</p>
+        <div class="mt-4 space-y-3 text-sm">
+          <a href="{% url 'client:files' %}?project={{ project.slug }}" class="block rounded-2xl bg-gold/10 px-4 py-3 font-semibold text-gold">All Files</a>
+          <a href="{% url 'client:files' %}?project={{ project.slug }}&kind=photo" class="block rounded-2xl bg-white/5 px-4 py-3 text-soft/80 hover:bg-white/10">Photos</a>
+          <a href="{% url 'client:files' %}?project={{ project.slug }}&kind=video" class="block rounded-2xl bg-white/5 px-4 py-3 text-soft/80 hover:bg-white/10">Videos</a>
+          <a href="{% url 'client:files' %}?project={{ project.slug }}&kind=design" class="block rounded-2xl bg-white/5 px-4 py-3 text-soft/80 hover:bg-white/10">Design</a>
+        </div>
+      </div>
+    </aside>
+
+    <div>
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-2xl font-bold">Available Files</h2>
+        <a href="{% url 'client:files' %}?project={{ project.slug }}" class="text-sm font-semibold text-gold">Open full library -></a>
+      </div>
+
+      <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {% for media_file in files %}
+        <article class="overflow-hidden rounded-[1.5rem] border border-white/10 bg-secondary">
+          <img class="h-52 w-full object-cover" src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" />
+          <div class="p-5">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="font-semibold">{{ media_file.title }}</h3>
+              <span class="text-sm font-semibold text-gold">{{ media_file.formatted_price }}</span>
+            </div>
+            <p class="mt-2 text-sm text-soft/70">{{ media_file.get_kind_display }}</p>
+            <div class="mt-4 flex gap-3">
+              <a href="{% url 'client:files' %}?project={{ project.slug }}" class="flex-1 rounded-full border border-white/10 px-4 py-2 text-center text-sm font-semibold text-soft/80">Browse More</a>
+              {% if media_file.is_download_unlocked and media_file.has_downloadable_file %}
+              <a href="{% url 'client:download_file' media_file.id %}?next={{ request.get_full_path|urlencode }}" class="flex-1 rounded-full border border-green-400/25 bg-green-500/10 px-4 py-2 text-center text-sm font-semibold text-green-300">Download</a>
+              {% elif media_file.has_pending_payment %}
+              <a href="{% url 'client:payments' %}" class="flex-1 rounded-full border border-amber-400/25 bg-amber-500/10 px-4 py-2 text-center text-sm font-semibold text-amber-200">Payment Pending</a>
+              {% else %}
+              <a href="{% url 'client:checkout' %}?project={{ project.slug }}" class="flex-1 rounded-full bg-accent px-4 py-2 text-center text-sm font-semibold text-white">Pay to Unlock</a>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+        {% empty %}
+        <div class="rounded-[1.5rem] border border-dashed border-white/10 bg-secondary p-8 md:col-span-2 xl:col-span-3">
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">No Files Yet</p>
+          <h2 class="mt-3 text-2xl font-bold">This project does not have files yet.</h2>
+          <p class="mt-4 text-sm leading-7 text-soft/75">Once the SudPix team prepares files for your portal, they will appear here for viewing and project payment.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

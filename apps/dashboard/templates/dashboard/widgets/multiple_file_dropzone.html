@@ -1,0 +1,231 @@
+<div class="staff-upload" data-batch-dropzone>
+  <style>
+    .staff-upload__dropzone {
+      border: 1px dashed rgba(212, 163, 115, 0.45);
+      border-radius: 1.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+
+    .staff-upload__dropzone:hover,
+    .staff-upload__dropzone:focus {
+      border-color: rgba(232, 93, 4, 0.8);
+      background: rgba(232, 93, 4, 0.08);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .staff-upload__dropzone.is-dragover {
+      border-color: rgba(232, 93, 4, 0.95);
+      background: rgba(232, 93, 4, 0.12);
+    }
+
+    .staff-upload__input {
+      display: none;
+    }
+
+    .staff-upload__preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .staff-upload__preview[hidden] {
+      display: none;
+    }
+
+    .staff-upload__card {
+      overflow: hidden;
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .staff-upload__thumb,
+    .staff-upload__placeholder {
+      width: 100%;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      color: #d4a373;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      object-fit: cover;
+    }
+
+    .staff-upload__details {
+      padding: 0.75rem;
+    }
+
+    .staff-upload__name {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      line-height: 1.4;
+      word-break: break-word;
+      color: #f5f5f5;
+    }
+
+    .staff-upload__size {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.75rem;
+      color: rgba(245, 245, 245, 0.65);
+    }
+  </style>
+
+  <div class="staff-upload__dropzone" tabindex="0" role="button" aria-label="Drag and drop files to upload">
+    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Batch Upload</p>
+    <h3 class="mt-3 text-xl font-bold text-soft">Drag and drop photos or videos here</h3>
+    <p class="mt-3 text-sm leading-6 text-soft/75">Click anywhere in this area to choose local files. Each uploaded item will appear on the client site immediately after save.</p>
+    <div class="mt-4 text-sm font-semibold text-accent" data-batch-upload-meta>No files selected yet.</div>
+    <input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+  </div>
+
+  <div class="staff-upload__preview" data-batch-upload-preview hidden></div>
+</div>
+<script>
+  (function() {
+    var script = document.currentScript;
+    var root = script.previousElementSibling;
+
+    if (!root || root.dataset.initialized === "true") {
+      return;
+    }
+
+    root.dataset.initialized = "true";
+
+    var input = root.querySelector("[data-batch-upload-input]");
+    var dropzone = root.querySelector(".staff-upload__dropzone");
+    var meta = root.querySelector("[data-batch-upload-meta]");
+    var preview = root.querySelector("[data-batch-upload-preview]");
+
+    if (!input || !dropzone || !meta || !preview) {
+      return;
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) {
+        return bytes + " B";
+      }
+      if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(1) + " KB";
+      }
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
+    function renderPreview(files) {
+      preview.innerHTML = "";
+
+      if (!files.length) {
+        preview.hidden = true;
+        meta.textContent = "No files selected yet.";
+        return;
+      }
+
+      meta.textContent = files.length + " file" + (files.length === 1 ? "" : "s") + " ready to upload.";
+      preview.hidden = false;
+
+      Array.prototype.forEach.call(files, function(file) {
+        var card = document.createElement("div");
+        card.className = "staff-upload__card";
+
+        if (file.type.indexOf("image/") === 0) {
+          var image = document.createElement("img");
+          image.className = "staff-upload__thumb";
+          image.alt = file.name;
+          image.src = URL.createObjectURL(file);
+          image.addEventListener("load", function() {
+            URL.revokeObjectURL(image.src);
+          });
+          card.appendChild(image);
+        } else {
+          var placeholder = document.createElement("div");
+          placeholder.className = "staff-upload__placeholder";
+          placeholder.textContent = file.type.indexOf("video/") === 0 ? "Video" : "File";
+          card.appendChild(placeholder);
+        }
+
+        var details = document.createElement("div");
+        details.className = "staff-upload__details";
+
+        var name = document.createElement("span");
+        name.className = "staff-upload__name";
+        name.textContent = file.name;
+        details.appendChild(name);
+
+        var size = document.createElement("span");
+        size.className = "staff-upload__size";
+        size.textContent = formatSize(file.size || 0);
+        details.appendChild(size);
+
+        card.appendChild(details);
+        preview.appendChild(card);
+      });
+    }
+
+    function updateFiles(fileList) {
+      renderPreview(Array.prototype.slice.call(fileList || []));
+    }
+
+    function assignDroppedFiles(fileList) {
+      if (!window.DataTransfer) {
+        updateFiles(fileList);
+        return;
+      }
+
+      var transfer = new DataTransfer();
+      Array.prototype.forEach.call(fileList, function(file) {
+        transfer.items.add(file);
+      });
+      input.files = transfer.files;
+      updateFiles(input.files);
+    }
+
+    ["dragenter", "dragover"].forEach(function(eventName) {
+      dropzone.addEventListener(eventName, function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        dropzone.classList.add("is-dragover");
+      });
+    });
+
+    ["dragleave", "dragend", "drop"].forEach(function(eventName) {
+      dropzone.addEventListener(eventName, function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        dropzone.classList.remove("is-dragover");
+      });
+    });
+
+    dropzone.addEventListener("drop", function(event) {
+      if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+        assignDroppedFiles(event.dataTransfer.files);
+      }
+    });
+
+    dropzone.addEventListener("click", function() {
+      input.click();
+    });
+
+    dropzone.addEventListener("keydown", function(event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        input.click();
+      }
+    });
+
+    input.addEventListener("change", function() {
+      updateFiles(input.files);
+    });
+
+    updateFiles(input.files);
+  })();
+</script>

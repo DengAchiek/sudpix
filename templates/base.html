@@ -1,0 +1,207 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}SudPix{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#0F0F0F',
+              secondary: '#1B1B1B',
+              accent: '#E85D04',
+              gold: '#D4A373',
+              soft: '#F5F5F5',
+              muted: '#A3A3A3'
+            },
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+              display: ['Poppins', 'Inter', 'ui-sans-serif', 'system-ui']
+            },
+            boxShadow: {
+              glow: '0 10px 35px rgba(232, 93, 4, 0.25)'
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body class="bg-primary font-sans text-soft selection:bg-accent selection:text-white">
+    <header class="sticky top-0 z-50 border-b border-white/10 bg-primary/90 backdrop-blur">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+        <a href="{% url 'core:home' %}" class="flex items-center">
+          <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Creative Studio" class="h-10 w-auto sm:h-12" />
+        </a>
+
+        <nav class="hidden items-center gap-8 text-sm md:flex">
+          <a href="{% url 'core:home' %}" class="hover:text-accent">Home</a>
+          <a href="{% url 'services:list' %}" class="hover:text-accent">Services</a>
+          <a href="{% url 'portfolio:list' %}" class="hover:text-accent">Portfolio</a>
+          <a href="{% url 'bookings:create' %}" class="hover:text-accent">Book</a>
+          <a href="{% url 'core:contact' %}" class="hover:text-accent">Contact</a>
+        </nav>
+
+        <div class="hidden items-center gap-3 md:flex">
+          {% if request.user.is_authenticated %}
+          {% if request.user.is_staff %}
+          <a href="{% url 'dashboard:home' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium hover:border-gold/50 hover:text-gold">Staff Dashboard</a>
+          {% else %}
+          <a href="{% url 'accounts:profile' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium hover:border-gold/50 hover:text-gold">My Account</a>
+          {% endif %}
+          <a href="{% url 'accounts:logout' %}" class="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-glow">Logout</a>
+          {% else %}
+          <a href="{% url 'accounts:login' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium hover:border-gold/50 hover:text-gold">Login</a>
+          <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-glow">Book a Service</a>
+          {% endif %}
+        </div>
+
+        <button
+          type="button"
+          class="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-soft transition hover:border-gold/40 hover:text-gold md:hidden"
+          data-mobile-menu-toggle
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+          aria-label="Open navigation menu"
+        >
+          <svg data-mobile-menu-open-icon aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M4 7h16"></path>
+            <path d="M4 12h16"></path>
+            <path d="M4 17h16"></path>
+          </svg>
+          <svg data-mobile-menu-close-icon aria-hidden="true" class="hidden h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 6l12 12"></path>
+            <path d="M18 6l-12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div id="mobile-nav" data-mobile-menu hidden class="border-t border-white/10 bg-primary/95 md:hidden">
+        <div class="mx-auto max-w-7xl px-6 py-5 lg:px-8">
+          <nav class="grid gap-2 text-sm">
+            <a href="{% url 'core:home' %}" class="rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">Home</a>
+            <a href="{% url 'services:list' %}" class="rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">Services</a>
+            <a href="{% url 'portfolio:list' %}" class="rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">Portfolio</a>
+            <a href="{% url 'bookings:create' %}" class="rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">Book</a>
+            <a href="{% url 'core:contact' %}" class="rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">Contact</a>
+          </nav>
+
+          <div class="mt-5 grid gap-3">
+            {% if request.user.is_authenticated %}
+            {% if request.user.is_staff %}
+            <a href="{% url 'dashboard:home' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium hover:border-gold/50 hover:text-gold">Staff Dashboard</a>
+            {% else %}
+            <a href="{% url 'accounts:profile' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium hover:border-gold/50 hover:text-gold">My Account</a>
+            {% endif %}
+            <a href="{% url 'accounts:logout' %}" class="rounded-full bg-accent px-5 py-3 text-center text-sm font-semibold text-white shadow-glow">Logout</a>
+            {% else %}
+            <a href="{% url 'accounts:login' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium hover:border-gold/50 hover:text-gold">Login</a>
+            <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-5 py-3 text-center text-sm font-semibold text-white shadow-glow">Book a Service</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      {% if messages %}
+      <div class="mx-auto max-w-7xl px-6 pt-6 lg:px-8">
+        <div class="space-y-3">
+          {% for message in messages %}
+          <div class="rounded-2xl border border-white/10 bg-secondary px-5 py-4 text-sm text-soft/85">{{ message }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-white/10 bg-primary">
+      <div class="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-4 lg:px-8">
+        <div class="lg:col-span-2">
+          <div class="flex items-center">
+            <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Creative Studio" class="h-12 w-auto sm:h-14" />
+          </div>
+          <p class="mt-5 max-w-lg text-sm leading-7 text-soft/70">
+            SudPix delivers premium photography, videography, branding, and graphic design backed by a secure client portal for file access, payments, and downloads.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Quick Links</h3>
+          <ul class="mt-5 space-y-3 text-sm text-soft/75">
+            <li><a href="{% url 'services:list' %}" class="hover:text-accent">Services</a></li>
+            <li><a href="{% url 'portfolio:list' %}" class="hover:text-accent">Portfolio</a></li>
+            <li><a href="{% url 'bookings:create' %}" class="hover:text-accent">Book a Service</a></li>
+            <li><a href="{% url 'accounts:login' %}" class="hover:text-accent">Login</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Contact</h3>
+          <ul class="mt-5 space-y-3 text-sm text-soft/75">
+            <li>Email: hello@sudpix.com</li>
+            <li>Phone: +254 768774232</li>
+            <li>WhatsApp: +254 768774232</li>
+            <li>Nairobi, Kenya</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/10 px-6 py-5 text-center text-sm text-muted">
+        © 2026 SudPix. All rights reserved.
+      </div>
+    </footer>
+
+    <script>
+      (function() {
+        var toggle = document.querySelector("[data-mobile-menu-toggle]");
+        var menu = document.querySelector("[data-mobile-menu]");
+
+        if (!toggle || !menu) {
+          return;
+        }
+
+        var openIcon = toggle.querySelector("[data-mobile-menu-open-icon]");
+        var closeIcon = toggle.querySelector("[data-mobile-menu-close-icon]");
+
+        function setMenuState(isOpen) {
+          menu.hidden = !isOpen;
+          toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+          toggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
+          openIcon.classList.toggle("hidden", isOpen);
+          closeIcon.classList.toggle("hidden", !isOpen);
+        }
+
+        toggle.addEventListener("click", function() {
+          setMenuState(menu.hidden);
+        });
+
+        menu.querySelectorAll("a").forEach(function(link) {
+          link.addEventListener("click", function() {
+            setMenuState(false);
+          });
+        });
+
+        document.addEventListener("keydown", function(event) {
+          if (event.key === "Escape" && !menu.hidden) {
+            setMenuState(false);
+          }
+        });
+
+        window.addEventListener("resize", function() {
+          if (window.innerWidth >= 768) {
+            setMenuState(false);
+          }
+        });
+      })();
+    </script>
+    {% block extra_scripts %}{% endblock %}
+  </body>
+</html>

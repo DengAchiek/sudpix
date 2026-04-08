@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Services | SudPix{% endblock %}
+
+{% block content %}
+<section class="bg-[linear-gradient(to_right,rgba(15,15,15,0.92),rgba(15,15,15,0.7)),url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center">
+  <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-28">
+    <div class="max-w-3xl">
+      <span class="inline-flex rounded-full border border-gold/30 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">SudPix Services</span>
+      <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">Creative services built for brands, events, and unforgettable visual stories</h1>
+      <p class="mt-6 max-w-2xl text-base leading-7 text-soft/80 sm:text-lg">
+        From photography and videography to branding and graphic design, SudPix delivers premium creative solutions backed by a modern client experience.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="#service-categories" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Explore Services</a>
+        <a href="#service-packages" class="rounded-full border border-white/15 px-6 py-3 font-semibold hover:border-gold/50 hover:text-gold">View Packages</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="service-categories" class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+  <div class="max-w-2xl">
+    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Service Categories</p>
+    <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Professional creative solutions for every stage of your project</h2>
+    <p class="mt-4 text-soft/75">Choose from photography, videography, branding, and graphic design packages built for individuals, businesses, and campaigns.</p>
+  </div>
+
+  <div class="mt-12 grid gap-8 lg:grid-cols-[320px_1fr]">
+    <aside class="rounded-[2rem] border border-white/10 bg-secondary p-6">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Browse Services</p>
+      <div class="mt-5 space-y-3">
+        <button class="w-full rounded-2xl border border-gold/30 bg-gold/10 px-4 py-3 text-left font-semibold text-gold">Photography</button>
+        <button class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left font-semibold text-soft/85">Videography</button>
+        <button class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left font-semibold text-soft/85">Branding</button>
+        <button class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left font-semibold text-soft/85">Graphic Design</button>
+      </div>
+
+      <div class="mt-8 rounded-3xl border border-white/10 bg-primary p-5">
+        <p class="text-sm font-semibold text-gold">Why SudPix</p>
+        <ul class="mt-4 space-y-3 text-sm text-soft/75">
+          <li>• Premium creative quality</li>
+          <li>• Fast client communication</li>
+          <li>• Flexible service packages</li>
+          <li>• Secure file delivery system</li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="space-y-6">
+      <article class="overflow-hidden rounded-[2rem] border border-white/10 bg-secondary">
+        <div class="grid lg:grid-cols-[1.1fr_0.9fr]">
+          <div class="p-8 lg:p-10">
+            <span class="inline-flex rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">Photography Services</span>
+            <h3 class="mt-5 text-3xl font-bold">Professional photography for events, products, portraits, and campaigns</h3>
+            <p class="mt-5 text-sm leading-7 text-soft/75">
+              We create polished photo content that helps businesses market better, individuals preserve moments, and brands present themselves with confidence.
+            </p>
+            <div class="mt-8 grid gap-4 sm:grid-cols-2">
+              <div class="rounded-2xl bg-white/5 p-4">
+                <p class="text-sm font-semibold text-gold">Included</p>
+                <ul class="mt-3 space-y-2 text-sm text-soft/75">
+                  <li>• Edited high-resolution files</li>
+                  <li>• Online preview gallery</li>
+                  <li>• Organized client folders</li>
+                  <li>• Download-ready delivery</li>
+                </ul>
+              </div>
+              <div class="rounded-2xl bg-white/5 p-4">
+                <p class="text-sm font-semibold text-gold">Best For</p>
+                <ul class="mt-3 space-y-2 text-sm text-soft/75">
+                  <li>• Weddings and events</li>
+                  <li>• Product shoots</li>
+                  <li>• Corporate campaigns</li>
+                  <li>• Personal portraits</li>
+                </ul>
+              </div>
+            </div>
+            <div class="mt-8 flex flex-wrap gap-4">
+              <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Book Photography</a>
+              <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold hover:border-gold/50 hover:text-gold">View Related Work</a>
+            </div>
+          </div>
+          <div id="service-packages" class="border-l border-white/10 bg-primary p-8 lg:p-10">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Photography Packages</p>
+            <div class="mt-5 space-y-4">
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="text-lg font-bold">Starter Shoot</h4>
+                    <p class="mt-2 text-sm text-soft/70">Best for portraits, product mini shoots, and quick sessions.</p>
+                  </div>
+                  <span class="text-lg font-bold text-gold">KES 12,000</span>
+                </div>
+              </div>
+              <div class="rounded-3xl border border-gold/30 bg-gold/10 p-5">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="text-lg font-bold">Business Package</h4>
+                    <p class="mt-2 text-sm text-soft/75">Designed for campaigns, corporate shoots, and structured visual content.</p>
+                  </div>
+                  <span class="text-lg font-bold text-gold">KES 35,000</span>
+                </div>
+              </div>
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="text-lg font-bold">Enterprise / Event</h4>
+                    <p class="mt-2 text-sm text-soft/70">Full-day or multi-day event coverage with custom requirements.</p>
+                  </div>
+                  <span class="text-lg font-bold text-gold">Custom Quote</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="grid gap-6 md:grid-cols-3">
+        <article class="rounded-3xl border border-white/10 bg-secondary p-7">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">🎥</div>
+          <h3 class="mt-5 text-xl font-bold">Videography</h3>
+          <p class="mt-3 text-sm leading-6 text-soft/75">Event coverage, highlight films, interviews, product videos, and branded content.</p>
+          <a href="{% url 'bookings:create' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Book service →</a>
+        </article>
+        <article class="rounded-3xl border border-white/10 bg-secondary p-7">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">✨</div>
+          <h3 class="mt-5 text-xl font-bold">Branding</h3>
+          <p class="mt-3 text-sm leading-6 text-soft/75">Logo systems, visual identity direction, campaign design, and brand consistency assets.</p>
+          <a href="{% url 'bookings:create' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Book service →</a>
+        </article>
+        <article class="rounded-3xl border border-white/10 bg-secondary p-7">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">🎨</div>
+          <h3 class="mt-5 text-xl font-bold">Graphic Design</h3>
+          <p class="mt-3 text-sm leading-6 text-soft/75">Social media graphics, flyers, posters, marketing assets, and presentation design.</p>
+          <a href="{% url 'bookings:create' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Book service →</a>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-secondary/60 py-20">
+  <div class="mx-auto max-w-5xl px-6 lg:px-8">
+    <div class="max-w-2xl">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">FAQ</p>
+      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Common questions about our services</h2>
+    </div>
+    <div class="mt-10 space-y-4">
+      <div class="rounded-3xl border border-white/10 bg-primary p-6">
+        <h3 class="text-lg font-bold">Can I book multiple services at once?</h3>
+        <p class="mt-3 text-sm leading-7 text-soft/75">Yes. SudPix can combine photography, videography, branding, and design into one tailored package.</p>
+      </div>
+      <div class="rounded-3xl border border-white/10 bg-primary p-6">
+        <h3 class="text-lg font-bold">How are files delivered?</h3>
+        <p class="mt-3 text-sm leading-7 text-soft/75">Clients receive secure access to their folders, where they can preview files, select items, pay, and download.</p>
+      </div>
+      <div class="rounded-3xl border border-white/10 bg-primary p-6">
+        <h3 class="text-lg font-bold">Do you offer custom pricing?</h3>
+        <p class="mt-3 text-sm leading-7 text-soft/75">Yes. Larger campaigns, events, and brand projects can be quoted based on scope and deliverables.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

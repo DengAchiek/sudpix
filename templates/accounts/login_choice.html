@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login | SudPix{% endblock %}
+
+{% block content %}
+<section class="mx-auto flex min-h-[80vh] max-w-6xl items-center px-6 py-16 lg:px-8">
+  <div class="w-full rounded-[2rem] border border-white/10 bg-secondary p-8 lg:p-10">
+    <div class="mx-auto max-w-3xl text-center">
+      <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Creative Studio" class="mx-auto h-16 w-auto max-w-[180px]" />
+      <p class="mt-6 text-sm font-semibold uppercase tracking-[0.25em] text-gold">SudPix Access</p>
+      <h1 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Choose how you want to log in</h1>
+      <p class="mt-5 text-soft/75">
+        Select `Client` to access files, downloads, and bookings, or select `Admin` to enter the Django admin workspace.
+      </p>
+    </div>
+
+    <div class="mx-auto mt-10 grid max-w-4xl gap-6 lg:grid-cols-2">
+      <article class="rounded-[1.75rem] border border-white/10 bg-primary p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Client Login</p>
+        <h2 class="mt-3 text-2xl font-bold">Access your portal</h2>
+        <p class="mt-4 text-sm leading-7 text-soft/75">
+          View your files, check payment status, download approved work, and continue booking services.
+        </p>
+        <a href="{% url 'accounts:client_login' %}{% if next %}?next={{ next|urlencode }}{% endif %}" class="mt-8 inline-flex rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Continue as Client</a>
+      </article>
+
+      <article class="rounded-[1.75rem] border border-white/10 bg-primary p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Admin Login</p>
+        <h2 class="mt-3 text-2xl font-bold">Open Django admin</h2>
+        <p class="mt-4 text-sm leading-7 text-soft/75">
+          Sign in as staff to manage client files, payments, bookings, and delivery records from the admin site.
+        </p>
+        <a href="{% url 'accounts:admin_login' %}{% if next %}?next={{ next|urlencode }}{% endif %}" class="mt-8 inline-flex rounded-full border border-white/15 px-6 py-3 font-semibold hover:border-gold/50 hover:text-gold">Continue as Admin</a>
+      </article>
+    </div>
+  </div>
+</section>
+{% endblock %}

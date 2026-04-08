@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Book a Service | SudPix{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+  <div class="grid gap-10 rounded-[2rem] border border-white/10 bg-secondary p-8 lg:grid-cols-[0.95fr_1.05fr] lg:p-10">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Book a Service</p>
+      <h1 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Start your project with SudPix</h1>
+      <p class="mt-5 max-w-lg text-soft/75">
+        Share your project details and our team will recommend the best service package, timeline, and delivery plan for your needs.
+      </p>
+
+      <div class="mt-8 space-y-4 text-sm text-soft/80">
+        <p>• Fast response for bookings and service inquiries</p>
+        <p>• Support for events, brands, campaigns, and creative projects</p>
+        <p>• Secure file delivery and pay-before-download workflow</p>
+      </div>
+
+      <div class="mt-8 rounded-3xl border border-white/10 bg-primary p-6">
+        <p class="text-sm font-semibold text-gold">Booking Process</p>
+        <div class="mt-4 space-y-3 text-sm text-soft/75">
+          {% for step in booking_steps %}
+          <p>{{ forloop.counter }}. {{ step }}</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <form method="post" class="grid gap-4 rounded-[1.5rem] border border-white/10 bg-primary/80 p-6 backdrop-blur">
+      {% csrf_token %}
+
+      {% if messages %}
+      <div class="space-y-3 sm:col-span-2">
+        {% for message in messages %}
+        <div class="rounded-2xl border border-green-400/20 bg-green-500/10 px-4 py-3 text-sm text-green-100">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if form.non_field_errors %}
+      <div class="space-y-2 sm:col-span-2 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+        {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if requires_client_details %}
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-2 block text-sm font-medium text-soft/80" for="{{ form.client_name.id_for_label }}">{{ form.client_name.label }}</label>
+          {{ form.client_name }}
+          {% for error in form.client_name.errors %}
+          <p class="mt-2 text-sm text-red-200">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-soft/80" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+          {{ form.email }}
+          {% for error in form.email.errors %}
+          <p class="mt-2 text-sm text-red-200">{{ error }}</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-2 block text-sm font-medium text-soft/80" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+          {{ form.phone }}
+          {% for error in form.phone.errors %}
+          <p class="mt-2 text-sm text-red-200">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-soft/80" for="{{ form.service.id_for_label }}">{{ form.service.label }}</label>
+          {{ form.service }}
+          {% for error in form.service.errors %}
+          <p class="mt-2 text-sm text-red-200">{{ error }}</p>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      {{ form.client_name }}
+      {{ form.email }}
+      {{ form.phone }}
+      <div class="rounded-3xl border border-gold/20 bg-gold/10 p-5 text-sm text-soft/80">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Booking As {{ prefilled_identity.client_name }}</p>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+          <div class="rounded-2xl border border-white/10 bg-primary/70 px-4 py-3">
+            <p class="text-xs uppercase tracking-[0.2em] text-muted">Email</p>
+            <p class="mt-2 font-semibold text-soft">{{ prefilled_identity.email }}</p>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-primary/70 px-4 py-3">
+            <p class="text-xs uppercase tracking-[0.2em] text-muted">Phone</p>
+            <p class="mt-2 font-semibold text-soft">
+              {% if prefilled_identity.phone %}
+              {{ prefilled_identity.phone }}
+              {% else %}
+              Added automatically from your account history when available
+              {% endif %}
+            </p>
+          </div>
+        </div>
+        <p class="mt-4 leading-6 text-soft/75">Because you are signed in, SudPix will attach your account details to this booking automatically. You only need to choose the service and share the project notes below.</p>
+      </div>
+
+      <div>
+        <label class="mb-2 block text-sm font-medium text-soft/80" for="{{ form.service.id_for_label }}">{{ form.service.label }}</label>
+        {{ form.service }}
+        {% for error in form.service.errors %}
+        <p class="mt-2 text-sm text-red-200">{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div>
+        <label class="mb-2 block text-sm font-medium text-soft/80" for="{{ form.event_date.id_for_label }}">{{ form.event_date.label }}</label>
+        {{ form.event_date }}
+        {% for error in form.event_date.errors %}
+        <p class="mt-2 text-sm text-red-200">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div>
+        <label class="mb-2 block text-sm font-medium text-soft/80" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+        {{ form.notes }}
+        {% for error in form.notes.errors %}
+        <p class="mt-2 text-sm text-red-200">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Submit Booking Request</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

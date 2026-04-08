@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Client Login | SudPix{% endblock %}
+
+{% block content %}
+<section class="mx-auto flex min-h-[80vh] max-w-7xl items-center px-6 py-16 lg:px-8">
+  <div class="grid w-full gap-10 rounded-[2rem] border border-white/10 bg-secondary p-8 lg:grid-cols-2 lg:p-10">
+    <div class="flex flex-col justify-center">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">SudPix Portal</p>
+      <h1 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Login to access your files, payments, and downloads</h1>
+      <p class="mt-5 max-w-lg text-soft/75">
+        Access your secure client dashboard to preview your files, complete payments, and download approved content.
+      </p>
+
+      <div class="mt-8 rounded-3xl border border-white/10 bg-primary p-6">
+        <p class="text-sm font-semibold text-gold">What you can do inside the portal</p>
+        <ul class="mt-4 space-y-3 text-sm text-soft/75">
+          <li>• View project folders and file previews</li>
+          <li>• Review project files before payment</li>
+          <li>• Pay securely before download</li>
+          <li>• Access invoices and download history</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rounded-[1.5rem] border border-white/10 bg-primary/80 p-6 backdrop-blur">
+      <form method="post" class="space-y-5">
+        {% csrf_token %}
+        <div>
+          <label class="mb-2 block text-sm font-medium text-soft/80">Email address</label>
+          <input name="username" type="email" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 placeholder:text-muted focus:border-accent focus:outline-none" placeholder="you@example.com" />
+        </div>
+        <div>
+          <div class="mb-2 flex items-center justify-between">
+            <label class="block text-sm font-medium text-soft/80">Password</label>
+            <a href="#" class="text-sm text-gold hover:text-accent">Forgot password?</a>
+          </div>
+          <input name="password" type="password" class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 placeholder:text-muted focus:border-accent focus:outline-none" placeholder="Enter your password" />
+        </div>
+        <button type="submit" class="w-full rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Login to Portal</button>
+      </form>
+
+      <div class="mt-6 rounded-3xl border border-white/10 bg-secondary p-5 text-sm text-soft/75">
+        Need help accessing your account?
+        <a href="{% url 'core:contact' %}" class="font-semibold text-gold">Contact support</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

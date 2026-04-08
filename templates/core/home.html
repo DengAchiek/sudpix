@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}SudPix | Photography, Videography, Branding & Design{% endblock %}
+
+{% block content %}
+<section class="bg-[linear-gradient(to_right,rgba(15,15,15,0.92),rgba(15,15,15,0.7)),url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center">
+  <div class="mx-auto grid max-w-7xl gap-16 px-6 py-24 lg:grid-cols-2 lg:px-8 lg:py-32">
+    <div class="max-w-2xl">
+      <span class="inline-flex rounded-full border border-gold/30 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+        Photography • Videography • Branding • Design
+      </span>
+      <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+        Capture Moments. Build Brands. Deliver Excellence.
+      </h1>
+      <p class="mt-6 max-w-xl text-base leading-7 text-soft/80 sm:text-lg">
+        SudPix is a premium creative studio helping individuals, brands, and businesses tell better stories through powerful photography, cinematic videography, branding, and graphic design.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow transition hover:scale-[1.02]">
+          Book a Service
+        </a>
+        <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold transition hover:border-gold/50 hover:text-gold">
+          View Portfolio
+        </a>
+      </div>
+      <div class="mt-10 grid grid-cols-2 gap-6 border-t border-white/10 pt-8 sm:grid-cols-3">
+        <div>
+          <p class="text-3xl font-bold text-gold">250+</p>
+          <p class="mt-2 text-sm text-muted">Projects delivered</p>
+        </div>
+        <div>
+          <p class="text-3xl font-bold text-gold">120+</p>
+          <p class="mt-2 text-sm text-muted">Happy clients</p>
+        </div>
+        <div>
+          <p class="text-3xl font-bold text-gold">24/7</p>
+          <p class="mt-2 text-sm text-muted">Client file access</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-5 self-end sm:grid-cols-2">
+      <div class="rounded-3xl border border-white/10 bg-secondary/80 p-6 backdrop-blur">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Creative Delivery</p>
+        <h3 class="mt-3 text-2xl font-bold">Premium visuals for brands and events</h3>
+        <p class="mt-4 text-sm leading-6 text-soft/75">
+          From shoots to brand identity systems, SudPix delivers memorable visuals that move audiences and strengthen market presence.
+        </p>
+      </div>
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur sm:translate-y-12">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Secure Access</p>
+        <h3 class="mt-3 text-2xl font-bold">Client portal with pay-before-download</h3>
+        <p class="mt-4 text-sm leading-6 text-soft/75">
+          Clients can preview photos and videos, select files, see the total amount due, and pay securely before downloading.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+  <div class="max-w-2xl">
+    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Our Services</p>
+    <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Creative solutions designed to elevate your image</h2>
+    <p class="mt-4 text-soft/75">
+      SudPix combines visual storytelling, design thinking, and professional execution to deliver complete creative services under one brand.
+    </p>
+  </div>
+
+  <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <article class="rounded-3xl border border-white/10 bg-secondary p-7 transition hover:-translate-y-1 hover:border-gold/40">
+      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">📸</div>
+      <h3 class="mt-5 text-xl font-bold">Photography</h3>
+      <p class="mt-3 text-sm leading-6 text-soft/75">Event, lifestyle, product, corporate, and portrait photography captured with precision and style.</p>
+      <a href="{% url 'services:list' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Learn more →</a>
+    </article>
+
+    <article class="rounded-3xl border border-white/10 bg-secondary p-7 transition hover:-translate-y-1 hover:border-gold/40">
+      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">🎥</div>
+      <h3 class="mt-5 text-xl font-bold">Videography</h3>
+      <p class="mt-3 text-sm leading-6 text-soft/75">Cinematic event coverage, promotional videos, interviews, social clips, and branded video content.</p>
+      <a href="{% url 'services:list' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Learn more →</a>
+    </article>
+
+    <article class="rounded-3xl border border-white/10 bg-secondary p-7 transition hover:-translate-y-1 hover:border-gold/40">
+      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">✨</div>
+      <h3 class="mt-5 text-xl font-bold">Branding</h3>
+      <p class="mt-3 text-sm leading-6 text-soft/75">Build a memorable identity with logo systems, brand strategy, social assets, and visual guidelines.</p>
+      <a href="{% url 'services:list' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Learn more →</a>
+    </article>
+
+    <article class="rounded-3xl border border-white/10 bg-secondary p-7 transition hover:-translate-y-1 hover:border-gold/40">
+      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">🎨</div>
+      <h3 class="mt-5 text-xl font-bold">Graphic Design</h3>
+      <p class="mt-3 text-sm leading-6 text-soft/75">Professional flyers, social media graphics, marketing designs, print layouts, and digital campaigns.</p>
+      <a href="{% url 'services:list' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Learn more →</a>
+    </article>
+  </div>
+</section>
+
+<section class="bg-secondary/60 py-20">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <div class="max-w-2xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Featured Portfolio</p>
+        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Selected work across events, brands, and campaigns</h2>
+      </div>
+      <a href="{% url 'portfolio:list' %}" class="text-sm font-semibold text-gold">Explore all projects →</a>
+    </div>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div class="overflow-hidden rounded-3xl border border-white/10 bg-primary">
+        <img class="h-72 w-full object-cover" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80" alt="Wedding photography portfolio" />
+        <div class="p-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold">Wedding Story</h3>
+            <span class="rounded-full bg-white/5 px-3 py-1 text-xs text-gold">Photography</span>
+          </div>
+          <p class="mt-3 text-sm leading-6 text-soft/75">Elegant wedding coverage with cinematic couple portraits and complete event storytelling.</p>
+        </div>
+      </div>
+
+      <div class="overflow-hidden rounded-3xl border border-white/10 bg-primary">
+        <img class="h-72 w-full object-cover" src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80" alt="Corporate brand visuals" />
+        <div class="p-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold">Corporate Campaign</h3>
+            <span class="rounded-full bg-white/5 px-3 py-1 text-xs text-gold">Branding</span>
+          </div>
+          <p class="mt-3 text-sm leading-6 text-soft/75">Professional visual identity and campaign assets built for a growing corporate brand.</p>
+        </div>
+      </div>
+
+      <div class="overflow-hidden rounded-3xl border border-white/10 bg-primary">
+        <img class="h-72 w-full object-cover" src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80" alt="Event videography portfolio" />
+        <div class="p-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold">Live Event Film</h3>
+            <span class="rounded-full bg-white/5 px-3 py-1 text-xs text-gold">Videography</span>
+          </div>
+          <p class="mt-3 text-sm leading-6 text-soft/75">A polished event recap film designed for digital promotion and audience engagement.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+  <div class="max-w-2xl">
+    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">How It Works</p>
+    <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">A simple process built for smooth service delivery</h2>
+  </div>
+
+  <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
+    <div class="rounded-3xl border border-white/10 bg-secondary p-6">
+      <span class="text-sm font-semibold text-gold">01</span>
+      <h3 class="mt-3 text-lg font-bold">Choose a service</h3>
+      <p class="mt-3 text-sm leading-6 text-soft/75">Select photography, videography, branding, or design based on your needs.</p>
+    </div>
+    <div class="rounded-3xl border border-white/10 bg-secondary p-6">
+      <span class="text-sm font-semibold text-gold">02</span>
+      <h3 class="mt-3 text-lg font-bold">Book your project</h3>
+      <p class="mt-3 text-sm leading-6 text-soft/75">Submit your brief, event details, location, and preferred schedule online.</p>
+    </div>
+    <div class="rounded-3xl border border-white/10 bg-secondary p-6">
+      <span class="text-sm font-semibold text-gold">03</span>
+      <h3 class="mt-3 text-lg font-bold">We create</h3>
+      <p class="mt-3 text-sm leading-6 text-soft/75">Our team handles shooting, editing, design, and project delivery professionally.</p>
+    </div>
+    <div class="rounded-3xl border border-white/10 bg-secondary p-6">
+      <span class="text-sm font-semibold text-gold">04</span>
+      <h3 class="mt-3 text-lg font-bold">Preview your files</h3>
+      <p class="mt-3 text-sm leading-6 text-soft/75">Access your secure client portal to preview available photos and videos.</p>
+    </div>
+    <div class="rounded-3xl border border-white/10 bg-secondary p-6">
+      <span class="text-sm font-semibold text-gold">05</span>
+      <h3 class="mt-3 text-lg font-bold">Pay and download</h3>
+      <p class="mt-3 text-sm leading-6 text-soft/75">Review your files, unlock the project with payment, and download securely.</p>
+    </div>
+  </div>
+</section>
+
+<section class="bg-secondary/60 py-20">
+  <div class="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-2 lg:px-8">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Client Portal</p>
+      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">A smarter way to access, pay for, and download your files</h2>
+      <p class="mt-5 text-soft/75">
+        SudPix gives each client secure access to their own folders where they can preview image and video files, see project totals, and complete payments before download.
+      </p>
+      <ul class="mt-8 space-y-4 text-sm text-soft/80">
+        <li class="flex items-start gap-3"><span class="mt-1 text-gold">✓</span><span>Secure project folders for each client</span></li>
+        <li class="flex items-start gap-3"><span class="mt-1 text-gold">✓</span><span>Watermarked previews before payment</span></li>
+        <li class="flex items-start gap-3"><span class="mt-1 text-gold">✓</span><span>Automatic file counting and price calculation</span></li>
+        <li class="flex items-start gap-3"><span class="mt-1 text-gold">✓</span><span>M-Pesa, card, and mobile money checkout</span></li>
+        <li class="flex items-start gap-3"><span class="mt-1 text-gold">✓</span><span>Download access unlocked after confirmed payment</span></li>
+      </ul>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="{% url 'accounts:login' %}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white">Open Client Portal</a>
+        <a href="{% url 'bookings:create' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold hover:border-gold/50 hover:text-gold">Request a Demo</a>
+      </div>
+    </div>
+
+    <div class="rounded-[2rem] border border-white/10 bg-primary p-5 shadow-2xl">
+      <div class="rounded-[1.5rem] border border-white/10 bg-secondary p-5">
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div>
+            <p class="text-sm font-semibold text-gold">Client Dashboard</p>
+            <h3 class="mt-1 text-xl font-bold">Mary Wanjiku Wedding</h3>
+          </div>
+          <span class="rounded-full bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-300">Files Ready</span>
+        </div>
+
+        <div class="mt-5 grid gap-4 sm:grid-cols-3">
+          <div class="rounded-2xl bg-white/5 p-4">
+            <p class="text-xs uppercase tracking-[0.2em] text-muted">Photos</p>
+            <p class="mt-2 text-2xl font-bold">86</p>
+          </div>
+          <div class="rounded-2xl bg-white/5 p-4">
+            <p class="text-xs uppercase tracking-[0.2em] text-muted">Videos</p>
+            <p class="mt-2 text-2xl font-bold">12</p>
+          </div>
+          <div class="rounded-2xl bg-white/5 p-4">
+            <p class="text-xs uppercase tracking-[0.2em] text-muted">Selected</p>
+            <p class="mt-2 text-2xl font-bold">14</p>
+          </div>
+        </div>
+
+        <div class="mt-5 space-y-3">
+          <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+            <div>
+              <p class="font-medium">Bridal Portrait 01.jpg</p>
+              <p class="text-sm text-muted">Photo • KES 150</p>
+            </div>
+            <button class="rounded-full bg-accent px-4 py-2 text-sm font-semibold">Selected</button>
+          </div>
+          <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+            <div>
+              <p class="font-medium">Ceremony Highlight.mp4</p>
+              <p class="text-sm text-muted">Video • KES 500</p>
+            </div>
+            <button class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold">Select</button>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl border border-gold/25 bg-gold/10 p-5">
+          <div class="flex items-center justify-between text-sm text-soft/80">
+            <span>Total files selected</span>
+            <span>14</span>
+          </div>
+          <div class="mt-3 flex items-center justify-between text-lg font-bold">
+            <span>Total payable</span>
+            <span class="text-gold">KES 3,900</span>
+          </div>
+          <a href="{% url 'client:checkout' %}" class="mt-4 block w-full rounded-full bg-accent px-5 py-3 text-center font-semibold text-white">Proceed to Payment</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+  <div class="max-w-2xl">
+    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Testimonials</p>
+    <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">What clients say about SudPix</h2>
+  </div>
+
+  <div class="mt-12 grid gap-6 lg:grid-cols-3">
+    <article class="rounded-3xl border border-white/10 bg-secondary p-7">
+      <p class="text-lg leading-8 text-soft/85">“SudPix gave our brand launch a polished and premium visual identity. The photography and design quality stood out immediately.”</p>
+      <div class="mt-6">
+        <p class="font-semibold">Amina K.</p>
+        <p class="text-sm text-muted">Brand Manager</p>
+      </div>
+    </article>
+    <article class="rounded-3xl border border-white/10 bg-secondary p-7">
+      <p class="text-lg leading-8 text-soft/85">“The client portal made everything easy. We previewed the photos, selected what we wanted, paid, and downloaded without stress.”</p>
+      <div class="mt-6">
+        <p class="font-semibold">Daniel M.</p>
+        <p class="text-sm text-muted">Wedding Client</p>
+      </div>
+    </article>
+    <article class="rounded-3xl border border-white/10 bg-secondary p-7">
+      <p class="text-lg leading-8 text-soft/85">“Professional, responsive, and creatively sharp. SudPix is the kind of studio you trust with serious projects.”</p>
+      <div class="mt-6">
+        <p class="font-semibold">Mercy N.</p>
+        <p class="text-sm text-muted">Corporate Communications Lead</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-6 pb-20 lg:px-8">
+  <div class="grid gap-10 rounded-[2rem] border border-white/10 bg-[linear-gradient(to_right,rgba(232,93,4,0.15),rgba(212,163,115,0.12))] p-8 lg:grid-cols-[1fr_1.1fr] lg:p-10">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Book a Service</p>
+      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Start your project with SudPix today</h2>
+      <p class="mt-5 max-w-lg text-soft/75">
+        Tell us what you need and our team will get back to you with the right package, timeline, and next steps.
+      </p>
+      <div class="mt-8 space-y-4 text-sm text-soft/80">
+        <p>• Fast response for bookings and quotes</p>
+        <p>• Flexible support for events, businesses, and campaigns</p>
+        <p>• Secure file delivery after production</p>
+      </div>
+    </div>
+
+    <form method="post" action="{% url 'bookings:create' %}" class="grid gap-4 rounded-[1.5rem] border border-white/10 bg-primary/80 p-6 backdrop-blur">
+      {% csrf_token %}
+      <div class="grid gap-4 sm:grid-cols-2">
+        <input class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" type="text" name="client_name" placeholder="Client name" />
+        <input class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" type="email" name="email" placeholder="Email address" />
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <input class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" type="text" name="phone" placeholder="Phone number" />
+        <select class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-accent" name="service">
+          <option value="">Select service</option>
+          <option>Photography</option>
+          <option>Videography</option>
+          <option>Branding</option>
+          <option>Graphic Design</option>
+        </select>
+      </div>
+      <input class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" type="date" name="event_date" />
+      <textarea class="min-h-[130px] rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" name="notes" placeholder="Tell us about your project, location, and any important requirements"></textarea>
+      <button type="submit" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Submit Booking Request</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

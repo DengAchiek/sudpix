@@ -1,0 +1,258 @@
+<div class="admin-batch-upload" data-batch-dropzone>
+  <style>
+    .admin-batch-upload {
+      max-width: 960px;
+    }
+
+    .admin-batch-upload__dropzone {
+      border: 2px dashed #417690;
+      border-radius: 14px;
+      background: #f8fbfd;
+      padding: 22px;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      outline: none;
+    }
+
+    .admin-batch-upload__dropzone:hover,
+    .admin-batch-upload__dropzone:focus {
+      border-color: #205067;
+      background: #eef6fb;
+      box-shadow: 0 0 0 3px rgba(65, 118, 144, 0.14);
+    }
+
+    .admin-batch-upload__dropzone.is-dragover {
+      border-color: #205067;
+      background: #e6f2f9;
+      box-shadow: 0 0 0 4px rgba(65, 118, 144, 0.18);
+    }
+
+    .admin-batch-upload__title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: #10284c;
+    }
+
+    .admin-batch-upload__hint {
+      margin: 6px 0 0;
+      color: #415664;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .admin-batch-upload__meta {
+      margin-top: 12px;
+      color: #205067;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .admin-batch-upload__input {
+      display: none;
+    }
+
+    .admin-batch-upload__preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .admin-batch-upload__preview[hidden] {
+      display: none;
+    }
+
+    .admin-batch-upload__card {
+      border: 1px solid #d3e1ea;
+      border-radius: 12px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .admin-batch-upload__thumb,
+    .admin-batch-upload__placeholder {
+      width: 100%;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #edf4f8;
+      color: #205067;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      object-fit: cover;
+    }
+
+    .admin-batch-upload__details {
+      padding: 10px 12px 12px;
+    }
+
+    .admin-batch-upload__name {
+      display: block;
+      color: #10284c;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .admin-batch-upload__size {
+      display: block;
+      margin-top: 4px;
+      color: #415664;
+      font-size: 12px;
+    }
+  </style>
+
+  <div class="admin-batch-upload__dropzone" tabindex="0" role="button" aria-label="Drag and drop media files">
+    <p class="admin-batch-upload__title">Drag and drop many images or videos here</p>
+    <p class="admin-batch-upload__hint">Click anywhere in this area to browse local files. The client site will show each uploaded item after you save.</p>
+    <div class="admin-batch-upload__meta" data-batch-upload-meta>No files selected yet.</div>
+    <input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+  </div>
+
+  <div class="admin-batch-upload__preview" data-batch-upload-preview hidden></div>
+</div>
+<script>
+  (function() {
+    var script = document.currentScript;
+    var root = script.previousElementSibling;
+
+    if (!root || root.dataset.initialized === "true") {
+      return;
+    }
+
+    root.dataset.initialized = "true";
+
+    var input = root.querySelector("[data-batch-upload-input]");
+    var dropzone = root.querySelector(".admin-batch-upload__dropzone");
+    var meta = root.querySelector("[data-batch-upload-meta]");
+    var preview = root.querySelector("[data-batch-upload-preview]");
+
+    if (!input || !dropzone || !meta || !preview) {
+      return;
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) {
+        return bytes + " B";
+      }
+      if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(1) + " KB";
+      }
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
+    function renderPreview(files) {
+      preview.innerHTML = "";
+
+      if (!files.length) {
+        preview.hidden = true;
+        meta.textContent = "No files selected yet.";
+        return;
+      }
+
+      meta.textContent = files.length + " file" + (files.length === 1 ? "" : "s") + " ready to upload.";
+      preview.hidden = false;
+
+      Array.prototype.forEach.call(files, function(file) {
+        var card = document.createElement("div");
+        card.className = "admin-batch-upload__card";
+
+        var isImage = file.type.indexOf("image/") === 0;
+        if (isImage) {
+          var img = document.createElement("img");
+          img.className = "admin-batch-upload__thumb";
+          img.alt = file.name;
+          img.src = URL.createObjectURL(file);
+          img.addEventListener("load", function() {
+            URL.revokeObjectURL(img.src);
+          });
+          card.appendChild(img);
+        } else {
+          var placeholder = document.createElement("div");
+          placeholder.className = "admin-batch-upload__placeholder";
+          placeholder.textContent = file.type.indexOf("video/") === 0 ? "Video" : "File";
+          card.appendChild(placeholder);
+        }
+
+        var details = document.createElement("div");
+        details.className = "admin-batch-upload__details";
+
+        var name = document.createElement("span");
+        name.className = "admin-batch-upload__name";
+        name.textContent = file.name;
+        details.appendChild(name);
+
+        var size = document.createElement("span");
+        size.className = "admin-batch-upload__size";
+        size.textContent = formatSize(file.size || 0);
+        details.appendChild(size);
+
+        card.appendChild(details);
+        preview.appendChild(card);
+      });
+    }
+
+    function updateFiles(fileList) {
+      var files = Array.prototype.slice.call(fileList || []);
+      renderPreview(files);
+    }
+
+    function assignDroppedFiles(fileList) {
+      if (!window.DataTransfer) {
+        updateFiles(fileList);
+        return;
+      }
+
+      var transfer = new DataTransfer();
+      Array.prototype.forEach.call(fileList, function(file) {
+        transfer.items.add(file);
+      });
+      input.files = transfer.files;
+      updateFiles(input.files);
+    }
+
+    ["dragenter", "dragover"].forEach(function(eventName) {
+      dropzone.addEventListener(eventName, function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        dropzone.classList.add("is-dragover");
+      });
+    });
+
+    ["dragleave", "dragend", "drop"].forEach(function(eventName) {
+      dropzone.addEventListener(eventName, function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        dropzone.classList.remove("is-dragover");
+      });
+    });
+
+    dropzone.addEventListener("drop", function(event) {
+      if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+        assignDroppedFiles(event.dataTransfer.files);
+      }
+    });
+
+    dropzone.addEventListener("click", function() {
+      input.click();
+    });
+
+    dropzone.addEventListener("keydown", function(event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        input.click();
+      }
+    });
+
+    input.addEventListener("change", function() {
+      updateFiles(input.files);
+    });
+
+    updateFiles(input.files);
+  })();
+</script>

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout | SudPix{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Download Checkout</p>
+      <h1 class="mt-2 font-display text-3xl font-bold sm:text-4xl">Unlock your selected files</h1>
+      <p class="mt-3 text-soft/75">Press Download below to start payment for the files you selected. If you choose M-Pesa, SudPix will send a payment prompt to the phone number you enter here before the files unlock.</p>
+    </div>
+    <a href="{% url 'client:cart' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">Back to Selection</a>
+  </div>
+
+  {% if cart_items %}
+  <div class="mt-10 grid gap-8 lg:grid-cols-[1fr_0.85fr]">
+    <div class="space-y-6">
+      <form method="post" class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+        {% csrf_token %}
+
+        <div class="rounded-3xl border border-white/10 bg-primary p-5">
+          <p class="text-sm font-semibold text-gold">Selection Overview</p>
+          <h2 class="mt-3 text-2xl font-bold">{{ selected_file_count }} file{{ selected_file_count|pluralize }} selected</h2>
+          <p class="mt-2 text-sm text-soft/70">{{ selected_photo_count }} photo{{ selected_photo_count|pluralize }} • {{ selected_video_count }} video{{ selected_video_count|pluralize }} • Total due {{ selected_total }}</p>
+        </div>
+
+        <p class="mt-6 text-sm font-semibold text-gold">Payment Method</p>
+        <div class="mt-5 grid gap-4 sm:grid-cols-3">
+          {% for value, label in payment_methods %}
+          <label class="cursor-pointer rounded-3xl border border-white/10 bg-white/5 px-5 py-5 text-sm font-semibold text-soft/85">
+            <input class="sr-only" type="radio" name="payment_method" value="{{ value }}" {% if forloop.first %}checked{% endif %} />
+            {{ label }}
+          </label>
+          {% endfor %}
+        </div>
+
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-medium text-soft/80">Full name</label>
+            <input class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-soft/80" type="text" value="{{ request.user.get_full_name|default:request.user.username }}" readonly />
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium text-soft/80">Email</label>
+            <input class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-soft/80" type="email" value="{{ request.user.email }}" readonly />
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <label class="mb-2 block text-sm font-medium text-soft/80">Phone number</label>
+          <input class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 placeholder:text-muted focus:border-accent focus:outline-none" name="phone_number" type="text" placeholder="254700000000" />
+        </div>
+
+        <div class="mt-4 rounded-3xl border border-white/10 bg-primary p-5">
+          <p class="text-sm font-semibold text-gold">Payment Notice</p>
+          <p class="mt-3 text-sm leading-7 text-soft/75">The Download button starts payment for the files in this selection only. For M-Pesa, an STK prompt is sent to the phone number entered above and the files unlock after the payment callback is received.</p>
+        </div>
+
+        <button type="submit" class="mt-6 rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Download</button>
+      </form>
+    </div>
+
+    <aside class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <p class="text-sm font-semibold text-gold">Selected Files</p>
+      <div class="mt-5 space-y-4 border-b border-white/10 pb-5 text-sm text-soft/75">
+        {% for item in cart_items %}
+        <div class="flex items-center justify-between gap-4">
+          <span>{{ item.media_asset.title }}</span>
+          <span>{{ item.media_asset.get_kind_display }}</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="mt-5 space-y-3 text-sm text-soft/75">
+        <div class="flex items-center justify-between">
+          <span>Photos selected</span>
+          <span>{{ selected_photo_count }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span>Videos selected</span>
+          <span>{{ selected_video_count }}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span>Total files</span>
+          <span>{{ selected_file_count }}</span>
+        </div>
+        <div class="flex items-center justify-between border-t border-white/10 pt-3 text-base font-semibold">
+          <span>Total payable</span>
+          <span class="text-gold">{{ selected_total }}</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+  {% else %}
+  <div class="mt-10 rounded-[1.75rem] border border-dashed border-white/10 bg-secondary p-8">
+    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">No Files Selected</p>
+    <h2 class="mt-3 text-2xl font-bold">Select files before starting payment.</h2>
+    <p class="mt-4 text-sm leading-7 text-soft/75">Open your file library, choose the photos or videos you want, then return here to start the download payment.</p>
+    <a href="{% url 'client:files' %}" class="mt-6 inline-flex rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Browse Files</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,639 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff Dashboard | SudPix{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Staff Workspace</p>
+      <h1 class="mt-2 font-display text-3xl font-bold sm:text-4xl">Client activity and uploads</h1>
+      <p class="mt-3 max-w-3xl text-soft/75">Monitor what clients are doing in the portal, follow payment progress, review new bookings, and upload files from the site without leaving the SudPix frontend.</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a href="{% url 'admin:index' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">Open Django Admin</a>
+      <a href="{% url 'accounts:logout' %}" class="rounded-full bg-accent px-5 py-3 font-semibold text-white shadow-glow">Logout</a>
+    </div>
+  </div>
+
+  <section class="mt-8">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm text-soft/70">Tap any activity card to jump to that part of the dashboard and highlight the matching details below.</p>
+      <button type="button" data-dashboard-reset class="hidden rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-soft transition hover:border-gold/40 hover:text-gold">
+        Show all activity
+      </button>
+    </div>
+
+    <div class="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-7">
+      <button type="button" data-activity-card data-target-section="notifications" class="group rounded-3xl border border-white/10 bg-secondary p-5 text-left transition hover:border-gold/35 hover:shadow-glow">
+        <p class="text-xs uppercase tracking-[0.2em] text-muted transition group-hover:text-gold">New Signups</p>
+        <p class="mt-3 text-3xl font-bold">{{ unread_notifications_count }}</p>
+        <p class="mt-4 text-sm text-soft/60">Review admin alerts</p>
+      </button>
+      <button type="button" data-activity-card data-target-section="selected-files" class="group rounded-3xl border border-white/10 bg-secondary p-5 text-left transition hover:border-gold/35 hover:shadow-glow">
+        <p class="text-xs uppercase tracking-[0.2em] text-muted transition group-hover:text-gold">Selected Files</p>
+        <p class="mt-3 text-3xl font-bold">{{ selected_files_count }}</p>
+        <p class="mt-4 text-sm text-soft/60">Open client selections</p>
+      </button>
+      <button type="button" data-activity-card data-target-section="downloads" class="group rounded-3xl border border-white/10 bg-secondary p-5 text-left transition hover:border-gold/35 hover:shadow-glow">
+        <p class="text-xs uppercase tracking-[0.2em] text-muted transition group-hover:text-gold">Downloads Logged</p>
+        <p class="mt-3 text-3xl font-bold">{{ downloads_count }}</p>
+        <p class="mt-4 text-sm text-soft/60">See delivered files</p>
+      </button>
+      <button type="button" data-activity-card data-target-section="payments" data-payment-filter-target="pending" class="group rounded-3xl border border-white/10 bg-secondary p-5 text-left transition hover:border-gold/35 hover:shadow-glow">
+        <p class="text-xs uppercase tracking-[0.2em] text-muted transition group-hover:text-gold">Pending Payments</p>
+        <p class="mt-3 text-3xl font-bold">{{ pending_payments_count }}</p>
+        <p class="mt-4 text-sm text-soft/60">Show pending payments</p>
+      </button>
+      <button type="button" data-activity-card data-target-section="payments" data-payment-filter-target="confirmed" class="group rounded-3xl border border-white/10 bg-secondary p-5 text-left transition hover:border-gold/35 hover:shadow-glow">
+        <p class="text-xs uppercase tracking-[0.2em] text-muted transition group-hover:text-gold">Confirmed Payments</p>
+        <p class="mt-3 text-3xl font-bold">{{ confirmed_payments_count }}</p>
+        <p class="mt-4 text-sm text-soft/60">Show confirmed payments</p>
+      </button>
+      <button type="button" data-activity-card data-target-section="bookings" class="group rounded-3xl border border-white/10 bg-secondary p-5 text-left transition hover:border-gold/35 hover:shadow-glow">
+        <p class="text-xs uppercase tracking-[0.2em] text-muted transition group-hover:text-gold">New Bookings</p>
+        <p class="mt-3 text-3xl font-bold">{{ new_bookings_count }}</p>
+        <p class="mt-4 text-sm text-soft/60">Review new service requests</p>
+      </button>
+      <button type="button" data-activity-card data-target-section="uploads" class="group rounded-3xl border border-white/10 bg-secondary p-5 text-left transition hover:border-gold/35 hover:shadow-glow">
+        <p class="text-xs uppercase tracking-[0.2em] text-muted transition group-hover:text-gold">Clients With Files</p>
+        <p class="mt-3 text-3xl font-bold">{{ clients_count }}</p>
+        <p class="mt-4 text-sm text-soft/60">Browse uploaded gallery</p>
+      </button>
+    </div>
+  </section>
+
+  <div class="mt-10 grid gap-8 xl:items-start xl:grid-cols-[1.1fr_0.9fr]">
+    <section class="self-start rounded-[1.75rem] border border-white/10 bg-secondary p-5">
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Upload</p>
+          <h2 class="mt-1 text-xl font-bold">Upload files</h2>
+        </div>
+        <span class="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">Staff only</span>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" class="mt-4 space-y-4">
+        {% csrf_token %}
+        <div>
+          <label for="{{ form.client.id_for_label }}" class="mb-2 block text-sm font-medium text-soft/80">{{ form.client.label }}</label>
+          {{ form.client }}
+          {% if form.client.errors %}
+          <p class="mt-2 text-sm text-red-300">{{ form.client.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <div class="rounded-[1.5rem] border border-dashed border-gold/40 bg-white/5 p-4 transition hover:border-accent/70 hover:bg-accent/10" data-batch-dropzone tabindex="0" role="button" aria-label="Drag and drop files to upload">
+            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Batch Upload</p>
+            <h3 class="mt-2 text-lg font-bold text-soft">Drag and drop photos or videos here</h3>
+            <p class="mt-2 text-sm leading-6 text-soft/75">Click here to choose local files. Uploaded items appear on the client site after save.</p>
+            <div class="mt-3 text-sm font-semibold text-accent" data-batch-upload-meta>No files selected yet.</div>
+            {{ form.batch_files }}
+          </div>
+          <div class="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3" data-batch-upload-preview hidden></div>
+          {% if form.batch_files.errors %}
+          <p class="mt-2 text-sm text-red-300">{{ form.batch_files.errors|join:", " }}</p>
+          {% endif %}
+        </div>
+
+        <div class="rounded-3xl border border-white/10 bg-primary p-4 text-sm text-soft/75">
+          Choose the client first, then drag in multiple photos or videos. SudPix will send every uploaded file into that client's assigned folder automatically.
+        </div>
+
+        <button type="submit" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Upload to Client</button>
+      </form>
+    </section>
+
+    <section id="dashboard-uploads" data-dashboard-section="uploads" class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Uploaded Gallery</p>
+          <p class="mt-2 text-sm text-soft/70">Preview the latest client files in the same album style clients see in their portal.</p>
+        </div>
+        <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-soft/70">{{ gallery_uploads|length }} shown</span>
+      </div>
+
+      <div class="mt-6 grid gap-6 md:grid-cols-2">
+        {% for media_file in gallery_uploads %}
+        <article class="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-secondary">
+          <img src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]">
+          <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-flex rounded-full border border-white/15 bg-primary/85 px-3 py-1 text-xs font-semibold text-soft">{{ media_file.get_kind_display }}</span>
+              <span class="inline-flex rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-xs font-semibold text-gold">{{ media_file.project.client.username }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-primary/75 text-soft/70">
+                {% if media_file.kind == 'video' %}
+                <svg aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.868v4.264a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                  <path d="M21 12c0 4.971-4.029 9-9 9s-9-4.029-9-9 4.029-9 9-9 9 4.029 9 9z"></path>
+                </svg>
+                {% else %}
+                <svg aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16"></path>
+                  <path d="M14 14l1.586-1.586a2 2 0 012.828 0L20 14"></path>
+                  <path d="M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                {% endif %}
+              </span>
+              <button
+                type="button"
+                class="rounded-full bg-primary/85 px-4 py-2 text-xs font-semibold text-white transition hover:bg-accent"
+                data-preview-trigger
+                data-preview-url="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}{{ media_file.asset_url }}{% else %}{{ media_file.preview_url }}{% endif %}"
+                data-preview-kind="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}video{% else %}image{% endif %}"
+                data-preview-title="{{ media_file.title }}"
+                data-preview-subtitle="{{ media_file.project.title }} • {{ media_file.project.client.username }}"
+              >
+                Open
+              </button>
+            </div>
+          </div>
+
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-primary via-primary/80 to-transparent"></div>
+
+          <div class="absolute inset-x-4 bottom-4">
+            <p class="text-base font-semibold text-white">{{ media_file.title }}</p>
+            <p class="mt-1 text-sm text-soft/75">{{ media_file.project.title }}</p>
+            <p class="mt-2 text-xs uppercase tracking-[0.2em] text-muted">{{ media_file.uploaded_at|date:"d M Y, H:i" }}</p>
+          </div>
+        </article>
+        {% empty %}
+        <div class="rounded-[1.5rem] border border-dashed border-white/10 bg-primary p-8 text-sm text-soft/70 md:col-span-2">No uploads yet.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <div class="mt-10 grid gap-8 xl:grid-cols-2">
+    <section id="dashboard-notifications" data-dashboard-section="notifications" class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Admin Notifications</p>
+          <p class="mt-2 text-sm text-soft/70">New client registrations appear here so the SudPix team can follow up quickly.</p>
+        </div>
+        <span class="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+          {{ unread_notifications_count }} unread
+        </span>
+      </div>
+
+      <div class="mt-5 space-y-3">
+        {% for notification in recent_notifications %}
+        <article class="rounded-2xl border {% if notification.is_read %}border-white/10{% else %}border-gold/25{% endif %} bg-primary px-4 py-4">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="font-semibold">{{ notification.title }}</p>
+              <p class="mt-1 text-sm text-soft/70">{{ notification.message }}</p>
+              <p class="mt-2 text-xs uppercase tracking-[0.2em] text-muted">{{ notification.created_at|date:"d M Y, H:i" }}</p>
+            </div>
+            <span class="rounded-full px-3 py-1 text-xs font-semibold {% if notification.is_read %}border border-white/10 text-soft/65{% else %}border border-gold/30 bg-gold/10 text-gold{% endif %}">
+              {% if notification.is_read %}Read{% else %}Unread{% endif %}
+            </span>
+          </div>
+        </article>
+        {% empty %}
+        <div class="rounded-2xl border border-dashed border-white/10 bg-primary px-4 py-5 text-sm text-soft/70">No admin notifications yet.</div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section id="dashboard-selected-files" data-dashboard-section="selected-files" class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Files Selected By Clients</p>
+      <p class="mt-2 text-sm text-soft/70">See the exact files clients have marked for download in the same gallery style as their portal.</p>
+      <div class="mt-6 grid gap-6 sm:grid-cols-2">
+        {% for item in recent_selections %}
+        <article class="group relative overflow-hidden rounded-[1.75rem] border border-gold/30 bg-secondary shadow-glow">
+          <img src="{{ item.media_asset.preview_url }}" alt="{{ item.media_asset.title }}" class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]">
+          <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-flex rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold text-gold">Selected</span>
+              <span class="inline-flex rounded-full border border-white/15 bg-primary/85 px-3 py-1 text-xs font-semibold text-soft">{{ item.user.username }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="flex h-11 w-11 items-center justify-center rounded-full border border-gold/40 bg-gold/15 text-gold">
+                <svg aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              </span>
+              <button
+                type="button"
+                class="rounded-full bg-primary/85 px-4 py-2 text-xs font-semibold text-white transition hover:bg-accent"
+                data-preview-trigger
+                data-preview-url="{% if item.media_asset.kind == 'video' and item.media_asset.has_downloadable_file %}{{ item.media_asset.asset_url }}{% else %}{{ item.media_asset.preview_url }}{% endif %}"
+                data-preview-kind="{% if item.media_asset.kind == 'video' and item.media_asset.has_downloadable_file %}video{% else %}image{% endif %}"
+                data-preview-title="{{ item.media_asset.title }}"
+                data-preview-subtitle="{{ item.media_asset.project.title }} • {{ item.user.username }}"
+              >
+                Open
+              </button>
+            </div>
+          </div>
+
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-primary via-primary/80 to-transparent"></div>
+
+          <div class="absolute inset-x-4 bottom-4">
+            <p class="text-base font-semibold text-white">{{ item.media_asset.title }}</p>
+            <p class="mt-1 text-sm text-soft/75">{{ item.media_asset.project.title }}</p>
+            <p class="mt-2 text-xs uppercase tracking-[0.2em] text-muted">{{ item.added_at|date:"d M Y, H:i" }}</p>
+          </div>
+        </article>
+        {% empty %}
+        <div class="rounded-[1.5rem] border border-dashed border-white/10 bg-primary p-8 text-sm text-soft/70 sm:col-span-2">No active file selections right now.</div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section id="dashboard-downloads" data-dashboard-section="downloads" class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Files Downloaded</p>
+      <div class="mt-5 space-y-3">
+        {% for event in recent_downloads %}
+        <div class="rounded-2xl border border-white/10 bg-primary px-4 py-4">
+          <p class="font-semibold">{{ event.media_asset.title }}</p>
+          <p class="mt-1 text-sm text-soft/65">{{ event.user.username }} • {{ event.media_asset.project.title }}</p>
+          <p class="mt-1 text-xs uppercase tracking-[0.2em] text-muted">{{ event.downloaded_at|date:"d M Y, H:i" }}</p>
+        </div>
+        {% empty %}
+        <div class="rounded-2xl border border-dashed border-white/10 bg-primary px-4 py-5 text-sm text-soft/70">No downloads have been logged yet.</div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section id="dashboard-payments" data-dashboard-section="payments" class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Payment Status</p>
+      <div class="mt-4 flex flex-wrap gap-3">
+        <button type="button" data-payment-filter-button data-payment-filter="all" class="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold transition hover:border-gold/50">All</button>
+        <button type="button" data-payment-filter-button data-payment-filter="pending" class="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft/75 transition hover:border-gold/35 hover:text-gold">Pending</button>
+        <button type="button" data-payment-filter-button data-payment-filter="confirmed" class="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft/75 transition hover:border-gold/35 hover:text-gold">Confirmed</button>
+      </div>
+      <div class="mt-5 space-y-3">
+        {% for payment in recent_payments %}
+        <div data-payment-item data-payment-status="{{ payment.status }}" class="rounded-2xl border border-white/10 bg-primary px-4 py-4">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <p class="font-semibold">{{ payment.user.username }} • {{ payment.formatted_amount }}</p>
+              <p class="mt-1 text-sm text-soft/65">{{ payment.project_label }} • {{ payment.selected_file_label }}</p>
+            </div>
+            <span class="rounded-full px-3 py-1 text-xs font-semibold {{ payment.status_badge_class }}">{{ payment.get_status_display }}</span>
+          </div>
+        </div>
+        {% empty %}
+        <div class="rounded-2xl border border-dashed border-white/10 bg-primary px-4 py-5 text-sm text-soft/70">No payment activity yet.</div>
+        {% endfor %}
+        <div data-payment-empty hidden class="rounded-2xl border border-dashed border-white/10 bg-primary px-4 py-5 text-sm text-soft/70">No payments match this filter right now.</div>
+      </div>
+    </section>
+
+    <section id="dashboard-bookings" data-dashboard-section="bookings" class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Service Bookings</p>
+      <div class="mt-5 space-y-3">
+        {% for booking in recent_bookings %}
+        <div class="rounded-2xl border border-white/10 bg-primary px-4 py-4">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <p class="font-semibold">{{ booking.client_name }} • {{ booking.service }}</p>
+              <p class="mt-1 text-sm text-soft/65">{{ booking.email }} • {{ booking.event_date|date:"d M Y" }}</p>
+            </div>
+            <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-soft/80">{{ booking.get_status_display }}</span>
+          </div>
+        </div>
+        {% empty %}
+        <div class="rounded-2xl border border-dashed border-white/10 bg-primary px-4 py-5 text-sm text-soft/70">No bookings yet.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</section>
+<div data-preview-modal hidden class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/85 px-4 py-8 backdrop-blur-sm">
+  <button type="button" data-preview-close class="absolute inset-0 cursor-default" aria-label="Close preview"></button>
+  <div class="relative z-[81] w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-primary shadow-2xl">
+    <div class="flex items-center justify-between gap-4 border-b border-white/10 px-5 py-4">
+      <div class="min-w-0">
+        <p data-preview-title class="truncate text-lg font-semibold text-white"></p>
+        <p data-preview-subtitle class="mt-1 truncate text-sm text-soft/70"></p>
+      </div>
+      <button type="button" data-preview-dismiss class="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white transition hover:border-gold/40 hover:text-gold">
+        Close
+      </button>
+    </div>
+    <div class="bg-black">
+      <img data-preview-image src="" alt="" class="hidden max-h-[78vh] w-full object-contain">
+      <video data-preview-video class="hidden max-h-[78vh] w-full bg-black" controls playsinline preload="metadata">
+        <source data-preview-video-source src="">
+      </video>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  (function() {
+    var dropzone = document.querySelector("[data-batch-dropzone]");
+    var input = document.querySelector("[data-batch-upload-input]");
+    var meta = document.querySelector("[data-batch-upload-meta]");
+    var preview = document.querySelector("[data-batch-upload-preview]");
+
+    if (!dropzone || !input || !meta || !preview) {
+      return;
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) {
+        return bytes + " B";
+      }
+      if (bytes < 1024 * 1024) {
+        return (bytes / 1024).toFixed(1) + " KB";
+      }
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
+    function renderPreview(files) {
+      preview.innerHTML = "";
+
+      if (!files.length) {
+        preview.hidden = true;
+        meta.textContent = "No files selected yet.";
+        return;
+      }
+
+      meta.textContent = files.length + " file" + (files.length === 1 ? "" : "s") + " ready to upload.";
+      preview.hidden = false;
+
+      Array.prototype.forEach.call(files, function(file) {
+        var card = document.createElement("div");
+        card.className = "overflow-hidden rounded-2xl border border-white/10 bg-primary";
+
+        if (file.type.indexOf("image/") === 0) {
+          var image = document.createElement("img");
+          image.className = "h-32 w-full object-cover";
+          image.alt = file.name;
+          image.src = URL.createObjectURL(file);
+          image.addEventListener("load", function() {
+            URL.revokeObjectURL(image.src);
+          });
+          card.appendChild(image);
+        } else {
+          var placeholder = document.createElement("div");
+          placeholder.className = "flex h-32 items-center justify-center bg-white/5 text-xs font-bold uppercase tracking-[0.2em] text-gold";
+          placeholder.textContent = file.type.indexOf("video/") === 0 ? "Video" : "File";
+          card.appendChild(placeholder);
+        }
+
+        var details = document.createElement("div");
+        details.className = "p-3";
+
+        var name = document.createElement("p");
+        name.className = "text-sm font-semibold text-soft";
+        name.textContent = file.name;
+        details.appendChild(name);
+
+        var size = document.createElement("p");
+        size.className = "mt-1 text-xs text-soft/65";
+        size.textContent = formatSize(file.size || 0);
+        details.appendChild(size);
+
+        card.appendChild(details);
+        preview.appendChild(card);
+      });
+    }
+
+    function updateFiles(fileList) {
+      renderPreview(Array.prototype.slice.call(fileList || []));
+    }
+
+    function assignDroppedFiles(fileList) {
+      if (!window.DataTransfer) {
+        updateFiles(fileList);
+        return;
+      }
+
+      var transfer = new DataTransfer();
+      Array.prototype.forEach.call(fileList, function(file) {
+        transfer.items.add(file);
+      });
+      input.files = transfer.files;
+      updateFiles(input.files);
+    }
+
+    ["dragenter", "dragover"].forEach(function(eventName) {
+      dropzone.addEventListener(eventName, function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        dropzone.classList.add("border-accent", "bg-accent/10");
+      });
+    });
+
+    ["dragleave", "dragend", "drop"].forEach(function(eventName) {
+      dropzone.addEventListener(eventName, function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        dropzone.classList.remove("border-accent", "bg-accent/10");
+      });
+    });
+
+    dropzone.addEventListener("drop", function(event) {
+      if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+        assignDroppedFiles(event.dataTransfer.files);
+      }
+    });
+
+    dropzone.addEventListener("click", function() {
+      input.click();
+    });
+
+    dropzone.addEventListener("keydown", function(event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        input.click();
+      }
+    });
+
+    input.addEventListener("change", function() {
+      updateFiles(input.files);
+    });
+
+    updateFiles(input.files);
+  })();
+
+  (function() {
+    var modal = document.querySelector("[data-preview-modal]");
+    if (!modal) {
+      return;
+    }
+
+    var image = modal.querySelector("[data-preview-image]");
+    var video = modal.querySelector("[data-preview-video]");
+    var videoSource = modal.querySelector("[data-preview-video-source]");
+    var title = modal.querySelector("[data-preview-title]");
+    var subtitle = modal.querySelector("[data-preview-subtitle]");
+    var triggers = document.querySelectorAll("[data-preview-trigger]");
+    var dismissButtons = modal.querySelectorAll("[data-preview-dismiss], [data-preview-close]");
+
+    function closeModal() {
+      modal.hidden = true;
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.classList.remove("overflow-hidden");
+
+      image.classList.add("hidden");
+      image.removeAttribute("src");
+      image.removeAttribute("alt");
+
+      video.pause();
+      video.classList.add("hidden");
+      video.removeAttribute("src");
+      videoSource.removeAttribute("src");
+      video.load();
+    }
+
+    function openModal(trigger) {
+      title.textContent = trigger.dataset.previewTitle || "";
+      subtitle.textContent = trigger.dataset.previewSubtitle || "";
+
+      if ((trigger.dataset.previewKind || "image") === "video") {
+        videoSource.src = trigger.dataset.previewUrl || "";
+        video.load();
+        video.classList.remove("hidden");
+        image.classList.add("hidden");
+      } else {
+        image.src = trigger.dataset.previewUrl || "";
+        image.alt = trigger.dataset.previewTitle || "Preview";
+        image.classList.remove("hidden");
+        video.classList.add("hidden");
+      }
+
+      modal.hidden = false;
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.body.classList.add("overflow-hidden");
+    }
+
+    triggers.forEach(function(trigger) {
+      trigger.addEventListener("click", function() {
+        openModal(trigger);
+      });
+    });
+
+    dismissButtons.forEach(function(button) {
+      button.addEventListener("click", closeModal);
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape" && !modal.hidden) {
+        closeModal();
+      }
+    });
+  })();
+
+  (function() {
+    var cards = document.querySelectorAll("[data-activity-card]");
+    var sections = document.querySelectorAll("[data-dashboard-section]");
+    var resetButton = document.querySelector("[data-dashboard-reset]");
+    var paymentButtons = document.querySelectorAll("[data-payment-filter-button]");
+    var paymentItems = document.querySelectorAll("[data-payment-item]");
+    var paymentEmpty = document.querySelector("[data-payment-empty]");
+
+    if (!cards.length || !resetButton) {
+      return;
+    }
+
+    function setCardActive(activeCard) {
+      cards.forEach(function(card) {
+        var active = card === activeCard;
+        card.classList.toggle("border-gold/40", active);
+        card.classList.toggle("bg-gold/10", active);
+        card.classList.toggle("shadow-glow", active);
+        card.classList.toggle("border-white/10", !active);
+      });
+    }
+
+    function setSectionActive(activeSection) {
+      sections.forEach(function(section) {
+        var active = section === activeSection;
+        section.classList.toggle("ring-1", active);
+        section.classList.toggle("ring-gold/35", active);
+        section.classList.toggle("shadow-glow", active);
+      });
+    }
+
+    function setPaymentButtonState(filter) {
+      paymentButtons.forEach(function(button) {
+        var active = button.dataset.paymentFilter === filter;
+        button.classList.toggle("border-gold/30", active);
+        button.classList.toggle("bg-gold/10", active);
+        button.classList.toggle("text-gold", active);
+        button.classList.toggle("border-white/10", !active);
+        button.classList.toggle("text-soft/75", !active);
+      });
+    }
+
+    function applyPaymentFilter(filter) {
+      var visibleItems = 0;
+
+      paymentItems.forEach(function(item) {
+        var matches = filter === "all" || item.dataset.paymentStatus === filter;
+        item.hidden = !matches;
+        if (matches) {
+          visibleItems += 1;
+        }
+      });
+
+      if (paymentEmpty) {
+        paymentEmpty.hidden = !(paymentItems.length && visibleItems === 0);
+      }
+
+      setPaymentButtonState(filter);
+    }
+
+    function activateSection(section, behavior) {
+      if (!section) {
+        return;
+      }
+
+      setSectionActive(section);
+      section.scrollIntoView({
+        behavior: behavior || "smooth",
+        block: "start",
+      });
+    }
+
+    function resetDashboardFocus() {
+      setCardActive(null);
+      setSectionActive(null);
+      applyPaymentFilter("all");
+      resetButton.classList.add("hidden");
+    }
+
+    cards.forEach(function(card) {
+      card.addEventListener("click", function() {
+        var target = card.dataset.targetSection;
+        var section = document.querySelector('[data-dashboard-section="' + target + '"]');
+        var paymentFilter = card.dataset.paymentFilterTarget || "all";
+
+        setCardActive(card);
+        activateSection(section);
+        resetButton.classList.remove("hidden");
+
+        if (target === "payments") {
+          applyPaymentFilter(paymentFilter);
+        } else {
+          applyPaymentFilter("all");
+        }
+      });
+    });
+
+    paymentButtons.forEach(function(button) {
+      button.addEventListener("click", function() {
+        applyPaymentFilter(button.dataset.paymentFilter || "all");
+        setCardActive(null);
+        activateSection(document.querySelector('[data-dashboard-section="payments"]'));
+        resetButton.classList.remove("hidden");
+      });
+    });
+
+    resetButton.addEventListener("click", resetDashboardFocus);
+  })();
+</script>
+{% endblock %}
