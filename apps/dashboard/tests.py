@@ -104,7 +104,9 @@ class StaffDashboardTests(TestCase):
         response = self.client.get(reverse("dashboard:home"))
 
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "staff/base.html")
         self.assertContains(response, "Client activity and uploads")
+        self.assertContains(response, "Separate from the public site layout")
         self.assertContains(response, "Tap any activity card")
         self.assertContains(response, "Show all activity")
         self.assertContains(response, "New Signups")
@@ -118,6 +120,15 @@ class StaffDashboardTests(TestCase):
         self.assertContains(response, "Pending")
         self.assertContains(response, "Batch Upload")
         self.assertContains(response, "Client name")
+
+    def test_django_admin_has_separate_backend_branding(self):
+        self.client.force_login(self.staff_user)
+
+        response = self.client.get(reverse("admin:index"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "SudPix Django Admin")
+        self.assertContains(response, "Backend data and user management stay separate")
 
     def test_staff_can_upload_files_from_site_dashboard(self):
         self.client.force_login(self.staff_user)

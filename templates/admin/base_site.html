@@ -1,0 +1,48 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}SudPix Django Admin{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  #header {
+    background: #111111;
+    color: #f5f5f5;
+  }
+
+  #branding h1,
+  #branding h1 a:link,
+  #branding h1 a:visited {
+    color: #f5f5f5;
+    font-weight: 700;
+  }
+
+  #header a:link,
+  #header a:visited {
+    color: #d4a373;
+  }
+
+  .sudpix-admin-note {
+    margin-top: 6px;
+    color: rgba(245, 245, 245, 0.75);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  </style>
+{% endblock %}
+
+{% block branding %}
+<div id="branding">
+  <h1 id="site-name">
+    <a href="{% url 'admin:index' %}">SudPix Django Admin</a>
+  </h1>
+  <div class="sudpix-admin-note">Backend data and user management stay separate from the public frontend layout.</div>
+</div>
+{% endblock %}
+
+{% block nav-global %}
+<a href="{% url 'dashboard:home' %}">Staff Workspace</a> /
+<a href="{% url 'core:home' %}">Public Site</a>
+{% endblock %}

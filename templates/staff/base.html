@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}SudPix Backend{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#080808',
+              secondary: '#141414',
+              accent: '#E85D04',
+              gold: '#D4A373',
+              soft: '#F5F5F5',
+              muted: '#A3A3A3'
+            },
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+              display: ['Poppins', 'Inter', 'ui-sans-serif', 'system-ui']
+            },
+            boxShadow: {
+              glow: '0 10px 35px rgba(232, 93, 4, 0.25)'
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'branding/sudpix-favicon.png' %}" />
+    <link rel="apple-touch-icon" href="{% static 'branding/sudpix-favicon.png' %}" />
+    <meta name="theme-color" content="#080808" />
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body class="bg-primary font-sans text-soft selection:bg-accent selection:text-white">
+    <header class="border-b border-white/10 bg-primary/95 backdrop-blur">
+      <div class="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-5 lg:px-8">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div class="flex items-center gap-4">
+            <a href="{% url 'dashboard:home' %}" class="flex items-center">
+              <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Backend Workspace" class="h-10 w-auto sm:h-12" />
+            </a>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-gold">Backend Workspace</p>
+              <p class="mt-1 text-sm text-soft/70">Separate from the public site layout and safe for managing live data.</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <a href="{% url 'dashboard:home' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium hover:border-gold/50 hover:text-gold">Workspace</a>
+            <a href="{% url 'admin:index' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium hover:border-gold/50 hover:text-gold">Django Admin</a>
+            <a href="{% url 'core:home' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium hover:border-gold/50 hover:text-gold">Public Site</a>
+            <a href="{% url 'accounts:logout' %}" class="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-glow">Logout</a>
+          </div>
+        </div>
+
+        <div class="rounded-[1.5rem] border border-gold/20 bg-secondary px-5 py-4 text-sm text-soft/75">
+          Frontend design changes stay in the public template layer. Client accounts, uploads, payments, bookings, and admin records stay in the Django backend database.
+        </div>
+      </div>
+    </header>
+
+    <main>
+      {% if messages %}
+      <div class="mx-auto max-w-7xl px-6 pt-6 lg:px-8">
+        <div class="space-y-3">
+          {% for message in messages %}
+          <div class="rounded-2xl border border-white/10 bg-secondary px-5 py-4 text-sm text-soft/85">{{ message }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+
+    {% block extra_scripts %}{% endblock %}
+  </body>
+</html>
