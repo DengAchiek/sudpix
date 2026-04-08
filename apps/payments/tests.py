@@ -86,6 +86,7 @@ class MpesaPaymentTests(TestCase):
 
     def test_normalize_phone_number_converts_local_format(self):
         self.assertEqual(normalize_phone_number("0712345678"), "254712345678")
+        self.assertEqual(normalize_phone_number("0140412932"), "254140412932")
         self.assertEqual(normalize_phone_number("+254 712 345 678"), "254712345678")
 
     def test_prepare_stk_push_request_requires_public_https_callback_url(self):

@@ -8,7 +8,7 @@
     <div>
       <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Download Checkout</p>
       <h1 class="mt-2 font-display text-3xl font-bold sm:text-4xl">Unlock your selected files</h1>
-      <p class="mt-3 text-soft/75">Press Download below to start payment for the files you selected. SudPix will send an M-Pesa prompt to the phone number you enter here, and the files only unlock after the payment is confirmed.</p>
+      <p class="mt-3 text-soft/75">Press Download below to start payment for the files you selected. SudPix will send an M-Pesa prompt to your phone number, and the payment is collected into the SudPix business M-Pesa account configured for this site.</p>
     </div>
     <a href="{% url 'client:cart' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">Back to Selection</a>
   </div>
@@ -47,13 +47,13 @@
         </div>
 
         <div class="mt-4">
-          <label class="mb-2 block text-sm font-medium text-soft/80">Phone number</label>
-          <input class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 placeholder:text-muted focus:border-accent focus:outline-none" name="phone_number" type="text" placeholder="254700000000" />
+          <label class="mb-2 block text-sm font-medium text-soft/80">Your M-Pesa phone number</label>
+          <input class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 placeholder:text-muted focus:border-accent focus:outline-none" name="phone_number" type="tel" value="{{ payment_phone_number }}" placeholder="0712345678 or 254712345678" />
         </div>
 
         <div class="mt-4 rounded-3xl border border-white/10 bg-primary p-5">
           <p class="text-sm font-semibold text-gold">Payment Notice</p>
-          <p class="mt-3 text-sm leading-7 text-soft/75">The Download button starts a real payment request for the files in this selection only. An STK prompt is sent to the phone number entered above, and the download page stays locked until confirmation comes back from M-Pesa.</p>
+          <p class="mt-3 text-sm leading-7 text-soft/75">The Download button starts a real payment request for the files in this selection only. The STK prompt goes to the phone number you enter above, and the funds are sent to SudPix's M-Pesa business account. Your download stays locked until confirmation comes back from M-Pesa.</p>
         </div>
 
         <button type="submit" class="mt-6 rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Download</button>

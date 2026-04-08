@@ -178,7 +178,7 @@ class CheckoutView(PortalAccessMixin, TemplateView):
             payment.result_desc = str(exc)
             payment.save(update_fields=["status", "result_desc"])
             messages.error(request, str(exc))
-            return redirect("client:checkout")
+            return redirect("client:payment_processing", payment_id=payment.pk)
 
         CartItem.objects.filter(
             user=request.user,
@@ -209,6 +209,7 @@ class CheckoutView(PortalAccessMixin, TemplateView):
             for value, label in Payment.Method.choices
             if value in CLIENT_CHECKOUT_PAYMENT_METHODS
         ]
+        context["payment_phone_number"] = get_recent_payment_phone(self.request.user)
         return context
 
 
@@ -231,6 +232,7 @@ class PaymentProcessingView(PortalAccessMixin, TemplateView):
         payment = get_payment_for_user_or_404(self.request.user, self.kwargs["payment_id"])
         context["payment"] = payment
         context["selected_assets"] = list(payment.media_assets.all())
+        context["retry_phone_number"] = payment.phone_number or get_recent_payment_phone(self.request.user)
         return context
 
 
@@ -636,3 +638,12 @@ def get_latest_pending_payment(user, media_file):
 
 def get_payment_for_user_or_404(user, payment_id):
     return get_object_or_404(get_payment_queryset(user), pk=payment_id)
+
+
+def get_recent_payment_phone(user):
+    return (
+        Payment.objects.filter(user=user)
+        .exclude(phone_number="")
+        .values_list("phone_number", flat=True)
+        .first()
+    )

@@ -205,6 +205,8 @@ class ClientPortalTests(TestCase):
         self.assertNotContains(response, "Submit Payment Request")
         self.assertContains(response, "M-Pesa")
         self.assertNotContains(response, ">Card<", html=False)
+        self.assertContains(response, "Your M-Pesa phone number")
+        self.assertContains(response, "funds are sent to SudPix")
 
     def test_checkout_rejects_unsupported_manual_payment_methods(self):
         self.client.force_login(self.user)
@@ -255,6 +257,32 @@ class ClientPortalTests(TestCase):
         self.assertEqual(payment.phone_number, "254712345678")
         mock_initiate_stk_push.assert_called_once()
         self.assertFalse(CartItem.objects.filter(user=self.user).exists())
+
+    @patch("apps.clients.views.initiate_stk_push")
+    def test_checkout_requires_client_mpesa_phone_number(self, mock_initiate_stk_push):
+        self.client.force_login(self.user)
+        CartItem.objects.create(user=self.user, media_asset=self.locked_photo)
+        mpesa_settings = self.settings(
+            MPESA_CONSUMER_KEY="test-key",
+            MPESA_CONSUMER_SECRET="test-secret",
+            MPESA_SHORTCODE="174379",
+            MPESA_PASSKEY="test-passkey",
+            MPESA_CALLBACK_BASE_URL="https://example.com",
+        )
+        mpesa_settings.enable()
+        self.addCleanup(mpesa_settings.disable)
+
+        response = self.client.post(
+            reverse("client:checkout"),
+            {
+                "payment_method": Payment.Method.MPESA,
+                "phone_number": "",
+            },
+        )
+
+        self.assertRedirects(response, reverse("client:checkout"))
+        self.assertEqual(Payment.objects.exclude(pk=self.confirmed_payment.pk).count(), 0)
+        mock_initiate_stk_push.assert_not_called()
 
     def test_payment_processing_page_renders_for_payment_owner(self):
         self.client.force_login(self.user)

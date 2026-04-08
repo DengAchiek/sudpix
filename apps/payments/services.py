@@ -44,7 +44,7 @@ def normalize_phone_number(phone_number):
         digits = f"254{digits}"
 
     if not digits.startswith("254") or len(digits) != 12:
-        raise MpesaGatewayError("Use a valid Kenyan mobile number like 2547XXXXXXXX.")
+        raise MpesaGatewayError("Use a valid Kenyan mobile number like 0140412932 or 254140412932.")
 
     return digits
 
