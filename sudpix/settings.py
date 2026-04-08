@@ -12,9 +12,24 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+from importlib.util import find_spec
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def env_bool(name, default=False):
+    raw_value = os.getenv(name)
+    if raw_value is None:
+        return default
+    return raw_value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def env_list(name, default=None):
+    raw_value = os.getenv(name, "")
+    if not raw_value.strip():
+        return list(default or [])
+    return [item.strip() for item in raw_value.split(",") if item.strip()]
 
 
 def load_local_env():
@@ -48,9 +63,13 @@ load_local_env()
 SECRET_KEY = "django-insecure-!r3iz=yl@9%r)4dh+f(lcj=*k(&j!e4ogcb_==*5!i*5)+tu41"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_bool("DEBUG", default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env_list(
+    "ALLOWED_HOSTS",
+    default=["127.0.0.1", "localhost", ".onrender.com"],
+)
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", default=[])
 
 
 # Application definition
@@ -88,6 +107,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if find_spec("whitenoise") is not None:
+    MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 ROOT_URLCONF = "sudpix.urls"
 
@@ -156,8 +178,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+if find_spec("whitenoise") is not None:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "client:dashboard"
@@ -176,3 +202,8 @@ MPESA_PASSKEY = os.getenv("MPESA_PASSKEY", "").strip()
 MPESA_CALLBACK_BASE_URL = os.getenv("MPESA_CALLBACK_BASE_URL", "").strip()
 MPESA_TRANSACTION_TYPE = os.getenv("MPESA_TRANSACTION_TYPE", "CustomerPayBillOnline").strip()
 MPESA_TIMEOUT = int(os.getenv("MPESA_TIMEOUT", "30"))
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
