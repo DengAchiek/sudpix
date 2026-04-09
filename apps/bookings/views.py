@@ -29,6 +29,13 @@ class BookingCreateView(SuccessMessageMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         form = context.get("form")
+        selected_service = ""
+        if form is not None:
+            if form.is_bound:
+                selected_service = str(form.data.get("service", "")).strip()
+            else:
+                selected_service = str(form.initial.get("service", "")).strip()
+        is_demo_request = selected_service == BookingRequest.Service.CLIENT_PORTAL_DEMO
         context.update(
             {
                 "booking_steps": [
@@ -39,6 +46,7 @@ class BookingCreateView(SuccessMessageMixin, CreateView):
                 ],
                 "requires_client_details": getattr(form, "requires_client_details", True),
                 "prefilled_identity": getattr(form, "prefilled_identity", {}),
+                "is_demo_request": is_demo_request,
             }
         )
         return context

@@ -28,6 +28,16 @@ class CorePageTests(TestCase):
         self.assertContains(response, reverse("services:detail", args=["branding"]))
         self.assertContains(response, reverse("services:detail", args=["graphic-design"]))
 
+    def test_home_demo_button_links_to_demo_booking_flow(self):
+        response = self.client.get(reverse("core:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f'{reverse("bookings:create")}?service=Client+Portal+Demo',
+            html=False,
+        )
+
 
 class SeedPortalDemoCommandTests(TestCase):
     def setUp(self):

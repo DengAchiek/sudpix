@@ -16,6 +16,16 @@ class BookingPageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    def test_demo_booking_page_prefills_demo_service(self):
+        response = self.client.get(
+            reverse("bookings:create") + "?service=Client+Portal+Demo"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Schedule a SudPix portal walkthrough")
+        self.assertContains(response, 'value="Client Portal Demo"', html=False)
+        self.assertContains(response, "Submit Demo Request")
+
     def test_logged_in_client_booking_page_uses_account_details(self):
         client_user = get_user_model().objects.create_user(
             username="portalclient",

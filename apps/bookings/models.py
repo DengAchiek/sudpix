@@ -13,6 +13,7 @@ class BookingRequest(models.Model):
         VIDEOGRAPHY = "Videography", "Videography"
         BRANDING = "Branding", "Branding"
         GRAPHIC_DESIGN = "Graphic Design", "Graphic Design"
+        CLIENT_PORTAL_DEMO = "Client Portal Demo", "Client Portal Demo"
 
     class Status(models.TextChoices):
         NEW = "new", "New"
