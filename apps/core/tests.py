@@ -19,6 +19,15 @@ class CorePageTests(TestCase):
                 response = self.client.get(reverse(route_name))
                 self.assertEqual(response.status_code, 200)
 
+    def test_home_service_cards_link_to_matching_service_pages(self):
+        response = self.client.get(reverse("core:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("services:detail", args=["photography"]))
+        self.assertContains(response, reverse("services:detail", args=["videography"]))
+        self.assertContains(response, reverse("services:detail", args=["branding"]))
+        self.assertContains(response, reverse("services:detail", args=["graphic-design"]))
+
 
 class SeedPortalDemoCommandTests(TestCase):
     def setUp(self):
