@@ -19,6 +19,12 @@ class CorePageTests(TestCase):
                 response = self.client.get(reverse(route_name))
                 self.assertEqual(response.status_code, 200)
 
+    def test_root_favicon_redirects_to_static_icon(self):
+        response = self.client.get(reverse("favicon"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "/static/favicon.ico")
+
     def test_home_service_cards_link_to_matching_service_pages(self):
         response = self.client.get(reverse("core:home"))
 
