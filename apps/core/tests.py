@@ -44,6 +44,20 @@ class CorePageTests(TestCase):
             html=False,
         )
 
+    def test_contact_page_shows_contact_details_and_actions(self):
+        response = self.client.get(reverse("core:contact"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "hello@sudpix.com")
+        self.assertContains(response, "+254 768 774 232")
+        self.assertContains(response, "Nairobi, Kenya")
+        self.assertContains(response, reverse("bookings:create"))
+        self.assertContains(
+            response,
+            f'{reverse("bookings:create")}?service=Client+Portal+Demo',
+            html=False,
+        )
+
 
 class SeedPortalDemoCommandTests(TestCase):
     def setUp(self):
