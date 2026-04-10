@@ -25,7 +25,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path(
         "favicon.ico",
-        RedirectView.as_view(url=f"{settings.STATIC_URL}favicon.ico", permanent=False),
+        RedirectView.as_view(url=f"{settings.STATIC_URL}favicon.ico?v=20260410b", permanent=False),
         name="favicon",
     ),
     path("", include("apps.core.urls")),

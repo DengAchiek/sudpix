@@ -1,6 +1,8 @@
 {% load static %}
-<link rel="icon" type="image/x-icon" href="{% url 'favicon' %}" />
-<link rel="icon" type="image/png" sizes="32x32" href="{% static 'branding/sudpix-favicon.png' %}" />
-<link rel="icon" type="image/png" sizes="192x192" href="{% static 'branding/sudpix-favicon.png' %}" />
-<link rel="shortcut icon" href="{% url 'favicon' %}" />
-<link rel="apple-touch-icon" href="{% static 'branding/sudpix-favicon.png' %}" />
+{% with favicon_version='20260410b' %}
+<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}?v={{ favicon_version }}" />
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'branding/sudpix-favicon.png' %}?v={{ favicon_version }}" />
+<link rel="icon" type="image/png" sizes="192x192" href="{% static 'branding/sudpix-favicon.png' %}?v={{ favicon_version }}" />
+<link rel="shortcut icon" href="{% static 'favicon.ico' %}?v={{ favicon_version }}" />
+<link rel="apple-touch-icon" href="{% static 'branding/sudpix-favicon.png' %}?v={{ favicon_version }}" />
+{% endwith %}
