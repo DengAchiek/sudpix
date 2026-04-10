@@ -33,6 +33,11 @@
   </style>
 {% endblock %}
 
+{% block extrahead %}
+{{ block.super }}
+{% include "includes/favicon_meta.html" %}
+{% endblock %}
+
 {% block branding %}
 <div id="branding">
   <h1 id="site-name">
