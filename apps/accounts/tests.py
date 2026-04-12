@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -28,6 +28,23 @@ class AccountPageTests(TestCase):
         response = self.client.get(reverse("accounts:admin_login"))
 
         self.assertEqual(response.status_code, 200)
+
+    def test_homepage_allows_sudpix_custom_domain_host(self):
+        response = self.client.get(
+            reverse("core:home"),
+            headers={"host": "sudpix.com"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(ALLOWED_HOSTS=["127.0.0.1", "localhost", ".onrender.com", "testserver"])
+    def test_django_admin_login_uses_sudpix_template(self):
+        response = self.client.get(reverse("admin:login"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Django Admin Login")
+        self.assertContains(response, "Log in to Django Admin")
+        self.assertContains(response, "SudPix Admin")
 
     def test_register_page_renders(self):
         response = self.client.get(reverse("accounts:register"))

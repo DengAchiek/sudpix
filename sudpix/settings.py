@@ -65,11 +65,27 @@ SECRET_KEY = "django-insecure-!r3iz=yl@9%r)4dh+f(lcj=*k(&j!e4ogcb_==*5!i*5)+tu41
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool("DEBUG", default=True)
 
-ALLOWED_HOSTS = env_list(
-    "ALLOWED_HOSTS",
-    default=["127.0.0.1", "localhost", ".onrender.com"],
+DEFAULT_ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    ".onrender.com",
+    "sudpix.com",
+    "www.sudpix.com",
+]
+DEFAULT_CSRF_TRUSTED_ORIGINS = [
+    "https://sudpix.com",
+    "https://www.sudpix.com",
+]
+
+ALLOWED_HOSTS = list(
+    dict.fromkeys(DEFAULT_ALLOWED_HOSTS + env_list("ALLOWED_HOSTS", default=[]))
 )
-CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", default=[])
+CSRF_TRUSTED_ORIGINS = list(
+    dict.fromkeys(
+        DEFAULT_CSRF_TRUSTED_ORIGINS
+        + env_list("CSRF_TRUSTED_ORIGINS", default=[])
+    )
+)
 
 
 # Application definition
