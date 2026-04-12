@@ -32,8 +32,9 @@
 
   <div class="mt-12 grid gap-6 md:grid-cols-2">
     {% for project in projects %}
-    <article class="overflow-hidden rounded-[2rem] border border-white/10 bg-secondary">
-      <img class="h-72 w-full object-cover" src="{{ project.image }}" alt="{{ project.title }}" />
+    <article class="overflow-hidden rounded-[2rem] border border-white/10 bg-secondary transition hover:-translate-y-1 hover:border-gold/35 hover:shadow-[0_20px_80px_rgba(199,150,95,0.12)]">
+      <a href="{% url 'portfolio:detail' project.slug %}" class="group block">
+      <img class="h-72 w-full object-cover transition duration-500 group-hover:scale-105" src="{{ project.image }}" alt="{{ project.title }}" />
       <div class="p-7">
         <div class="flex items-center justify-between gap-3">
           <h3 class="text-2xl font-bold">{{ project.title }}</h3>
@@ -41,7 +42,14 @@
         </div>
         <p class="mt-4 text-sm leading-7 text-soft/75">{{ project.summary }}</p>
         <div class="mt-6 flex flex-wrap gap-3">
-          <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white">Book Similar Work</a>
+          <span class="rounded-full border border-gold/25 bg-gold/10 px-5 py-3 text-sm font-semibold text-gold">View project details</span>
+          <span class="rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-soft/75">Creative breakdown included</span>
+        </div>
+      </div>
+      </a>
+      <div class="border-t border-white/10 px-7 py-5">
+        <div class="flex flex-wrap gap-3">
+          <a href="{% url 'bookings:create' %}?service={{ project.booking_service|urlencode }}" class="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white">Book Similar Work</a>
           <a href="{% url 'services:list' %}" class="rounded-full border border-white/10 px-5 py-3 text-sm font-semibold hover:border-gold/50 hover:text-gold">View Services</a>
         </div>
       </div>

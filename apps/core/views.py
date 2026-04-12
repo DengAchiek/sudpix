@@ -1,5 +1,7 @@
 from django.views.generic import TemplateView
 
+from apps.portfolio.data import get_featured_portfolio_projects
+
 
 class HomeView(TemplateView):
     template_name = "core/home.html"
@@ -35,26 +37,7 @@ class HomeView(TemplateView):
                         "description": "Professional flyers, social media graphics, marketing designs, print layouts, and digital campaigns.",
                     },
                 ],
-                "portfolio_preview": [
-                    {
-                        "title": "Wedding Story",
-                        "category": "Photography",
-                        "description": "Elegant wedding coverage with cinematic couple portraits and complete event storytelling.",
-                        "image": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
-                    },
-                    {
-                        "title": "Corporate Campaign",
-                        "category": "Branding",
-                        "description": "Professional visual identity and campaign assets built for a growing corporate brand.",
-                        "image": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
-                    },
-                    {
-                        "title": "Live Event Film",
-                        "category": "Videography",
-                        "description": "A polished event recap film designed for digital promotion and audience engagement.",
-                        "image": "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80",
-                    },
-                ],
+                "portfolio_preview": get_featured_portfolio_projects(limit=3),
                 "process_steps": [
                     {"number": "01", "title": "Choose a service", "description": "Select photography, videography, branding, or design based on your needs."},
                     {"number": "02", "title": "Book your project", "description": "Submit your brief, event details, location, and preferred schedule online."},

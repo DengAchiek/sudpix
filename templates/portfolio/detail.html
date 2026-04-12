@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project.title }} | SudPix Portfolio{% endblock %}
+
+{% block content %}
+<section class="relative overflow-hidden">
+  <div
+    class="absolute inset-0 bg-cover bg-center"
+    style="background-image: linear-gradient(to right, rgba(15, 15, 15, 0.94), rgba(15, 15, 15, 0.72)), url('{{ project.image }}');"
+  ></div>
+  <div class="relative mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
+    <div class="max-w-4xl">
+      <span class="inline-flex rounded-full border border-gold/30 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+        {{ project.hero_eyebrow }}
+      </span>
+      <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+        {{ project.hero_heading }}
+      </h1>
+      <p class="mt-6 max-w-2xl text-base leading-7 text-soft/80 sm:text-lg">
+        {{ project.description }}
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="{% url 'bookings:create' %}?service={{ project.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">
+          Book Similar Work
+        </a>
+        <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold transition hover:border-gold/50 hover:text-gold">
+          Back to Portfolio
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-12 grid gap-4 sm:grid-cols-3">
+      {% for metric in project.metrics %}
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">{{ metric.label }}</p>
+        <p class="mt-3 text-3xl font-bold">{{ metric.value }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+  <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+    <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-secondary">
+      <img src="{{ project.image }}" alt="{{ project.title }}" class="h-[420px] w-full object-cover" />
+      <div class="border-t border-white/10 p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">{{ project.category }}</p>
+        <h2 class="mt-4 text-3xl font-bold">Project Overview</h2>
+        <p class="mt-4 text-base leading-8 text-soft/78">{{ project.description }}</p>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">What We Delivered</p>
+        <ul class="mt-5 space-y-3 text-sm leading-7 text-soft/78">
+          {% for item in project.deliverables %}
+          <li>• {{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Project Highlights</p>
+        <ul class="mt-5 space-y-3 text-sm leading-7 text-soft/78">
+          {% for item in project.project_highlights %}
+          <li>• {{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-secondary/60 py-20">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div class="max-w-2xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Project Gallery</p>
+        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Selected frames from {{ project.title }}</h2>
+      </div>
+      <a href="{% url 'services:detail' project.service_slug %}#service-detail" class="text-sm font-semibold text-gold">View matching service →</a>
+    </div>
+
+    <div class="mt-10 grid gap-6 md:grid-cols-3">
+      {% for image in project.gallery %}
+      <div class="overflow-hidden rounded-[1.75rem] border border-white/10 bg-primary">
+        <img src="{{ image }}" alt="{{ project.title }} gallery image {{ forloop.counter }}" class="h-80 w-full object-cover transition duration-500 hover:scale-105" />
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+  <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
+    <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Next Project</p>
+      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Looking for this same premium finish on your project?</h2>
+      <p class="mt-4 max-w-2xl text-soft/78">
+        SudPix can shape a similar experience for weddings, launches, live events, brand campaigns, and design-led promotions.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="{% url 'bookings:create' %}?service={{ project.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">
+          Start Your Booking
+        </a>
+        <a href="{% url 'core:contact' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold transition hover:border-gold/50 hover:text-gold">
+          Talk to SudPix
+        </a>
+      </div>
+    </div>
+
+    <div class="rounded-[2rem] border border-white/10 bg-primary p-6">
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Related Projects</p>
+      <div class="mt-5 space-y-4">
+        {% for related in related_projects %}
+        <a href="{% url 'portfolio:detail' related.slug %}" class="block rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-gold/35 hover:bg-gold/5">
+          <p class="text-sm font-semibold text-gold">{{ related.category }}</p>
+          <h3 class="mt-2 text-lg font-bold">{{ related.title }}</h3>
+          <p class="mt-2 text-sm leading-6 text-soft/75">{{ related.summary }}</p>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

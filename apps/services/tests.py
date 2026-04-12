@@ -19,6 +19,7 @@ class ServicesPageTests(TestCase):
         self.assertContains(response, "Videography Services")
         self.assertContains(response, "Brand Story Package")
         self.assertContains(response, f"{reverse('bookings:create')}?service=Videography")
+        self.assertContains(response, "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4")
 
     def test_invalid_service_slug_returns_404(self):
         response = self.client.get(reverse("services:detail", args=["unknown-service"]))

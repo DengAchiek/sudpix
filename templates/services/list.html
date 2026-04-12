@@ -86,7 +86,33 @@
             </div>
           </div>
           <div id="service-packages" class="border-l border-white/10 bg-primary p-8 lg:p-10">
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">{{ active_service.packages_heading }}</p>
+            <div class="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5">
+              {% if active_service.showcase_media.type == 'video' %}
+              <video
+                class="h-64 w-full object-cover"
+                autoplay
+                muted
+                loop
+                playsinline
+                poster="{{ active_service.showcase_media.poster }}"
+              >
+                <source src="{{ active_service.showcase_media.url }}" type="video/mp4" />
+              </video>
+              {% else %}
+              <img
+                src="{{ active_service.showcase_media.url }}"
+                alt="{{ active_service.name }} showcase"
+                class="h-64 w-full object-cover"
+              />
+              {% endif %}
+              <div class="p-5">
+                <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">{{ active_service.showcase_media.eyebrow }}</p>
+                <h4 class="mt-3 text-xl font-bold">{{ active_service.showcase_media.title }}</h4>
+                <p class="mt-3 text-sm leading-6 text-soft/75">{{ active_service.showcase_media.description }}</p>
+              </div>
+            </div>
+
+            <p class="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-gold">{{ active_service.packages_heading }}</p>
             <div class="mt-5 space-y-4">
               {% for package in active_service.packages.all %}
               <div class="rounded-3xl border p-5 {% if package.highlighted %}border-gold/30 bg-gold/10{% else %}border-white/10 bg-white/5{% endif %}">

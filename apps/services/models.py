@@ -3,6 +3,38 @@ from django.utils.text import slugify
 
 
 class Service(models.Model):
+    SHOWCASE_MEDIA = {
+        "photography": {
+            "type": "image",
+            "url": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80",
+            "eyebrow": "Signature Frames",
+            "title": "Clean compositions, premium lighting, and story-led image delivery",
+            "description": "SudPix photography blends event emotion with polished editorial direction so the final gallery feels both premium and personal.",
+        },
+        "videography": {
+            "type": "video",
+            "url": "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+            "poster": "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1400&q=80",
+            "eyebrow": "Motion Preview",
+            "title": "A live video clip preview for cinematic event coverage and branded storytelling",
+            "description": "The videography experience now opens with motion, giving visitors an immediate feel for pacing, atmosphere, and the premium SudPix finish.",
+        },
+        "branding": {
+            "type": "image",
+            "url": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1400&q=80",
+            "eyebrow": "Brand Direction",
+            "title": "Identity systems designed to look premium across launch, web, and campaign assets",
+            "description": "From executive decks to social rollouts, SudPix branding work is structured for consistency, confidence, and stronger market presence.",
+        },
+        "graphic-design": {
+            "type": "image",
+            "url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=80",
+            "eyebrow": "Design Showcase",
+            "title": "Campaign-ready graphics that stay bold, clear, and conversion-focused",
+            "description": "SudPix design output balances visual impact with clean hierarchy so marketing graphics feel premium without losing clarity.",
+        },
+    }
+
     name = models.CharField(max_length=120)
     slug = models.SlugField(max_length=140, unique=True)
     badge = models.CharField(max_length=160)
@@ -56,6 +88,20 @@ class Service(models.Model):
     @property
     def best_for_list(self):
         return self._split_lines(self.best_for_items)
+
+    @property
+    def showcase_media(self):
+        default_media = {
+            "type": "image",
+            "url": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80",
+            "eyebrow": "SudPix Showcase",
+            "title": "Premium creative direction built around clear stories and polished delivery",
+            "description": "Every SudPix service is presented with premium visual treatment to match the quality of the final work clients receive.",
+        }
+        return {
+            **default_media,
+            **self.SHOWCASE_MEDIA.get(self.slug, {}),
+        }
 
 
 class ServicePackage(models.Model):

@@ -1,4 +1,7 @@
+from django.http import Http404
 from django.views.generic import TemplateView
+
+from .data import get_portfolio_project, get_portfolio_projects
 
 
 class PortfolioListView(TemplateView):
@@ -6,35 +9,27 @@ class PortfolioListView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["projects"] = [
-            {
-                "title": "Wedding Story",
-                "category": "Photography",
-                "summary": "Elegant ceremony coverage, intimate portraits, and a complete wedding-day story.",
-                "image": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
-            },
-            {
-                "title": "Corporate Campaign",
-                "category": "Branding",
-                "summary": "A premium identity refresh and rollout kit for a growing business audience.",
-                "image": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
-            },
-            {
-                "title": "Live Event Film",
-                "category": "Videography",
-                "summary": "Fast-turnaround event recap production tailored for digital promotion.",
-                "image": "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80",
-            },
-            {
-                "title": "Launch Graphics Suite",
-                "category": "Graphic Design",
-                "summary": "Campaign posters, motion-ready social assets, and event collateral in one system.",
-                "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
-            },
-        ]
+        context["projects"] = get_portfolio_projects()
         context["portfolio_stats"] = [
             {"label": "Projects delivered", "value": "250+"},
             {"label": "Creative categories", "value": "4"},
             {"label": "Average turnaround", "value": "7 days"},
         ]
+        return context
+
+
+class PortfolioDetailView(TemplateView):
+    template_name = "portfolio/detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        project = get_portfolio_project(self.kwargs["project_slug"])
+
+        if project is None:
+            raise Http404("Portfolio project not found.")
+
+        context["project"] = project
+        context["related_projects"] = [
+            item for item in get_portfolio_projects() if item["slug"] != project["slug"]
+        ][:3]
         return context
