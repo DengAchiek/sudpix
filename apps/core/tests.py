@@ -23,7 +23,17 @@ class CorePageTests(TestCase):
         response = self.client.get(reverse("favicon"))
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "/static/favicon.ico?v=20260410b")
+        self.assertEqual(response["Location"], "/static/branding/sudpix-logo.png?v=20260412a")
+
+    def test_shared_layout_uses_sudpix_logo_for_tab_icon(self):
+        response = self.client.get(reverse("core:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            '/static/branding/sudpix-logo.png?v=20260412a',
+            html=False,
+        )
 
     def test_home_service_cards_link_to_matching_service_pages(self):
         response = self.client.get(reverse("core:home"))
