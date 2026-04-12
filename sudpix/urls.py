@@ -26,7 +26,7 @@ urlpatterns = [
     path(
         "favicon.ico",
         RedirectView.as_view(
-            url=f"{settings.STATIC_URL}branding/sudpix-logo.png?v=20260412a",
+            url=f"{settings.STATIC_URL}branding/sudpix-logo.png?v=20260412c",
             permanent=False,
         ),
         name="favicon",
