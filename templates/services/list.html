@@ -54,14 +54,37 @@
         {% for service in service_categories %}
         <a
           href="{% url 'services:detail' service.slug %}#service-detail"
-          class="block w-full rounded-2xl border px-4 py-4 text-left transition {% if active_service and service.slug == active_service.slug %}border-gold/30 bg-gold/10 text-gold{% else %}border-white/10 bg-white/5 text-soft/85 hover:border-gold/30 hover:bg-gold/5 hover:text-gold{% endif %}"
+          class="group relative block overflow-hidden rounded-[1.75rem] border text-left transition {% if active_service and service.slug == active_service.slug %}border-gold/30 bg-gold/10 text-gold{% else %}border-white/10 bg-white/5 text-soft/85 hover:border-gold/30 hover:text-gold{% endif %}"
           {% if active_service and service.slug == active_service.slug %}aria-current="page"{% endif %}
         >
-          <div class="flex items-center justify-between gap-4">
-            <span class="font-semibold">{{ service.name }}</span>
-            <span class="text-xs font-semibold uppercase tracking-[0.18em] {% if active_service and service.slug == active_service.slug %}text-gold/80{% else %}text-soft/50{% endif %}">{{ service.showcase_media.type }}</span>
+          <div class="absolute inset-0">
+            {% if service.showcase_media.type == 'video' %}
+            <video
+              class="h-full w-full object-cover"
+              autoplay
+              muted
+              loop
+              playsinline
+              poster="{{ service.showcase_media.poster|default:service.showcase_media.url }}"
+            >
+              <source src="{{ service.showcase_media.url }}" type="video/mp4" />
+            </video>
+            {% else %}
+            <img
+              src="{{ service.showcase_media.url }}"
+              alt="{{ service.name }} preview"
+              class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            />
+            {% endif %}
+            <div class="absolute inset-0 {% if active_service and service.slug == active_service.slug %}bg-[linear-gradient(135deg,rgba(212,163,115,0.22),rgba(15,15,15,0.88))]{% else %}bg-[linear-gradient(135deg,rgba(15,15,15,0.22),rgba(15,15,15,0.9))]{% endif %}"></div>
           </div>
-          <p class="mt-2 text-sm {% if active_service and service.slug == active_service.slug %}text-gold/75{% else %}text-soft/60{% endif %}">{{ service.teaser }}</p>
+          <div class="relative px-4 py-4">
+            <div class="flex items-center justify-between gap-4">
+              <span class="font-semibold">{{ service.name }}</span>
+              <span class="rounded-full border border-white/10 bg-primary/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] {% if active_service and service.slug == active_service.slug %}text-gold/80{% else %}text-soft/60{% endif %}">{{ service.showcase_media.type }}</span>
+            </div>
+            <p class="mt-2 max-w-[18rem] text-sm {% if active_service and service.slug == active_service.slug %}text-gold/75{% else %}text-soft/78{% endif %}">{{ service.teaser }}</p>
+          </div>
         </a>
         {% endfor %}
       </div>
@@ -80,58 +103,81 @@
       {% if active_service %}
       <article id="service-detail" class="overflow-hidden rounded-[2rem] border border-white/10 bg-secondary">
         <div class="grid lg:grid-cols-[0.95fr_1.05fr]">
-          <div class="border-b border-white/10 p-8 lg:border-b-0 lg:border-r lg:p-10">
-            <div class="flex flex-wrap items-center gap-3">
+          <div class="relative overflow-hidden border-b border-white/10 lg:border-b-0 lg:border-r">
+            <div class="absolute inset-0">
+              {% if active_service.showcase_media.type == 'video' %}
+              <video
+                class="h-full w-full object-cover"
+                autoplay
+                muted
+                loop
+                playsinline
+                poster="{{ active_service.showcase_media.poster|default:active_service.showcase_media.url }}"
+              >
+                <source src="{{ active_service.showcase_media.url }}" type="video/mp4" />
+              </video>
+              {% else %}
+              <img
+                src="{{ active_service.showcase_media.url }}"
+                alt="{{ active_service.name }} background preview"
+                class="h-full w-full object-cover"
+              />
+              {% endif %}
+              <div class="absolute inset-0 bg-[linear-gradient(145deg,rgba(15,15,15,0.18),rgba(15,15,15,0.94)_65%)]"></div>
+            </div>
+            <div class="relative p-8 lg:p-10">
+              <div class="flex flex-wrap items-center gap-3">
               <span class="inline-flex rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ active_service.badge }}</span>
-              <span class="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/70">{{ active_service.showcase_media.type }}</span>
-              <span class="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/70">{{ active_service.packages.all|length }} packages</span>
-            </div>
-            <h2 class="mt-5 text-3xl font-bold">{{ active_service.heading }}</h2>
-            <p class="mt-4 max-w-2xl text-sm leading-7 text-soft/75">{{ active_service.description }}</p>
-
-            {% if active_service.slug == 'photography' %}
-            <div class="mt-7 flex flex-wrap gap-2">
-              {% for item in active_service.best_for_list %}
-              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-soft/75">{{ item }}</span>
-              {% endfor %}
-            </div>
-
-            <div class="mt-7 grid gap-4 sm:grid-cols-3">
-              {% for stat in active_service.showcase_media.stats %}
-              <div class="rounded-3xl border border-white/10 bg-white/5 p-4">
-                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gold">{{ stat.label }}</p>
-                <p class="mt-2 text-lg font-bold">{{ stat.value }}</p>
+              <span class="inline-flex rounded-full border border-white/10 bg-primary/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/80">{{ active_service.showcase_media.type }}</span>
+              <span class="inline-flex rounded-full border border-white/10 bg-primary/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/80">{{ active_service.packages.all|length }} packages</span>
               </div>
-              {% endfor %}
-            </div>
-            {% else %}
-            <div class="mt-8 grid gap-4 md:grid-cols-2">
-              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gold">Included Files</p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                  {% for item in active_service.included_list %}
-                  <span class="rounded-full border border-white/10 bg-primary/70 px-3 py-2 text-xs font-semibold text-soft/75">{{ item }}</span>
-                  {% empty %}
-                  <span class="rounded-full border border-white/10 bg-primary/70 px-3 py-2 text-xs font-semibold text-soft/60">Custom deliverables</span>
-                  {% endfor %}
+              <h2 class="mt-5 max-w-3xl text-3xl font-bold">{{ active_service.heading }}</h2>
+              <p class="mt-4 max-w-2xl text-sm leading-7 text-soft/80">{{ active_service.description }}</p>
+
+              {% if active_service.slug == 'photography' %}
+              <div class="mt-7 flex flex-wrap gap-2">
+                {% for item in active_service.best_for_list %}
+                <span class="rounded-full border border-white/10 bg-primary/70 px-3 py-2 text-xs font-semibold text-soft/80">{{ item }}</span>
+                {% endfor %}
+              </div>
+
+              <div class="mt-7 grid gap-4 sm:grid-cols-3">
+                {% for stat in active_service.showcase_media.stats %}
+                <div class="rounded-3xl border border-white/10 bg-primary/70 p-4 backdrop-blur">
+                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gold">{{ stat.label }}</p>
+                  <p class="mt-2 text-lg font-bold">{{ stat.value }}</p>
+                </div>
+                {% endfor %}
+              </div>
+              {% else %}
+              <div class="mt-8 grid gap-4 md:grid-cols-2">
+                <div class="rounded-3xl border border-white/10 bg-primary/70 p-5 backdrop-blur">
+                  <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gold">Included Files</p>
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    {% for item in active_service.included_list %}
+                    <span class="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs font-semibold text-soft/80">{{ item }}</span>
+                    {% empty %}
+                    <span class="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs font-semibold text-soft/70">Custom deliverables</span>
+                    {% endfor %}
+                  </div>
+                </div>
+                <div class="rounded-3xl border border-white/10 bg-primary/70 p-5 backdrop-blur">
+                  <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gold">Best Fit</p>
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    {% for item in active_service.best_for_list %}
+                    <span class="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs font-semibold text-soft/80">{{ item }}</span>
+                    {% empty %}
+                    <span class="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-xs font-semibold text-soft/70">Flexible projects</span>
+                    {% endfor %}
+                  </div>
                 </div>
               </div>
-              <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gold">Best Fit</p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                  {% for item in active_service.best_for_list %}
-                  <span class="rounded-full border border-white/10 bg-primary/70 px-3 py-2 text-xs font-semibold text-soft/75">{{ item }}</span>
-                  {% empty %}
-                  <span class="rounded-full border border-white/10 bg-primary/70 px-3 py-2 text-xs font-semibold text-soft/60">Flexible projects</span>
-                  {% endfor %}
-                </div>
-              </div>
-            </div>
-            {% endif %}
+              {% endif %}
 
-            <div class="mt-8 flex flex-wrap gap-4">
-              <a href="{% url 'bookings:create' %}?service={{ active_service.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">{{ active_service.book_label }}</a>
-              <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold hover:border-gold/50 hover:text-gold">View Related Work</a>
+              <div class="mt-8 flex flex-wrap gap-4">
+                <a href="{% url 'bookings:create' %}?service={{ active_service.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">{{ active_service.book_label }}</a>
+                <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 bg-primary/60 px-6 py-3 font-semibold hover:border-gold/50 hover:text-gold">View Related Work</a>
+              </div>
             </div>
           </div>
 
@@ -201,14 +247,35 @@
 
       <div class="grid gap-6 md:grid-cols-3">
         {% for service in related_services %}
-        <a href="{% url 'services:detail' service.slug %}#service-detail" class="group block overflow-hidden rounded-[1.75rem] border border-white/10 bg-secondary transition hover:-translate-y-1 hover:border-gold/30 hover:bg-secondary/80">
-          <div class="p-6">
+        <a href="{% url 'services:detail' service.slug %}#service-detail" class="group relative block overflow-hidden rounded-[1.75rem] border border-white/10 bg-secondary transition hover:-translate-y-1 hover:border-gold/30">
+          <div class="absolute inset-0">
+            {% if service.showcase_media.type == 'video' %}
+            <video
+              class="h-full w-full object-cover"
+              autoplay
+              muted
+              loop
+              playsinline
+              poster="{{ service.showcase_media.poster|default:service.showcase_media.url }}"
+            >
+              <source src="{{ service.showcase_media.url }}" type="video/mp4" />
+            </video>
+            {% else %}
+            <img
+              src="{{ service.showcase_media.url }}"
+              alt="{{ service.name }} preview"
+              class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            />
+            {% endif %}
+            <div class="absolute inset-0 bg-[linear-gradient(145deg,rgba(15,15,15,0.28),rgba(15,15,15,0.94)_78%)]"></div>
+          </div>
+          <div class="relative p-6">
             <div class="flex items-center justify-between gap-4">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">{{ service.icon }}</div>
-              <span class="rounded-full border border-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/65">{{ service.showcase_media.type }}</span>
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/75 text-xl text-accent backdrop-blur">{{ service.icon }}</div>
+              <span class="rounded-full border border-white/10 bg-primary/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/75">{{ service.showcase_media.type }}</span>
             </div>
             <h3 class="mt-5 text-xl font-bold group-hover:text-gold">{{ service.name }}</h3>
-            <p class="mt-3 text-sm leading-6 text-soft/75">{{ service.teaser }}</p>
+            <p class="mt-3 max-w-[17rem] text-sm leading-6 text-soft/80">{{ service.teaser }}</p>
             <span class="mt-5 inline-block text-sm font-semibold text-gold">View service →</span>
           </div>
         </a>
