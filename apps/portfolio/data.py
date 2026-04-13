@@ -4,6 +4,9 @@ PORTFOLIO_PROJECTS = [
         "title": "Wedding Story",
         "category": "Photography",
         "summary": "Elegant ceremony coverage, intimate portraits, and a complete wedding-day story.",
+        "asset_total": "324 assets",
+        "delivery_mode": "Private gallery",
+        "formats": ["JPG", "RAW", "Album"],
         "description": (
             "A full wedding-day visual story shaped around emotion, atmosphere, and polished editorial detail. "
             "SudPix covered every chapter, from the quiet preparation moments to the final dance-floor celebration."
@@ -40,6 +43,9 @@ PORTFOLIO_PROJECTS = [
         "title": "Corporate Campaign",
         "category": "Branding",
         "summary": "A premium identity refresh and rollout kit for a growing business audience.",
+        "asset_total": "24 brand files",
+        "delivery_mode": "Brand kit",
+        "formats": ["PDF", "PNG", "Deck"],
         "description": (
             "This campaign blended brand strategy, executive visuals, and launch-ready design assets to help a "
             "corporate client present with more clarity, authority, and consistency across every touchpoint."
@@ -76,6 +82,9 @@ PORTFOLIO_PROJECTS = [
         "title": "Live Event Film",
         "category": "Videography",
         "summary": "Fast-turnaround event recap production tailored for digital promotion.",
+        "asset_total": "12 video exports",
+        "delivery_mode": "Motion package",
+        "formats": ["MP4", "Trailer", "Reels"],
         "description": (
             "A dynamic live-event film designed to build post-event momentum. SudPix captured the energy on site, "
             "structured the edits for digital attention, and delivered a polished recap ready for promotion."
@@ -112,6 +121,9 @@ PORTFOLIO_PROJECTS = [
         "title": "Launch Graphics Suite",
         "category": "Graphic Design",
         "summary": "Campaign posters, motion-ready social assets, and event collateral in one system.",
+        "asset_total": "18 design files",
+        "delivery_mode": "Campaign pack",
+        "formats": ["PDF", "PNG", "Print"],
         "description": (
             "SudPix created a coordinated graphics system for a launch campaign, giving the client a flexible visual "
             "toolkit that worked across print, digital promotion, and event-day communications."

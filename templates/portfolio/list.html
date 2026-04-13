@@ -3,54 +3,67 @@
 {% block title %}Portfolio SudPix{% endblock %}
 
 {% block content %}
-<section class="bg-[linear-gradient(to_right,rgba(15,15,15,0.94),rgba(15,15,15,0.72)),url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center">
-  <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
-    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Selected Work</p>
-    <h1 class="mt-4 max-w-3xl font-display text-4xl font-extrabold leading-tight sm:text-5xl">Portfolio built around visual storytelling and commercial impact</h1>
-    <p class="mt-6 max-w-2xl text-base leading-7 text-soft/80 sm:text-lg">
-      Explore a curated mix of photography, videography, branding, and design work created for events, campaigns, and growing businesses.
-    </p>
-    <div class="mt-10 grid gap-4 sm:grid-cols-3">
-      {% for stat in portfolio_stats %}
-      <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-        <p class="text-3xl font-bold text-gold">{{ stat.value }}</p>
-        <p class="mt-2 text-sm text-soft/75">{{ stat.label }}</p>
+<section class="relative overflow-hidden">
+  <div class="absolute inset-0 bg-[linear-gradient(120deg,rgba(15,15,15,0.95),rgba(15,15,15,0.78)),url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center"></div>
+  <div class="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-24">
+    <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+      <div class="max-w-3xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Selected Work</p>
+        <h1 class="mt-4 font-display text-4xl font-extrabold leading-tight sm:text-5xl">A portfolio built like a visual file wall.</h1>
+        <p class="mt-5 max-w-2xl text-base leading-7 text-soft/80 sm:text-lg">
+          Open projects by media type, preview the look immediately, and move into the matching service without reading through long case-study text.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Start Your Project</a>
+          <a href="{% url 'services:list' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold hover:border-gold/50 hover:text-gold">Open Services</a>
+        </div>
       </div>
-      {% endfor %}
+
+      <div class="grid gap-4 sm:grid-cols-3">
+        {% for stat in portfolio_stats %}
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+          <p class="text-3xl font-bold text-gold">{{ stat.value }}</p>
+          <p class="mt-2 text-sm text-soft/75">{{ stat.label }}</p>
+        </div>
+        {% endfor %}
+      </div>
     </div>
   </div>
 </section>
 
 <section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-  <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-    <div class="max-w-2xl">
-      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Creative Categories</p>
-      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Recent work from the SudPix studio</h2>
-    </div>
-    <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 text-center font-semibold text-white shadow-glow">Start Your Project</a>
-  </div>
-
-  <div class="mt-12 grid gap-6 md:grid-cols-2">
+  <div class="grid gap-6 md:grid-cols-2">
     {% for project in projects %}
-    <article class="overflow-hidden rounded-[2rem] border border-white/10 bg-secondary transition hover:-translate-y-1 hover:border-gold/35 hover:shadow-[0_20px_80px_rgba(199,150,95,0.12)]">
-      <a href="{% url 'portfolio:detail' project.slug %}" class="group block">
-      <img class="h-72 w-full object-cover transition duration-500 group-hover:scale-105" src="{{ project.image }}" alt="{{ project.title }}" />
-      <div class="p-7">
-        <div class="flex items-center justify-between gap-3">
-          <h3 class="text-2xl font-bold">{{ project.title }}</h3>
-          <span class="rounded-full bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ project.category }}</span>
+    <article class="group overflow-hidden rounded-[2rem] border border-white/10 bg-secondary transition hover:-translate-y-1 hover:border-gold/35 hover:shadow-[0_20px_80px_rgba(199,150,95,0.12)]">
+      <a href="{% url 'portfolio:detail' project.slug %}" class="block">
+        <div class="relative overflow-hidden">
+          <img class="h-80 w-full object-cover transition duration-500 group-hover:scale-105" src="{{ project.image }}" alt="{{ project.title }}" />
+          <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/5 to-transparent"></div>
+          <div class="absolute left-5 top-5 flex flex-wrap gap-2">
+            <span class="rounded-full bg-primary/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ project.category }}</span>
+            <span class="rounded-full bg-primary/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft/75">{{ project.asset_total }}</span>
+          </div>
+          <div class="absolute bottom-5 left-5 right-5">
+            <div class="flex items-end justify-between gap-4">
+              <div>
+                <h2 class="text-3xl font-bold">{{ project.title }}</h2>
+                <p class="mt-2 text-sm text-soft/75">{{ project.summary }}</p>
+              </div>
+              <span class="rounded-full border border-white/10 bg-primary/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/75">{{ project.delivery_mode }}</span>
+            </div>
+          </div>
         </div>
-        <p class="mt-4 text-sm leading-7 text-soft/75">{{ project.summary }}</p>
-        <div class="mt-6 flex flex-wrap gap-3">
-          <span class="rounded-full border border-gold/25 bg-gold/10 px-5 py-3 text-sm font-semibold text-gold">View project details</span>
-          <span class="rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-soft/75">Creative breakdown included</span>
-        </div>
-      </div>
       </a>
-      <div class="border-t border-white/10 px-7 py-5">
-        <div class="flex flex-wrap gap-3">
-          <a href="{% url 'bookings:create' %}?service={{ project.booking_service|urlencode }}" class="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white">Book Similar Work</a>
-          <a href="{% url 'services:list' %}" class="rounded-full border border-white/10 px-5 py-3 text-sm font-semibold hover:border-gold/50 hover:text-gold">View Services</a>
+
+      <div class="border-t border-white/10 p-6">
+        <div class="flex flex-wrap gap-2">
+          {% for format in project.formats %}
+          <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/70">{{ format }}</span>
+          {% endfor %}
+        </div>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <a href="{% url 'portfolio:detail' project.slug %}" class="rounded-full border border-gold/25 bg-gold/10 px-5 py-3 text-sm font-semibold text-gold">Open project</a>
+          <a href="{% url 'bookings:create' %}?service={{ project.booking_service|urlencode }}" class="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white">Book similar work</a>
         </div>
       </div>
     </article>

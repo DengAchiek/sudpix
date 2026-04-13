@@ -6,54 +6,75 @@
 <section class="relative overflow-hidden">
   <div
     class="absolute inset-0 bg-cover bg-center"
-    style="background-image: linear-gradient(to right, rgba(15, 15, 15, 0.94), rgba(15, 15, 15, 0.72)), url('{{ project.image }}');"
+    style="background-image: linear-gradient(to right, rgba(15, 15, 15, 0.95), rgba(15, 15, 15, 0.76)), url('{{ project.image }}');"
   ></div>
-  <div class="relative mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
-    <div class="max-w-4xl">
-      <span class="inline-flex rounded-full border border-gold/30 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-        {{ project.hero_eyebrow }}
-      </span>
-      <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-        {{ project.hero_heading }}
-      </h1>
-      <p class="mt-6 max-w-2xl text-base leading-7 text-soft/80 sm:text-lg">
-        {{ project.description }}
-      </p>
-      <div class="mt-8 flex flex-wrap gap-4">
-        <a href="{% url 'bookings:create' %}?service={{ project.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">
-          Book Similar Work
-        </a>
-        <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold transition hover:border-gold/50 hover:text-gold">
-          Back to Portfolio
-        </a>
+  <div class="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
+    <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+      <div class="max-w-3xl">
+        <span class="inline-flex rounded-full border border-gold/30 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+          {{ project.hero_eyebrow }}
+        </span>
+        <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+          {{ project.hero_heading }}
+        </h1>
+        <p class="mt-5 max-w-2xl text-base leading-7 text-soft/80 sm:text-lg">
+          {{ project.summary }}
+        </p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="{% url 'bookings:create' %}?service={{ project.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">
+            Book Similar Work
+          </a>
+          <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold transition hover:border-gold/50 hover:text-gold">
+            Back to Portfolio
+          </a>
+        </div>
       </div>
-    </div>
 
-    <div class="mt-12 grid gap-4 sm:grid-cols-3">
-      {% for metric in project.metrics %}
-      <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">{{ metric.label }}</p>
-        <p class="mt-3 text-3xl font-bold">{{ metric.value }}</p>
+      <div class="grid gap-4 sm:grid-cols-3">
+        {% for metric in project.metrics %}
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">{{ metric.label }}</p>
+          <p class="mt-3 text-3xl font-bold">{{ metric.value }}</p>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
   </div>
 </section>
 
 <section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-  <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+  <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
     <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-secondary">
-      <img src="{{ project.image }}" alt="{{ project.title }}" class="h-[420px] w-full object-cover" />
-      <div class="border-t border-white/10 p-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">{{ project.category }}</p>
-        <h2 class="mt-4 text-3xl font-bold">Project Overview</h2>
-        <p class="mt-4 text-base leading-8 text-soft/78">{{ project.description }}</p>
+      <img src="{{ project.image }}" alt="{{ project.title }}" class="h-[480px] w-full object-cover" />
+      <div class="grid gap-4 border-t border-white/10 p-6 sm:grid-cols-3">
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Category</p>
+          <p class="mt-3 text-lg font-bold">{{ project.category }}</p>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Assets</p>
+          <p class="mt-3 text-lg font-bold">{{ project.asset_total }}</p>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Delivery</p>
+          <p class="mt-3 text-lg font-bold">{{ project.delivery_mode }}</p>
+        </div>
       </div>
     </div>
 
     <div class="space-y-6">
       <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">What We Delivered</p>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">File Sheet</p>
+        <div class="mt-5 flex flex-wrap gap-2">
+          {% for format in project.formats %}
+          <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/75">{{ format }}</span>
+          {% endfor %}
+        </div>
+        <p class="mt-5 text-sm leading-7 text-soft/75">{{ project.description }}</p>
+      </div>
+
+      <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Delivered Assets</p>
         <ul class="mt-5 space-y-3 text-sm leading-7 text-soft/78">
           {% for item in project.deliverables %}
           <li>• {{ item }}</li>
@@ -62,7 +83,7 @@
       </div>
 
       <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Project Highlights</p>
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Why It Stands Out</p>
         <ul class="mt-5 space-y-3 text-sm leading-7 text-soft/78">
           {% for item in project.project_highlights %}
           <li>• {{ item }}</li>
@@ -77,16 +98,16 @@
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
     <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div class="max-w-2xl">
-        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Project Gallery</p>
-        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Selected frames from {{ project.title }}</h2>
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Gallery</p>
+        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Preview frames from {{ project.title }}</h2>
       </div>
-      <a href="{% url 'services:detail' project.service_slug %}#service-detail" class="text-sm font-semibold text-gold">View matching service →</a>
+      <a href="{% url 'services:detail' project.service_slug %}#service-detail" class="text-sm font-semibold text-gold">Open matching service →</a>
     </div>
 
     <div class="mt-10 grid gap-6 md:grid-cols-3">
       {% for image in project.gallery %}
       <div class="overflow-hidden rounded-[1.75rem] border border-white/10 bg-primary">
-        <img src="{{ image }}" alt="{{ project.title }} gallery image {{ forloop.counter }}" class="h-80 w-full object-cover transition duration-500 hover:scale-105" />
+        <img src="{{ image }}" alt="{{ project.title }} gallery image {{ forloop.counter }}" class="h-96 w-full object-cover transition duration-500 hover:scale-105" />
       </div>
       {% endfor %}
     </div>
@@ -96,10 +117,10 @@
 <section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
   <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
     <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
-      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Next Project</p>
-      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Looking for this same premium finish on your project?</h2>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Next Move</p>
+      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Want this same output style for your own project?</h2>
       <p class="mt-4 max-w-2xl text-soft/78">
-        SudPix can shape a similar experience for weddings, launches, live events, brand campaigns, and design-led promotions.
+        SudPix can shape a similar delivery flow for weddings, launches, brand campaigns, and media-heavy events.
       </p>
       <div class="mt-8 flex flex-wrap gap-4">
         <a href="{% url 'bookings:create' %}?service={{ project.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">
@@ -116,7 +137,10 @@
       <div class="mt-5 space-y-4">
         {% for related in related_projects %}
         <a href="{% url 'portfolio:detail' related.slug %}" class="block rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-gold/35 hover:bg-gold/5">
-          <p class="text-sm font-semibold text-gold">{{ related.category }}</p>
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm font-semibold text-gold">{{ related.category }}</p>
+            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-soft/55">{{ related.asset_total }}</span>
+          </div>
           <h3 class="mt-2 text-lg font-bold">{{ related.title }}</h3>
           <p class="mt-2 text-sm leading-6 text-soft/75">{{ related.summary }}</p>
         </a>

@@ -3,127 +3,162 @@
 {% block title %}SudPix Creative Studio{% endblock %}
 
 {% block content %}
-<section class="bg-[linear-gradient(to_right,rgba(15,15,15,0.92),rgba(15,15,15,0.7)),url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center">
-  <div class="mx-auto grid max-w-7xl gap-16 px-6 py-24 lg:grid-cols-2 lg:px-8 lg:py-32">
+<section class="relative overflow-hidden">
+  <div class="absolute inset-0 bg-[linear-gradient(120deg,rgba(15,15,15,0.96),rgba(15,15,15,0.78)),url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center"></div>
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,163,115,0.22),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(232,93,4,0.18),transparent_28%)]"></div>
+
+  <div class="relative mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-28">
     <div class="max-w-2xl">
       <span class="inline-flex rounded-full border border-gold/30 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-        Photography • Videography • Branding • Design
+        File-first creative studio
       </span>
       <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-        Capture Moments. Build Brands. Deliver Excellence.
+        Photos, videos, and brand files delivered like a premium media vault.
       </h1>
-      <p class="mt-6 max-w-xl text-base leading-7 text-soft/80 sm:text-lg">
-        SudPix is a premium creative studio helping individuals, brands, and businesses tell better stories through powerful photography, cinematic videography, branding, and graphic design.
+      <p class="mt-5 max-w-xl text-base leading-7 text-soft/80 sm:text-lg">
+        SudPix feels less like a brochure and more like a live creative library. Browse the work, open the files, and move straight into booking.
       </p>
+
       <div class="mt-8 flex flex-wrap gap-4">
         <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow transition hover:scale-[1.02]">
           Book a Service
         </a>
         <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold transition hover:border-gold/50 hover:text-gold">
-          View Portfolio
+          Open Portfolio
+        </a>
+        <a href="{% url 'bookings:create' %}?service=Client+Portal+Demo" class="rounded-full border border-white/15 px-6 py-3 font-semibold transition hover:border-gold/50 hover:text-gold">
+          Book Demo
         </a>
       </div>
-      <div class="mt-10 grid grid-cols-2 gap-6 border-t border-white/10 pt-8 sm:grid-cols-3">
-        <div>
-          <p class="text-3xl font-bold text-gold">250+</p>
-          <p class="mt-2 text-sm text-muted">Projects delivered</p>
+
+      <div class="mt-10 grid gap-4 sm:grid-cols-3">
+        {% for stat in hero_stats %}
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+          <p class="text-3xl font-bold text-gold">{{ stat.value }}</p>
+          <p class="mt-2 text-sm text-muted">{{ stat.label }}</p>
         </div>
-        <div>
-          <p class="text-3xl font-bold text-gold">120+</p>
-          <p class="mt-2 text-sm text-muted">Happy clients</p>
-        </div>
-        <div>
-          <p class="text-3xl font-bold text-gold">24/7</p>
-          <p class="mt-2 text-sm text-muted">Client file access</p>
-        </div>
+        {% endfor %}
+      </div>
+
+      <div class="mt-8 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-soft/70">
+        <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2">Photo delivery</span>
+        <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2">Video masters</span>
+        <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2">Brand kits</span>
+        <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2">Client vault access</span>
       </div>
     </div>
 
-    <div class="grid gap-5 self-end sm:grid-cols-2">
-      <div class="rounded-3xl border border-white/10 bg-secondary/80 p-6 backdrop-blur">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Creative Delivery</p>
-        <h3 class="mt-3 text-2xl font-bold">Premium visuals for brands and events</h3>
-        <p class="mt-4 text-sm leading-6 text-soft/75">
-          From shoots to brand identity systems, SudPix delivers memorable visuals that move audiences and strengthen market presence.
-        </p>
+    <div class="grid gap-5 self-end">
+      {% with featured_project=portfolio_preview|first %}
+      <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-secondary/85 shadow-2xl backdrop-blur">
+        <div class="relative">
+          <img src="{{ featured_project.image }}" alt="{{ featured_project.title }}" class="h-72 w-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/15 to-transparent"></div>
+          <div class="absolute left-5 top-5 flex gap-2">
+            <span class="rounded-full border border-white/10 bg-primary/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ featured_project.category }}</span>
+            <span class="rounded-full border border-white/10 bg-primary/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/75">{{ featured_project.asset_total }}</span>
+          </div>
+          <div class="absolute bottom-5 left-5 right-5">
+            <h2 class="text-2xl font-bold">{{ featured_project.title }}</h2>
+            <p class="mt-2 text-sm text-soft/75">{{ featured_project.summary }}</p>
+          </div>
+        </div>
+        <div class="grid gap-3 border-t border-white/10 p-5 sm:grid-cols-3">
+          {% for file in hero_file_stream %}
+          <div class="rounded-2xl border border-white/10 bg-primary/75 p-4">
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ file.kind }}</span>
+              <span class="h-2.5 w-2.5 rounded-full {% if file.accent == 'amber' %}bg-gold{% elif file.accent == 'orange' %}bg-accent{% else %}bg-white/40{% endif %}"></span>
+            </div>
+            <p class="mt-3 text-sm font-semibold text-soft">{{ file.name }}</p>
+            <p class="mt-1 text-xs text-muted">{{ file.size }}</p>
+          </div>
+          {% endfor %}
+        </div>
       </div>
-      <div class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur sm:translate-y-12">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Secure Access</p>
-        <h3 class="mt-3 text-2xl font-bold">Client portal with pay-before-download</h3>
-        <p class="mt-4 text-sm leading-6 text-soft/75">
-          Clients can preview photos and videos, select files, see the total amount due, and pay securely before downloading.
-        </p>
+      {% endwith %}
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Selection flow</p>
+          <p class="mt-3 text-lg font-bold">Preview, tick, pay, download.</p>
+          <p class="mt-2 text-sm text-soft/70">Clients move through files instead of long instructions.</p>
+        </div>
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Delivery style</p>
+          <p class="mt-3 text-lg font-bold">Every service ends in accessible assets.</p>
+          <p class="mt-2 text-sm text-soft/70">Photos, reels, campaign packs, and branded folders stay central.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-  <div class="max-w-2xl">
-    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Our Services</p>
-    <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Creative solutions designed to elevate your image</h2>
-    <p class="mt-4 text-soft/75">
-      SudPix combines visual storytelling, design thinking, and professional execution to deliver complete creative services under one brand.
-    </p>
+  <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div class="max-w-2xl">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Service Library</p>
+      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Open the type of files you want SudPix to create</h2>
+    </div>
+    <a href="{% url 'services:list' %}" class="text-sm font-semibold text-gold">View all services →</a>
   </div>
 
-  <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-    <article class="rounded-3xl border border-white/10 bg-secondary p-7 transition hover:-translate-y-1 hover:border-gold/40">
-      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">📸</div>
-      <h3 class="mt-5 text-xl font-bold">Photography</h3>
-      <p class="mt-3 text-sm leading-6 text-soft/75">Event, lifestyle, product, corporate, and portrait photography captured with precision and style.</p>
-      <a href="{% url 'services:detail' 'photography' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Learn more →</a>
-    </article>
-
-    <article class="rounded-3xl border border-white/10 bg-secondary p-7 transition hover:-translate-y-1 hover:border-gold/40">
-      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">🎥</div>
-      <h3 class="mt-5 text-xl font-bold">Videography</h3>
-      <p class="mt-3 text-sm leading-6 text-soft/75">Cinematic event coverage, promotional videos, interviews, social clips, and branded video content.</p>
-      <a href="{% url 'services:detail' 'videography' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Learn more →</a>
-    </article>
-
-    <article class="rounded-3xl border border-white/10 bg-secondary p-7 transition hover:-translate-y-1 hover:border-gold/40">
-      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">✨</div>
-      <h3 class="mt-5 text-xl font-bold">Branding</h3>
-      <p class="mt-3 text-sm leading-6 text-soft/75">Build a memorable identity with logo systems, brand strategy, social assets, and visual guidelines.</p>
-      <a href="{% url 'services:detail' 'branding' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Learn more →</a>
-    </article>
-
-    <article class="rounded-3xl border border-white/10 bg-secondary p-7 transition hover:-translate-y-1 hover:border-gold/40">
-      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-xl text-accent">🎨</div>
-      <h3 class="mt-5 text-xl font-bold">Graphic Design</h3>
-      <p class="mt-3 text-sm leading-6 text-soft/75">Professional flyers, social media graphics, marketing designs, print layouts, and digital campaigns.</p>
-      <a href="{% url 'services:detail' 'graphic-design' %}" class="mt-5 inline-block text-sm font-semibold text-gold">Learn more →</a>
-    </article>
+  <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+    {% for service in services_preview %}
+    <a href="{% url 'services:detail' service.slug %}" class="group overflow-hidden rounded-[2rem] border border-white/10 bg-secondary transition hover:-translate-y-1 hover:border-gold/35 hover:shadow-[0_24px_80px_rgba(199,150,95,0.12)]">
+      <div class="relative">
+        <img src="{{ service.preview_image }}" alt="{{ service.title }}" class="h-52 w-full object-cover transition duration-500 group-hover:scale-105" />
+        <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/25 to-transparent"></div>
+        <div class="absolute left-5 top-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/80 text-xl backdrop-blur">{{ service.icon }}</div>
+        <div class="absolute bottom-5 left-5 right-5">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="text-xl font-bold">{{ service.title }}</h3>
+            <span class="rounded-full border border-white/10 bg-primary/80 px-3 py-1 text-xs font-semibold text-gold">{{ service.asset_count }}</span>
+          </div>
+          <p class="mt-2 text-sm text-soft/75">{{ service.description }}</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 p-5">
+        {% for format in service.formats %}
+        <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-soft/75">{{ format }}</span>
+        {% endfor %}
+      </div>
+    </a>
+    {% endfor %}
   </div>
 </section>
 
 <section class="bg-secondary/60 py-20">
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
-    <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div class="max-w-2xl">
         <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Featured Portfolio</p>
-        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Selected work across events, brands, and campaigns</h2>
+        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Gallery-led work, not long case-study blocks</h2>
       </div>
       <a href="{% url 'portfolio:list' %}" class="text-sm font-semibold text-gold">Explore all projects →</a>
     </div>
 
-    <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
       {% for project in portfolio_preview %}
-      <a href="{% url 'portfolio:detail' project.slug %}" class="group block overflow-hidden rounded-3xl border border-white/10 bg-primary transition hover:-translate-y-1 hover:border-gold/35 hover:shadow-[0_24px_80px_rgba(199,150,95,0.14)]">
+      <a href="{% url 'portfolio:detail' project.slug %}" class="group block overflow-hidden rounded-[2rem] border border-white/10 bg-primary transition hover:-translate-y-1 hover:border-gold/35 hover:shadow-[0_24px_80px_rgba(199,150,95,0.14)]">
         <div class="relative overflow-hidden">
-          <img class="h-72 w-full object-cover transition duration-500 group-hover:scale-105" src="{{ project.image }}" alt="{{ project.title }}" />
+          <img class="h-80 w-full object-cover transition duration-500 group-hover:scale-105" src="{{ project.image }}" alt="{{ project.title }}" />
           <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/10 to-transparent"></div>
+          <div class="absolute left-5 top-5 flex flex-wrap gap-2">
+            <span class="rounded-full bg-primary/80 px-3 py-1 text-xs font-semibold text-gold">{{ project.category }}</span>
+            <span class="rounded-full bg-primary/80 px-3 py-1 text-xs font-semibold text-soft/75">{{ project.asset_total }}</span>
+          </div>
         </div>
         <div class="p-6">
           <div class="flex items-center justify-between gap-3">
             <h3 class="text-xl font-bold transition group-hover:text-gold">{{ project.title }}</h3>
-            <span class="rounded-full bg-white/5 px-3 py-1 text-xs text-gold">{{ project.category }}</span>
+            <span class="text-sm font-semibold text-gold">{{ project.delivery_mode }}</span>
           </div>
           <p class="mt-3 text-sm leading-6 text-soft/75">{{ project.summary }}</p>
-          <div class="mt-5 flex items-center justify-between text-sm font-semibold text-gold">
-            <span>Open project</span>
-            <span class="transition duration-300 group-hover:translate-x-1">→</span>
+          <div class="mt-4 flex flex-wrap gap-2">
+            {% for format in project.formats %}
+            <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/70">{{ format }}</span>
+            {% endfor %}
           </div>
         </div>
       </a>
@@ -133,66 +168,31 @@
 </section>
 
 <section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-  <div class="max-w-2xl">
-    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">How It Works</p>
-    <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">A simple process built for smooth service delivery</h2>
-  </div>
-
-  <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
-    <div class="rounded-3xl border border-white/10 bg-secondary p-6">
-      <span class="text-sm font-semibold text-gold">01</span>
-      <h3 class="mt-3 text-lg font-bold">Choose a service</h3>
-      <p class="mt-3 text-sm leading-6 text-soft/75">Select photography, videography, branding, or design based on your needs.</p>
-    </div>
-    <div class="rounded-3xl border border-white/10 bg-secondary p-6">
-      <span class="text-sm font-semibold text-gold">02</span>
-      <h3 class="mt-3 text-lg font-bold">Book your project</h3>
-      <p class="mt-3 text-sm leading-6 text-soft/75">Submit your brief, event details, location, and preferred schedule online.</p>
-    </div>
-    <div class="rounded-3xl border border-white/10 bg-secondary p-6">
-      <span class="text-sm font-semibold text-gold">03</span>
-      <h3 class="mt-3 text-lg font-bold">We create</h3>
-      <p class="mt-3 text-sm leading-6 text-soft/75">Our team handles shooting, editing, design, and project delivery professionally.</p>
-    </div>
-    <div class="rounded-3xl border border-white/10 bg-secondary p-6">
-      <span class="text-sm font-semibold text-gold">04</span>
-      <h3 class="mt-3 text-lg font-bold">Preview your files</h3>
-      <p class="mt-3 text-sm leading-6 text-soft/75">Access your secure client portal to preview available photos and videos.</p>
-    </div>
-    <div class="rounded-3xl border border-white/10 bg-secondary p-6">
-      <span class="text-sm font-semibold text-gold">05</span>
-      <h3 class="mt-3 text-lg font-bold">Pay and download</h3>
-      <p class="mt-3 text-sm leading-6 text-soft/75">Review your files, unlock the project with payment, and download securely.</p>
-    </div>
-  </div>
-</section>
-
-<section class="bg-secondary/60 py-20">
-  <div class="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-2 lg:px-8">
-    <div>
-      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Client Portal</p>
-      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">A smarter way to access, pay for, and download your files</h2>
-      <p class="mt-5 text-soft/75">
-        SudPix gives each client secure access to their own folders where they can preview image and video files, see project totals, and complete payments before download.
-      </p>
-      <ul class="mt-8 space-y-4 text-sm text-soft/80">
-        <li class="flex items-start gap-3"><span class="mt-1 text-gold">✓</span><span>Secure project folders for each client</span></li>
-        <li class="flex items-start gap-3"><span class="mt-1 text-gold">✓</span><span>Watermarked previews before payment</span></li>
-        <li class="flex items-start gap-3"><span class="mt-1 text-gold">✓</span><span>Automatic file counting and price calculation</span></li>
-        <li class="flex items-start gap-3"><span class="mt-1 text-gold">✓</span><span>M-Pesa, card, and mobile money checkout</span></li>
-        <li class="flex items-start gap-3"><span class="mt-1 text-gold">✓</span><span>Download access unlocked after confirmed payment</span></li>
-      </ul>
-      <div class="mt-8 flex flex-wrap gap-4">
-        <a href="{% url 'accounts:login' %}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white">Open Client Portal</a>
-        <a href="{% url 'bookings:create' %}?service=Client+Portal+Demo" class="rounded-full border border-white/15 px-6 py-3 font-semibold hover:border-gold/50 hover:text-gold">Request a Demo</a>
+  <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+    <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Delivery Flow</p>
+      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Short workflow, visible outputs.</h2>
+      <div class="mt-8 grid gap-4">
+        {% for step in process_steps %}
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ step.number }}</p>
+              <h3 class="mt-2 text-lg font-bold">{{ step.title }}</h3>
+              <p class="mt-2 text-sm text-soft/70">{{ step.description }}</p>
+            </div>
+            <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-soft/60">Flow</span>
+          </div>
+        </div>
+        {% endfor %}
       </div>
     </div>
 
     <div class="rounded-[2rem] border border-white/10 bg-primary p-5 shadow-2xl">
-      <div class="rounded-[1.5rem] border border-white/10 bg-secondary p-5">
+      <div class="rounded-[1.75rem] border border-white/10 bg-secondary p-5">
         <div class="flex items-center justify-between border-b border-white/10 pb-4">
           <div>
-            <p class="text-sm font-semibold text-gold">Client Dashboard</p>
+            <p class="text-sm font-semibold text-gold">Client Vault</p>
             <h3 class="mt-1 text-xl font-bold">Mary Wanjiku Wedding</h3>
           </div>
           <span class="rounded-full bg-green-500/15 px-3 py-1 text-xs font-semibold text-green-300">Files Ready</span>
@@ -213,82 +213,92 @@
           </div>
         </div>
 
-        <div class="mt-5 space-y-3">
-          <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-            <div>
-              <p class="font-medium">Bridal Portrait 01.jpg</p>
-              <p class="text-sm text-muted">Photo • KES 150</p>
+        <div class="mt-5 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+          <div class="space-y-3">
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-3">
+              <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=80" alt="Preview file one" class="h-40 w-full rounded-2xl object-cover" />
+              <div class="mt-3 flex items-center justify-between gap-3">
+                <div>
+                  <p class="font-medium">Bridal Portrait 01.jpg</p>
+                  <p class="text-sm text-muted">Photo file</p>
+                </div>
+                <span class="rounded-full bg-accent px-4 py-2 text-sm font-semibold">Selected</span>
+              </div>
             </div>
-            <button class="rounded-full bg-accent px-4 py-2 text-sm font-semibold">Selected</button>
-          </div>
-          <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-            <div>
-              <p class="font-medium">Ceremony Highlight.mp4</p>
-              <p class="text-sm text-muted">Video • KES 500</p>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-3">
+              <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80" alt="Preview file two" class="h-40 w-full rounded-2xl object-cover" />
+              <div class="mt-3 flex items-center justify-between gap-3">
+                <div>
+                  <p class="font-medium">Reception Storyboard.jpg</p>
+                  <p class="text-sm text-muted">Photo file</p>
+                </div>
+                <span class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold">Preview</span>
+              </div>
             </div>
-            <button class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold">Select</button>
           </div>
-        </div>
 
-        <div class="mt-6 rounded-2xl border border-gold/25 bg-gold/10 p-5">
-          <div class="flex items-center justify-between text-sm text-soft/80">
-            <span>Total files selected</span>
-            <span>14</span>
+          <div class="space-y-4">
+            {% for item in portal_activity %}
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ item.label }}</p>
+              <p class="mt-2 text-sm text-soft/75">{{ item.value }}</p>
+            </div>
+            {% endfor %}
+
+            <div class="rounded-2xl border border-gold/25 bg-gold/10 p-5">
+              <div class="flex items-center justify-between text-sm text-soft/80">
+                <span>Total files selected</span>
+                <span>14</span>
+              </div>
+              <div class="mt-3 flex items-center justify-between text-lg font-bold">
+                <span>Total payable</span>
+                <span class="text-gold">KES 3,900</span>
+              </div>
+              <a href="{% url 'client:checkout' %}" class="mt-4 block w-full rounded-full bg-accent px-5 py-3 text-center font-semibold text-white">Proceed to Payment</a>
+            </div>
           </div>
-          <div class="mt-3 flex items-center justify-between text-lg font-bold">
-            <span>Total payable</span>
-            <span class="text-gold">KES 3,900</span>
-          </div>
-          <a href="{% url 'client:checkout' %}" class="mt-4 block w-full rounded-full bg-accent px-5 py-3 text-center font-semibold text-white">Proceed to Payment</a>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-  <div class="max-w-2xl">
-    <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Testimonials</p>
-    <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">What clients say about SudPix</h2>
-  </div>
+<section class="bg-secondary/60 py-20">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div class="max-w-2xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Proof</p>
+        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Clients talk about the files, the speed, and the finish.</h2>
+      </div>
+      <a href="{% url 'accounts:login' %}" class="text-sm font-semibold text-gold">Open client portal →</a>
+    </div>
 
-  <div class="mt-12 grid gap-6 lg:grid-cols-3">
-    <article class="rounded-3xl border border-white/10 bg-secondary p-7">
-      <p class="text-lg leading-8 text-soft/85">“SudPix gave our brand launch a polished and premium visual identity. The photography and design quality stood out immediately.”</p>
-      <div class="mt-6">
-        <p class="font-semibold">Amina K.</p>
-        <p class="text-sm text-muted">Brand Manager</p>
-      </div>
-    </article>
-    <article class="rounded-3xl border border-white/10 bg-secondary p-7">
-      <p class="text-lg leading-8 text-soft/85">“The client portal made everything easy. We previewed the photos, selected what we wanted, paid, and downloaded without stress.”</p>
-      <div class="mt-6">
-        <p class="font-semibold">Daniel M.</p>
-        <p class="text-sm text-muted">Wedding Client</p>
-      </div>
-    </article>
-    <article class="rounded-3xl border border-white/10 bg-secondary p-7">
-      <p class="text-lg leading-8 text-soft/85">“Professional, responsive, and creatively sharp. SudPix is the kind of studio you trust with serious projects.”</p>
-      <div class="mt-6">
-        <p class="font-semibold">Mercy N.</p>
-        <p class="text-sm text-muted">Corporate Communications Lead</p>
-      </div>
-    </article>
+    <div class="mt-10 grid gap-6 lg:grid-cols-3">
+      {% for testimonial in testimonials %}
+      <article class="rounded-[2rem] border border-white/10 bg-primary p-7">
+        <p class="text-lg leading-8 text-soft/85">“{{ testimonial.quote }}”</p>
+        <div class="mt-6 border-t border-white/10 pt-4">
+          <p class="font-semibold">{{ testimonial.name }}</p>
+          <p class="text-sm text-muted">{{ testimonial.role }}</p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
   </div>
 </section>
 
 <section class="mx-auto max-w-7xl px-6 pb-20 lg:px-8">
-  <div class="grid gap-10 rounded-[2rem] border border-white/10 bg-[linear-gradient(to_right,rgba(232,93,4,0.15),rgba(212,163,115,0.12))] p-8 lg:grid-cols-[1fr_1.1fr] lg:p-10">
+  <div class="grid gap-10 rounded-[2rem] border border-white/10 bg-[linear-gradient(to_right,rgba(232,93,4,0.15),rgba(212,163,115,0.12))] p-8 lg:grid-cols-[0.95fr_1.05fr] lg:p-10">
     <div>
-      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Book a Service</p>
-      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Start your project with SudPix today</h2>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Start a File Pipeline</p>
+      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Tell SudPix what needs to be captured or built.</h2>
       <p class="mt-5 max-w-lg text-soft/75">
-        Tell us what you need and our team will get back to you with the right package, timeline, and next steps.
+        Use the quick booking form and move straight into dates, deliverables, and production.
       </p>
-      <div class="mt-8 space-y-4 text-sm text-soft/80">
-        <p>• Fast response for bookings and quotes</p>
-        <p>• Flexible support for events, businesses, and campaigns</p>
-        <p>• Secure file delivery after production</p>
+      <div class="mt-8 grid gap-3 text-sm text-soft/80">
+        <p class="rounded-2xl border border-white/10 bg-primary/50 px-4 py-3">Fast quote response</p>
+        <p class="rounded-2xl border border-white/10 bg-primary/50 px-4 py-3">Flexible events and campaigns</p>
+        <p class="rounded-2xl border border-white/10 bg-primary/50 px-4 py-3">Portal delivery after production</p>
       </div>
     </div>
 
@@ -309,7 +319,7 @@
         </select>
       </div>
       <input class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" type="date" name="event_date" />
-      <textarea class="min-h-[130px] rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" name="notes" placeholder="Tell us about your project, location, and any important requirements"></textarea>
+      <textarea class="min-h-[130px] rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" name="notes" placeholder="Project scope, venue, file expectations, or output formats"></textarea>
       <button type="submit" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Submit Booking Request</button>
     </form>
   </div>
