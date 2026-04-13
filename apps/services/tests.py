@@ -38,6 +38,14 @@ class ServicesPageTests(TestCase):
         self.assertContains(response, "KES 99,000")
         self.assertNotContains(response, "KES 12,000")
 
+    def test_photography_service_shows_photo_samples(self):
+        response = self.client.get(reverse("services:detail", args=["photography"]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Wedding")
+        self.assertContains(response, "Portrait")
+        self.assertContains(response, "Product")
+
     def test_services_page_handles_empty_database(self):
         ServicePackage.objects.all().delete()
         Service.objects.all().delete()

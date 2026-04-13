@@ -89,6 +89,22 @@
             <h2 class="mt-5 text-3xl font-bold">{{ active_service.heading }}</h2>
             <p class="mt-4 max-w-2xl text-sm leading-7 text-soft/75">{{ active_service.description }}</p>
 
+            {% if active_service.slug == 'photography' %}
+            <div class="mt-7 flex flex-wrap gap-2">
+              {% for item in active_service.best_for_list %}
+              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-soft/75">{{ item }}</span>
+              {% endfor %}
+            </div>
+
+            <div class="mt-7 grid gap-4 sm:grid-cols-3">
+              {% for stat in active_service.showcase_media.stats %}
+              <div class="rounded-3xl border border-white/10 bg-white/5 p-4">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gold">{{ stat.label }}</p>
+                <p class="mt-2 text-lg font-bold">{{ stat.value }}</p>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
             <div class="mt-8 grid gap-4 md:grid-cols-2">
               <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
                 <p class="text-sm font-semibold uppercase tracking-[0.18em] text-gold">Included Files</p>
@@ -111,6 +127,7 @@
                 </div>
               </div>
             </div>
+            {% endif %}
 
             <div class="mt-8 flex flex-wrap gap-4">
               <a href="{% url 'bookings:create' %}?service={{ active_service.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">{{ active_service.book_label }}</a>
@@ -119,6 +136,23 @@
           </div>
 
           <div id="service-packages" class="bg-primary p-8 lg:p-10">
+            {% if active_service.slug == 'photography' %}
+            <div class="space-y-4">
+              <div class="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5">
+                <img src="{{ active_service.showcase_media.url }}" alt="{{ active_service.name }} showcase" class="h-72 w-full object-cover" />
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                {% for sample in active_service.showcase_media.samples %}
+                <div class="group relative overflow-hidden rounded-[1.35rem] border border-white/10 bg-white/5">
+                  <img src="{{ sample.url }}" alt="{{ sample.label }} sample" class="h-40 w-full object-cover transition duration-500 group-hover:scale-105" />
+                  <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-primary/90 to-transparent px-4 pb-4 pt-8">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ sample.label }}</p>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% else %}
             <div class="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5">
               {% if active_service.showcase_media.type == 'video' %}
               <video class="h-72 w-full object-cover" autoplay muted loop playsinline poster="{{ active_service.showcase_media.poster }}">
@@ -133,6 +167,7 @@
                 <p class="mt-3 text-sm leading-6 text-soft/75">{{ active_service.showcase_media.description }}</p>
               </div>
             </div>
+            {% endif %}
 
             <div class="mt-6 flex items-center justify-between gap-4">
               <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">{{ active_service.packages_heading }}</p>

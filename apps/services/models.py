@@ -10,6 +10,29 @@ class Service(models.Model):
             "eyebrow": "Signature Frames",
             "title": "Clean compositions, premium lighting, and story-led image delivery",
             "description": "SudPix photography blends event emotion with polished editorial direction so the final gallery feels both premium and personal.",
+            "stats": [
+                {"label": "Sample Sets", "value": "Portraits"},
+                {"label": "Coverage", "value": "Events"},
+                {"label": "Delivery", "value": "Albums"},
+            ],
+            "samples": [
+                {
+                    "label": "Wedding",
+                    "url": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=80",
+                },
+                {
+                    "label": "Portrait",
+                    "url": "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=80",
+                },
+                {
+                    "label": "Lifestyle",
+                    "url": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+                },
+                {
+                    "label": "Product",
+                    "url": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80",
+                },
+            ],
         },
         "videography": {
             "type": "video",
@@ -97,6 +120,8 @@ class Service(models.Model):
             "eyebrow": "SudPix Showcase",
             "title": "Premium creative direction built around clear stories and polished delivery",
             "description": "Every SudPix service is presented with premium visual treatment to match the quality of the final work clients receive.",
+            "stats": [],
+            "samples": [],
         }
         return {
             **default_media,
