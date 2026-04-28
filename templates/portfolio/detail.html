@@ -3,28 +3,28 @@
 {% block title %}{{ project.title }} | SudPix Portfolio{% endblock %}
 
 {% block content %}
-<section class="relative overflow-hidden">
-  <div
-    class="absolute inset-0 bg-cover bg-center"
-    style="background-image: linear-gradient(to right, rgba(15, 15, 15, 0.95), rgba(15, 15, 15, 0.76)), url('{{ project.image }}');"
-  ></div>
-  <div class="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
-    <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-      <div class="max-w-3xl">
-        <span class="inline-flex rounded-full border border-gold/30 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+<section class="px-4">
+  <div class="relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] border border-white/10 shadow-panel">
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: linear-gradient(120deg, rgba(15, 15, 15, 0.92), rgba(15, 15, 15, 0.62)), url('{{ project.image }}');"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,163,115,0.22),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(232,93,4,0.14),transparent_28%)]"></div>
+
+    <div class="relative grid gap-10 px-6 py-10 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-12">
+      <div class="max-w-2xl">
+        <span class="inline-flex rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.28em] text-gold">
           {{ project.hero_eyebrow }}
         </span>
         <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
           {{ project.hero_heading }}
         </h1>
-        <p class="mt-5 max-w-2xl text-base leading-7 text-soft/80 sm:text-lg">
+        <p class="mt-5 max-w-xl text-base leading-7 text-soft/78 sm:text-lg">
           {{ project.summary }}
         </p>
+
         <div class="mt-8 flex flex-wrap gap-4">
           <a href="{% url 'bookings:create' %}?service={{ project.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">
             Book Similar Work
           </a>
-          <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold transition hover:border-gold/50 hover:text-gold">
+          <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 bg-primary/45 px-6 py-3 font-semibold text-soft/84 transition hover:border-gold/45 hover:text-gold">
             Back to Portfolio
           </a>
         </div>
@@ -32,8 +32,8 @@
 
       <div class="grid gap-4 sm:grid-cols-3">
         {% for metric in project.metrics %}
-        <div class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">{{ metric.label }}</p>
+        <div class="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 backdrop-blur">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ metric.label }}</p>
           <p class="mt-3 text-3xl font-bold">{{ metric.value }}</p>
         </div>
         {% endfor %}
@@ -42,107 +42,110 @@
   </div>
 </section>
 
-<section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-  <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-    <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-secondary">
-      <img src="{{ project.image }}" alt="{{ project.title }}" class="h-[480px] w-full object-cover" />
-      <div class="grid gap-4 border-t border-white/10 p-6 sm:grid-cols-3">
-        <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Category</p>
-          <p class="mt-3 text-lg font-bold">{{ project.category }}</p>
+<section class="px-4 pt-6">
+  <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+    <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
+      <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-primary/72">
+        <img src="{{ project.image }}" alt="{{ project.title }}" class="h-[29rem] w-full object-cover" />
+      </div>
+
+      <div class="mt-6 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-[1.6rem] border border-white/10 bg-primary/72 p-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Category</p>
+          <p class="mt-2 text-lg font-bold">{{ project.category }}</p>
         </div>
-        <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Assets</p>
-          <p class="mt-3 text-lg font-bold">{{ project.asset_total }}</p>
+        <div class="rounded-[1.6rem] border border-white/10 bg-primary/72 p-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Assets</p>
+          <p class="mt-2 text-lg font-bold">{{ project.asset_total }}</p>
         </div>
-        <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gold">Delivery</p>
-          <p class="mt-3 text-lg font-bold">{{ project.delivery_mode }}</p>
+        <div class="rounded-[1.6rem] border border-white/10 bg-primary/72 p-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Delivery</p>
+          <p class="mt-2 text-lg font-bold">{{ project.delivery_mode }}</p>
         </div>
       </div>
     </div>
 
     <div class="space-y-6">
-      <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">File Sheet</p>
+      <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">File Sheet</p>
         <div class="mt-5 flex flex-wrap gap-2">
           {% for format in project.formats %}
-          <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/75">{{ format }}</span>
+          <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/74">{{ format }}</span>
           {% endfor %}
         </div>
         <p class="mt-5 text-sm leading-7 text-soft/75">{{ project.description }}</p>
       </div>
 
-      <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Delivered Assets</p>
-        <ul class="mt-5 space-y-3 text-sm leading-7 text-soft/78">
+      <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Delivered Assets</p>
+        <div class="mt-5 grid gap-3">
           {% for item in project.deliverables %}
-          <li>• {{ item }}</li>
+          <div class="rounded-[1.5rem] border border-white/10 bg-primary/72 px-4 py-4 text-sm text-soft/76">{{ item }}</div>
           {% endfor %}
-        </ul>
+        </div>
       </div>
 
-      <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Why It Stands Out</p>
-        <ul class="mt-5 space-y-3 text-sm leading-7 text-soft/78">
+      <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Why It Stands Out</p>
+        <div class="mt-5 grid gap-3">
           {% for item in project.project_highlights %}
-          <li>• {{ item }}</li>
+          <div class="rounded-[1.5rem] border border-white/10 bg-primary/72 px-4 py-4 text-sm text-soft/76">{{ item }}</div>
           {% endfor %}
-        </ul>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="bg-secondary/60 py-20">
-  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+<section class="px-4 pt-6">
+  <div class="mx-auto max-w-7xl rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
     <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div class="max-w-2xl">
         <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Gallery</p>
         <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Preview frames from {{ project.title }}</h2>
       </div>
-      <a href="{% url 'services:detail' project.service_slug %}#service-detail" class="text-sm font-semibold text-gold">Open matching service →</a>
+      <a href="{% url 'services:detail' project.service_slug %}#service-detail" class="text-sm font-semibold text-gold transition hover:text-accent">Open matching service →</a>
     </div>
 
-    <div class="mt-10 grid gap-6 md:grid-cols-3">
+    <div class="mt-8 grid auto-rows-[18rem] gap-5 lg:grid-cols-3">
       {% for image in project.gallery %}
-      <div class="overflow-hidden rounded-[1.75rem] border border-white/10 bg-primary">
-        <img src="{{ image }}" alt="{{ project.title }} gallery image {{ forloop.counter }}" class="h-96 w-full object-cover transition duration-500 hover:scale-105" />
+      <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-primary {% if forloop.first %}lg:col-span-2{% endif %}">
+        <img src="{{ image }}" alt="{{ project.title }} gallery image {{ forloop.counter }}" class="h-full w-full object-cover transition duration-700 hover:scale-105" />
       </div>
       {% endfor %}
     </div>
   </div>
 </section>
 
-<section class="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-  <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
-    <div class="rounded-[2rem] border border-white/10 bg-secondary p-8">
+<section class="px-4 pb-4 pt-6">
+  <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.02fr_0.98fr]">
+    <div class="rounded-[2.25rem] border border-white/10 bg-[linear-gradient(135deg,rgba(212,163,115,0.18),rgba(232,93,4,0.12))] p-6 shadow-panel lg:p-8">
       <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Next Move</p>
       <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Want this same output style for your own project?</h2>
-      <p class="mt-4 max-w-2xl text-soft/78">
-        SudPix can shape a similar delivery flow for weddings, launches, brand campaigns, and media-heavy events.
+      <p class="mt-4 max-w-2xl text-sm leading-7 text-soft/76">
+        SudPix can shape a similar delivery approach for weddings, launches, campaigns, and media-heavy events with the same premium finish.
       </p>
-      <div class="mt-8 flex flex-wrap gap-4">
+      <div class="mt-6 flex flex-wrap gap-4">
         <a href="{% url 'bookings:create' %}?service={{ project.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">
           Start Your Booking
         </a>
-        <a href="{% url 'core:contact' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold transition hover:border-gold/50 hover:text-gold">
+        <a href="{% url 'core:contact' %}" class="rounded-full border border-white/15 px-6 py-3 font-semibold text-soft/80 transition hover:border-gold/45 hover:text-gold">
           Talk to SudPix
         </a>
       </div>
     </div>
 
-    <div class="rounded-[2rem] border border-white/10 bg-primary p-6">
-      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Related Projects</p>
+    <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Related Projects</p>
       <div class="mt-5 space-y-4">
         {% for related in related_projects %}
-        <a href="{% url 'portfolio:detail' related.slug %}" class="block rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-gold/35 hover:bg-gold/5">
+        <a href="{% url 'portfolio:detail' related.slug %}" class="block rounded-[1.6rem] border border-white/10 bg-primary/72 p-5 transition hover:border-gold/35 hover:bg-gold/10">
           <div class="flex items-center justify-between gap-3">
-            <p class="text-sm font-semibold text-gold">{{ related.category }}</p>
-            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-soft/55">{{ related.asset_total }}</span>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ related.category }}</p>
+            <span class="text-xs font-semibold uppercase tracking-[0.18em] text-soft/58">{{ related.asset_total }}</span>
           </div>
-          <h3 class="mt-2 text-lg font-bold">{{ related.title }}</h3>
-          <p class="mt-2 text-sm leading-6 text-soft/75">{{ related.summary }}</p>
+          <h3 class="mt-3 text-xl font-bold">{{ related.title }}</h3>
+          <p class="mt-2 text-sm leading-6 text-soft/76">{{ related.summary }}</p>
         </a>
         {% endfor %}
       </div>

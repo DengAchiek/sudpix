@@ -23,7 +23,8 @@
               display: ['Manrope', 'ui-sans-serif', 'system-ui']
             },
             boxShadow: {
-              glow: '0 10px 35px rgba(232, 93, 4, 0.25)'
+              glow: '0 10px 35px rgba(232, 93, 4, 0.25)',
+              panel: '0 30px 90px rgba(0, 0, 0, 0.42)'
             }
           }
         }
@@ -36,90 +37,119 @@
     <meta name="application-name" content="SudPix" />
     <meta name="apple-mobile-web-app-title" content="SudPix" />
     <meta name="theme-color" content="#0F0F0F" />
+    <style>
+      .sudpix-panel {
+        background:
+          radial-gradient(circle at top left, rgba(212, 163, 115, 0.16), transparent 28%),
+          linear-gradient(180deg, rgba(27, 27, 27, 0.94), rgba(15, 15, 15, 0.98));
+      }
+
+      .sudpix-grid {
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+        background-size: 24px 24px;
+      }
+    </style>
     {% block extra_head %}{% endblock %}
   </head>
-  <body class="bg-primary font-sans text-soft selection:bg-accent selection:text-white">
-    <header class="sticky top-0 z-50 border-b border-white/10 bg-primary/90 backdrop-blur">
-      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-        <a href="{% url 'core:home' %}" class="flex items-center">
-          <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Creative Studio" class="h-10 w-auto sm:h-12" />
-        </a>
+  <body class="min-h-screen bg-[radial-gradient(circle_at_top,rgba(212,163,115,0.14),transparent_18%),linear-gradient(180deg,#050505,#0F0F0F_30%,#101010)] font-sans text-soft selection:bg-accent selection:text-white">
+    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div class="absolute inset-0 opacity-20 sudpix-grid"></div>
+      <div class="absolute right-[-6rem] top-[-7rem] h-72 w-72 rounded-full bg-gold/10 blur-3xl"></div>
+      <div class="absolute bottom-[-8rem] left-[-5rem] h-80 w-80 rounded-full bg-accent/10 blur-3xl"></div>
+    </div>
 
-        <nav class="hidden items-center gap-8 text-sm md:flex">
-          <a href="{% url 'core:home' %}" class="hover:text-accent">Home</a>
-          <a href="{% url 'services:list' %}" class="hover:text-accent">Services</a>
-          <a href="{% url 'portfolio:list' %}" class="hover:text-accent">Portfolio</a>
-          <a href="{% url 'bookings:create' %}" class="hover:text-accent">Book</a>
-          <a href="{% url 'core:contact' %}" class="hover:text-accent">Contact</a>
-        </nav>
+    <header class="sticky top-0 z-50 px-4 pt-4">
+      <div class="mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-white/10 bg-primary/88 shadow-panel backdrop-blur-xl">
+        <div class="grid items-center gap-4 px-5 py-4 lg:grid-cols-[auto_1fr_auto] lg:px-8">
+          <a href="{% url 'core:home' %}" class="flex items-center">
+            <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Creative Studio" class="h-11 w-auto sm:h-12" />
+          </a>
 
-        <div class="hidden items-center gap-3 md:flex">
-          {% if request.user.is_authenticated %}
-          {% if request.user.is_staff %}
-          <a href="{% url 'dashboard:home' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium hover:border-gold/50 hover:text-gold">Staff Dashboard</a>
-          {% else %}
-          <a href="{% url 'accounts:profile' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium hover:border-gold/50 hover:text-gold">My Account</a>
-          {% endif %}
-          <a href="{% url 'accounts:logout' %}" class="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-glow">Logout</a>
-          {% else %}
-          <a href="{% url 'accounts:login' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium hover:border-gold/50 hover:text-gold">Login</a>
-          <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-glow">Book a Service</a>
-          {% endif %}
-        </div>
-
-        <button
-          type="button"
-          class="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-soft transition hover:border-gold/40 hover:text-gold md:hidden"
-          data-mobile-menu-toggle
-          aria-expanded="false"
-          aria-controls="mobile-nav"
-          aria-label="Open navigation menu"
-        >
-          <svg data-mobile-menu-open-icon aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M4 7h16"></path>
-            <path d="M4 12h16"></path>
-            <path d="M4 17h16"></path>
-          </svg>
-          <svg data-mobile-menu-close-icon aria-hidden="true" class="hidden h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M6 6l12 12"></path>
-            <path d="M18 6l-12 12"></path>
-          </svg>
-        </button>
-      </div>
-
-      <div id="mobile-nav" data-mobile-menu hidden class="border-t border-white/10 bg-primary/95 md:hidden">
-        <div class="mx-auto max-w-7xl px-6 py-5 lg:px-8">
-          <nav class="grid gap-2 text-sm">
-            <a href="{% url 'core:home' %}" class="rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">Home</a>
-            <a href="{% url 'services:list' %}" class="rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">Services</a>
-            <a href="{% url 'portfolio:list' %}" class="rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">Portfolio</a>
-            <a href="{% url 'bookings:create' %}" class="rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">Book</a>
-            <a href="{% url 'core:contact' %}" class="rounded-2xl border border-white/10 px-4 py-3 hover:border-gold/40 hover:text-gold">Contact</a>
+          {% with namespace=request.resolver_match.namespace url_name=request.resolver_match.url_name %}
+          <nav class="hidden items-center justify-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] lg:flex">
+            <a href="{% url 'core:home' %}" class="rounded-full px-4 py-2 transition {% if namespace == 'core' and url_name == 'home' %}bg-gold/12 text-gold{% else %}text-soft/72 hover:bg-white/5 hover:text-gold{% endif %}">Home</a>
+            <a href="{% url 'services:list' %}" class="rounded-full px-4 py-2 transition {% if namespace == 'services' %}bg-gold/12 text-gold{% else %}text-soft/72 hover:bg-white/5 hover:text-gold{% endif %}">Services</a>
+            <a href="{% url 'portfolio:list' %}" class="rounded-full px-4 py-2 transition {% if namespace == 'portfolio' %}bg-gold/12 text-gold{% else %}text-soft/72 hover:bg-white/5 hover:text-gold{% endif %}">Portfolio</a>
+            <a href="{% url 'bookings:create' %}" class="rounded-full px-4 py-2 transition {% if namespace == 'bookings' %}bg-gold/12 text-gold{% else %}text-soft/72 hover:bg-white/5 hover:text-gold{% endif %}">Book</a>
+            <a href="{% url 'core:contact' %}" class="rounded-full px-4 py-2 transition {% if namespace == 'core' and url_name == 'contact' %}bg-gold/12 text-gold{% else %}text-soft/72 hover:bg-white/5 hover:text-gold{% endif %}">Contact</a>
           </nav>
+          {% endwith %}
 
-          <div class="mt-5 grid gap-3">
+          <div class="hidden items-center gap-3 lg:flex">
+            <span class="hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-soft/58 xl:inline-flex">
+              Media-first studio
+            </span>
             {% if request.user.is_authenticated %}
             {% if request.user.is_staff %}
-            <a href="{% url 'dashboard:home' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium hover:border-gold/50 hover:text-gold">Staff Dashboard</a>
+            <a href="{% url 'dashboard:home' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">Staff Dashboard</a>
             {% else %}
-            <a href="{% url 'accounts:profile' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium hover:border-gold/50 hover:text-gold">My Account</a>
+            <a href="{% url 'accounts:profile' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">My Account</a>
             {% endif %}
-            <a href="{% url 'accounts:logout' %}" class="rounded-full bg-accent px-5 py-3 text-center text-sm font-semibold text-white shadow-glow">Logout</a>
+            <a href="{% url 'accounts:logout' %}" class="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:translate-y-[-1px]">Logout</a>
             {% else %}
-            <a href="{% url 'accounts:login' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium hover:border-gold/50 hover:text-gold">Login</a>
-            <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-5 py-3 text-center text-sm font-semibold text-white shadow-glow">Book a Service</a>
+            <a href="{% url 'accounts:login' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">Login</a>
+            <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:translate-y-[-1px]">Book a Service</a>
             {% endif %}
+          </div>
+
+          <button
+            type="button"
+            class="ml-auto flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-soft transition hover:border-gold/40 hover:text-gold lg:hidden"
+            data-mobile-menu-toggle
+            aria-expanded="false"
+            aria-controls="mobile-nav"
+            aria-label="Open navigation menu"
+          >
+            <svg data-mobile-menu-open-icon aria-hidden="true" class="h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 17h16"></path>
+            </svg>
+            <svg data-mobile-menu-close-icon aria-hidden="true" class="hidden h-5 w-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M6 6l12 12"></path>
+              <path d="M18 6l-12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div id="mobile-nav" data-mobile-menu hidden class="border-t border-white/10 bg-primary/96 lg:hidden">
+          <div class="space-y-5 px-5 py-5">
+            {% with namespace=request.resolver_match.namespace url_name=request.resolver_match.url_name %}
+            <nav class="grid gap-2 text-sm font-medium">
+              <a href="{% url 'core:home' %}" class="rounded-2xl border px-4 py-3 transition {% if namespace == 'core' and url_name == 'home' %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/78 hover:border-gold/35 hover:text-gold{% endif %}">Home</a>
+              <a href="{% url 'services:list' %}" class="rounded-2xl border px-4 py-3 transition {% if namespace == 'services' %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/78 hover:border-gold/35 hover:text-gold{% endif %}">Services</a>
+              <a href="{% url 'portfolio:list' %}" class="rounded-2xl border px-4 py-3 transition {% if namespace == 'portfolio' %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/78 hover:border-gold/35 hover:text-gold{% endif %}">Portfolio</a>
+              <a href="{% url 'bookings:create' %}" class="rounded-2xl border px-4 py-3 transition {% if namespace == 'bookings' %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/78 hover:border-gold/35 hover:text-gold{% endif %}">Book</a>
+              <a href="{% url 'core:contact' %}" class="rounded-2xl border px-4 py-3 transition {% if namespace == 'core' and url_name == 'contact' %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/78 hover:border-gold/35 hover:text-gold{% endif %}">Contact</a>
+            </nav>
+            {% endwith %}
+
+            <div class="grid gap-3">
+              {% if request.user.is_authenticated %}
+              {% if request.user.is_staff %}
+              <a href="{% url 'dashboard:home' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">Staff Dashboard</a>
+              {% else %}
+              <a href="{% url 'accounts:profile' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">My Account</a>
+              {% endif %}
+              <a href="{% url 'accounts:logout' %}" class="rounded-full bg-accent px-5 py-3 text-center text-sm font-semibold text-white shadow-glow">Logout</a>
+              {% else %}
+              <a href="{% url 'accounts:login' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">Login</a>
+              <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-5 py-3 text-center text-sm font-semibold text-white shadow-glow">Book a Service</a>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
     </header>
 
-    <main>
+    <main class="pb-4 pt-6">
       {% if messages %}
-      <div class="mx-auto max-w-7xl px-6 pt-6 lg:px-8">
+      <div class="mx-auto max-w-7xl px-4 pb-6">
         <div class="space-y-3">
           {% for message in messages %}
-          <div class="rounded-2xl border border-white/10 bg-secondary px-5 py-4 text-sm text-soft/85">{{ message }}</div>
+          <div class="rounded-[1.5rem] border border-white/10 bg-secondary/80 px-5 py-4 text-sm text-soft/85 shadow-panel">{{ message }}</div>
           {% endfor %}
         </div>
       </div>
@@ -127,39 +157,64 @@
       {% block content %}{% endblock %}
     </main>
 
-    <footer class="border-t border-white/10 bg-primary">
-      <div class="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-4 lg:px-8">
-        <div class="lg:col-span-2">
-          <div class="flex items-center">
-            <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Creative Studio" class="h-12 w-auto sm:h-14" />
+    <footer class="px-4 pb-8 pt-12">
+      <div class="mx-auto max-w-7xl rounded-[2.25rem] border border-white/10 bg-secondary/88 p-8 shadow-panel backdrop-blur">
+        <div class="grid gap-10 lg:grid-cols-[1.05fr_0.7fr_0.7fr]">
+          <div>
+            <div class="flex items-center">
+              <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Creative Studio" class="h-12 w-auto sm:h-14" />
+            </div>
+            <p class="mt-5 max-w-xl text-sm leading-7 text-soft/70">
+              SudPix is built around premium visual delivery: photography, videography, branding, and design presented in a client-ready file experience.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/62">Photo galleries</span>
+              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/62">Video masters</span>
+              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/62">Brand kits</span>
+              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/62">Client vault</span>
+            </div>
           </div>
-          <p class="mt-5 max-w-lg text-sm leading-7 text-soft/70">
-            SudPix delivers premium photography, videography, branding, and graphic design backed by a secure client portal for file access, payments, and downloads.
-          </p>
+
+          <div>
+            <h3 class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Navigate</h3>
+            <ul class="mt-5 space-y-3 text-sm text-soft/72">
+              <li><a href="{% url 'core:home' %}" class="transition hover:text-gold">Home</a></li>
+              <li><a href="{% url 'services:list' %}" class="transition hover:text-gold">Services</a></li>
+              <li><a href="{% url 'portfolio:list' %}" class="transition hover:text-gold">Portfolio</a></li>
+              <li><a href="{% url 'bookings:create' %}" class="transition hover:text-gold">Book a Service</a></li>
+              <li><a href="{% url 'accounts:login' %}" class="transition hover:text-gold">Login</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Reach SudPix</h3>
+            <ul class="mt-5 space-y-3 text-sm text-soft/72">
+              <li>Email: hello@sudpix.com</li>
+              <li>Phone: +254 768 774 232</li>
+              <li>WhatsApp: +254 768 774 232</li>
+              <li>Nairobi, Kenya</li>
+            </ul>
+          </div>
         </div>
 
-        <div>
-          <h3 class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Quick Links</h3>
-          <ul class="mt-5 space-y-3 text-sm text-soft/75">
-            <li><a href="{% url 'services:list' %}" class="hover:text-accent">Services</a></li>
-            <li><a href="{% url 'portfolio:list' %}" class="hover:text-accent">Portfolio</a></li>
-            <li><a href="{% url 'bookings:create' %}" class="hover:text-accent">Book a Service</a></li>
-            <li><a href="{% url 'accounts:login' %}" class="hover:text-accent">Login</a></li>
-          </ul>
+        <div class="mt-8 grid gap-4 border-t border-white/10 pt-8 md:grid-cols-3">
+          <div class="rounded-[1.5rem] border border-white/10 bg-primary/70 p-5">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Response</p>
+            <p class="mt-2 text-lg font-bold">Fast booking follow-up</p>
+          </div>
+          <div class="rounded-[1.5rem] border border-white/10 bg-primary/70 p-5">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Access</p>
+            <p class="mt-2 text-lg font-bold">Client portal ready</p>
+          </div>
+          <div class="rounded-[1.5rem] border border-white/10 bg-primary/70 p-5">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Coverage</p>
+            <p class="mt-2 text-lg font-bold">Media and brand services</p>
+          </div>
         </div>
 
-        <div>
-          <h3 class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Contact</h3>
-          <ul class="mt-5 space-y-3 text-sm text-soft/75">
-            <li>Email: hello@sudpix.com</li>
-            <li>Phone: +254 768774232</li>
-            <li>WhatsApp: +254 768774232</li>
-            <li>Nairobi, Kenya</li>
-          </ul>
+        <div class="mt-8 border-t border-white/10 pt-5 text-center text-sm text-muted">
+          © 2026 SudPix. All rights reserved.
         </div>
-      </div>
-      <div class="border-t border-white/10 px-6 py-5 text-center text-sm text-muted">
-        © 2026 SudPix. All rights reserved.
       </div>
     </footer>
 
@@ -200,7 +255,7 @@
         });
 
         window.addEventListener("resize", function() {
-          if (window.innerWidth >= 768) {
+          if (window.innerWidth >= 1024) {
             setMenuState(false);
           }
         });
