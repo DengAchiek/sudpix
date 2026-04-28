@@ -3,305 +3,151 @@
 {% block title %}SudPix Creative Studio{% endblock %}
 
 {% block content %}
-<section class="px-4">
-  <div class="relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] border border-white/10 shadow-panel">
-    <div class="absolute inset-0 bg-[linear-gradient(120deg,rgba(15,15,15,0.92),rgba(15,15,15,0.64)),url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,163,115,0.22),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(232,93,4,0.18),transparent_26%)]"></div>
-
-    <div class="relative grid gap-10 px-6 py-10 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-12">
-      <div class="max-w-2xl">
-        <span class="inline-flex rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.28em] text-gold">
-          SudPix media vault
-        </span>
-        <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-          Premium visuals presented like a live creative platform.
-        </h1>
-        <p class="mt-5 max-w-xl text-base leading-7 text-soft/78 sm:text-lg">
-          SudPix brings photography, videography, branding, and design into one polished space where the work leads, the files stay visible, and booking stays fast.
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-banner" style="background-image: url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1800&q=80');">
+      <div class="sud-banner__content">
+        <div class="sud-banner__eyebrow">SudPix Creative Studio</div>
+        <h1 class="sud-banner__title">Premium <em>Photos</em>, bold <em>Videos</em>, and polished brand files in one place.</h1>
+        <p class="sud-banner__text">
+          SudPix is built for modern media delivery. Explore the work visually, move through services quickly, and book the exact creative direction your project needs.
         </p>
-
-        <div class="mt-8 flex flex-wrap gap-4">
-          <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow transition hover:translate-y-[-1px]">
-            Book a Service
-          </a>
-          <a href="{% url 'portfolio:list' %}" class="rounded-full border border-white/15 bg-primary/45 px-6 py-3 font-semibold text-soft/84 transition hover:border-gold/45 hover:text-gold">
-            Explore Portfolio
-          </a>
-          <a href="{% url 'bookings:create' %}?service=Client+Portal+Demo" class="rounded-full border border-white/15 bg-primary/45 px-6 py-3 font-semibold text-soft/84 transition hover:border-gold/45 hover:text-gold">
-            Book Demo
-          </a>
-        </div>
-
-        <div class="mt-10 grid gap-4 sm:grid-cols-3">
-          {% for stat in hero_stats %}
-          <div class="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 backdrop-blur">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-gold">{{ stat.label }}</p>
-            <p class="mt-3 text-3xl font-bold">{{ stat.value }}</p>
-          </div>
-          {% endfor %}
-        </div>
-
-        <div class="mt-8 rounded-[2rem] border border-white/10 bg-primary/60 p-5 backdrop-blur">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Quick open</p>
-              <h2 class="mt-2 text-xl font-bold">Choose the file type you want created.</h2>
-            </div>
-            <a href="{% url 'services:list' %}" class="text-sm font-semibold text-gold transition hover:text-accent">Open full service browser →</a>
-          </div>
-
-          <div class="mt-5 flex flex-wrap gap-3">
-            {% for service in services_preview %}
-            <a href="{% url 'services:detail' service.slug %}" class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-soft/76 transition hover:border-gold/40 hover:bg-gold/10 hover:text-gold">
-              {{ service.title }}
-            </a>
-            {% endfor %}
-          </div>
+        <div class="sud-banner__buttons">
+          <a href="{% url 'portfolio:list' %}" class="sud-btn">Explore Portfolio</a>
+          <a href="{% url 'bookings:create' %}" class="sud-btn-ghost">Book a Service</a>
+          <a href="{% url 'bookings:create' %}?service=Client+Portal+Demo" class="sud-btn-ghost">Book Demo</a>
         </div>
       </div>
+    </div>
+  </div>
+</section>
 
-      <div class="grid gap-5">
-        {% with lead_project=portfolio_preview|first %}
-        <a href="{% url 'portfolio:detail' lead_project.slug %}" class="group overflow-hidden rounded-[2.1rem] border border-white/10 bg-secondary/80 shadow-panel">
-          <div class="relative">
-            <img src="{{ lead_project.image }}" alt="{{ lead_project.title }}" class="h-[25rem] w-full object-cover transition duration-700 group-hover:scale-105" />
-            <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/18 to-transparent"></div>
-            <div class="absolute left-5 top-5 flex flex-wrap gap-2">
-              <span class="rounded-full border border-white/10 bg-primary/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ lead_project.category }}</span>
-              <span class="rounded-full border border-white/10 bg-primary/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/70">{{ lead_project.asset_total }}</span>
-            </div>
-            <div class="absolute inset-x-0 bottom-0 p-6 lg:p-7">
-              <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Featured portfolio</p>
-              <div class="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div class="max-w-xl">
-                  <h2 class="text-3xl font-bold transition group-hover:text-gold">{{ lead_project.title }}</h2>
-                  <p class="mt-3 text-sm leading-7 text-soft/76">{{ lead_project.summary }}</p>
-                </div>
-                <span class="rounded-full border border-white/10 bg-primary/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/72">{{ lead_project.delivery_mode }}</span>
-              </div>
-            </div>
+<section class="sud-feature-strip">
+  <div class="sud-container">
+    <div class="sud-feature-strip__grid">
+      {% for project in portfolio_preview %}
+      <a href="{% url 'portfolio:detail' project.slug %}" class="sud-media-card">
+        <img src="{{ project.image }}" alt="{{ project.title }}" />
+        <div class="sud-media-card__content">
+          <div class="sud-media-card__meta">
+            <span class="sud-tag">{{ project.category }}</span>
+            <span class="sud-tag sud-tag--light">{{ project.asset_total }}</span>
+          </div>
+          <h3>{{ project.title }}</h3>
+          <p>{{ project.summary }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-section-heading">
+      <div class="sud-section-heading__eyebrow">Our Services</div>
+      <h2>Check Out SudPix creative categories</h2>
+    </div>
+    <div class="sud-categories">
+      {% for service in services_preview %}
+      <a href="{% url 'services:detail' service.slug %}" class="sud-category-item">
+        <div class="sud-category-item__icon">{{ service.icon }}</div>
+        <h4>{{ service.title }}</h4>
+        <span>{{ service.asset_count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-section-heading sud-section-heading--center">
+      <div class="sud-section-heading__eyebrow">Featured Work</div>
+      <h2>Browse highlighted media collections from SudPix</h2>
+      <p>
+        Move through live project examples, see the delivery format, and jump directly to the matching service page when the style fits your brief.
+      </p>
+    </div>
+
+    <div class="sud-split-grid">
+      {% for project in portfolio_preview %}
+      {% if not forloop.last %}
+      <article class="sud-showcase-item">
+        <a href="{% url 'portfolio:detail' project.slug %}" class="block">
+          <div class="sud-showcase-item__thumb">
+            <img src="{{ project.image }}" alt="{{ project.title }}" />
+            <span class="sud-tag">{{ project.delivery_mode }}</span>
+          </div>
+          <div class="sud-showcase-item__body">
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.summary }}</p>
+            <div class="sud-showcase-item__action">Open project →</div>
           </div>
         </a>
-        {% endwith %}
-
-        <div class="grid gap-4 md:grid-cols-3">
-          {% for file in hero_file_stream %}
-          <div class="rounded-[1.6rem] border border-white/10 bg-primary/75 p-5 backdrop-blur">
-            <div class="flex items-center justify-between gap-3">
-              <span class="text-xs font-semibold uppercase tracking-[0.24em] text-gold">{{ file.kind }}</span>
-              <span class="h-2.5 w-2.5 rounded-full {% if file.accent == 'amber' %}bg-gold{% elif file.accent == 'orange' %}bg-accent{% else %}bg-white/45{% endif %}"></span>
-            </div>
-            <p class="mt-4 text-base font-bold">{{ file.name }}</p>
-            <p class="mt-2 text-sm text-soft/68">{{ file.size }}</p>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="px-4 pt-6">
-  <div class="mx-auto max-w-7xl rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
-    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-      <div class="max-w-2xl">
-        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Creative Channels</p>
-        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Browse services the way you browse featured media.</h2>
-      </div>
-      <a href="{% url 'services:list' %}" class="text-sm font-semibold text-gold transition hover:text-accent">View full service browser →</a>
-    </div>
-
-    <div class="mt-8 grid gap-5 xl:grid-cols-4 md:grid-cols-2">
-      {% for service in services_preview %}
-      <a href="{% url 'services:detail' service.slug %}" class="group overflow-hidden rounded-[2rem] border border-white/10 bg-primary transition hover:-translate-y-1 hover:border-gold/35 hover:shadow-[0_24px_80px_rgba(199,150,95,0.14)]">
-        <div class="relative">
-          <img src="{{ service.preview_image }}" alt="{{ service.title }}" class="h-72 w-full object-cover transition duration-700 group-hover:scale-105" />
-          <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/22 to-transparent"></div>
-          <div class="absolute left-5 top-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/82 text-xl backdrop-blur">{{ service.icon }}</div>
-          <div class="absolute right-5 top-5 rounded-full border border-white/10 bg-primary/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ service.asset_count }}</div>
-          <div class="absolute inset-x-0 bottom-0 p-5">
-            <h3 class="text-2xl font-bold transition group-hover:text-gold">{{ service.title }}</h3>
-            <p class="mt-2 text-sm leading-6 text-soft/76">{{ service.description }}</p>
-          </div>
-        </div>
-        <div class="flex flex-wrap gap-2 border-t border-white/10 p-5">
-          {% for format in service.formats %}
-          <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/68">{{ format }}</span>
-          {% endfor %}
-        </div>
-      </a>
+      </article>
+      {% endif %}
       {% endfor %}
     </div>
   </div>
 </section>
 
-<section class="px-4 pt-6">
-  <div class="mx-auto max-w-7xl rounded-[2.25rem] border border-white/10 bg-secondary/82 p-6 shadow-panel lg:p-8">
-    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-      <div class="max-w-2xl">
-        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Featured Portfolio</p>
-        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Visual projects displayed in a stronger gallery rhythm.</h2>
-      </div>
-      <a href="{% url 'portfolio:list' %}" class="text-sm font-semibold text-gold transition hover:text-accent">Open all projects →</a>
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-section-heading sud-section-heading--center">
+      <div class="sud-section-heading__eyebrow">Service Plans</div>
+      <h2>SudPix booking paths and output options</h2>
     </div>
 
-    <div class="mt-8 grid auto-rows-[18rem] gap-5 lg:grid-cols-3">
-      {% for project in portfolio_preview %}
-      <a href="{% url 'portfolio:detail' project.slug %}" class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-primary {% if forloop.first %}lg:col-span-2 lg:row-span-2{% endif %}">
-        <img src="{{ project.image }}" alt="{{ project.title }}" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
-        <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/22 to-transparent"></div>
-        <div class="absolute left-5 top-5 flex flex-wrap gap-2">
-          <span class="rounded-full border border-white/10 bg-primary/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ project.category }}</span>
-          <span class="rounded-full border border-white/10 bg-primary/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/70">{{ project.asset_total }}</span>
-        </div>
-        <div class="absolute inset-x-0 bottom-0 p-5 lg:p-6">
-          <div class="flex items-end justify-between gap-4">
-            <div class="{% if forloop.first %}max-w-2xl{% else %}max-w-sm{% endif %}">
-              <h3 class="{% if forloop.first %}text-3xl lg:text-4xl{% else %}text-2xl{% endif %} font-bold transition group-hover:text-gold">{{ project.title }}</h3>
-              <p class="mt-3 text-sm leading-6 text-soft/76">{{ project.summary }}</p>
-            </div>
-            <span class="hidden rounded-full border border-white/10 bg-primary/78 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/72 md:inline-flex">{{ project.delivery_mode }}</span>
+    <div class="sud-package-grid">
+      {% for service in services_preview|slice:":3" %}
+      <article class="sud-package-card">
+        <img src="{{ service.preview_image }}" alt="{{ service.title }}" />
+        <div class="sud-package-card__body">
+          <h3>{{ service.title }}</h3>
+          <p>{{ service.description }} Delivery formats include {{ service.formats|join:", " }}.</p>
+          <span class="sud-price">{{ service.asset_count }}</span>
+          <div class="mt-5">
+            <a href="{% url 'services:detail' service.slug %}" class="sud-btn-ghost">View service</a>
           </div>
         </div>
-      </a>
+      </article>
       {% endfor %}
     </div>
   </div>
 </section>
 
-<section class="px-4 pt-6">
-  <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.92fr_1.08fr]">
-    <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
-      <div class="flex items-end justify-between gap-4">
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Delivery Flow</p>
-          <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">A short path from booking to unlocked files.</h2>
-        </div>
-        <span class="hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/60 md:inline-flex">Client journey</span>
-      </div>
-
-      <div class="mt-8 space-y-4">
-        {% for step in process_steps %}
-        <div class="rounded-[1.75rem] border border-white/10 bg-primary/72 p-5">
-          <div class="flex items-start gap-4">
-            <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/20 bg-gold/10 text-sm font-semibold text-gold">{{ step.number }}</span>
-            <div>
-              <h3 class="text-lg font-bold">{{ step.title }}</h3>
-              <p class="mt-2 text-sm leading-6 text-soft/72">{{ step.description }}</p>
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-section-heading sud-section-heading--center">
+      <div class="sud-section-heading__eyebrow">Client Flow</div>
+      <h2>From selection to payment and download</h2>
     </div>
 
-    <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
-      <div class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <div class="space-y-4">
-          {% for project in portfolio_preview|slice:":2" %}
-          <div class="overflow-hidden rounded-[1.8rem] border border-white/10 bg-primary/70">
-            <img src="{{ project.image }}" alt="{{ project.title }}" class="h-56 w-full object-cover" />
-            <div class="border-t border-white/10 p-5">
-              <div class="flex items-center justify-between gap-3">
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ project.category }}</p>
-                  <h3 class="mt-2 text-xl font-bold">{{ project.title }}</h3>
-                </div>
-                <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/70">{{ project.asset_total }}</span>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-
-        <div class="space-y-4">
-          {% for item in portal_activity %}
-          <div class="rounded-[1.6rem] border border-white/10 bg-primary/72 p-5">
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ item.label }}</p>
-            <p class="mt-3 text-sm leading-6 text-soft/74">{{ item.value }}</p>
-          </div>
-          {% endfor %}
-
-          <div class="rounded-[1.8rem] border border-gold/20 bg-[linear-gradient(135deg,rgba(212,163,115,0.18),rgba(232,93,4,0.12))] p-5">
-            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Download gate</p>
-            <h3 class="mt-3 text-2xl font-bold">Selections total before checkout unlocks the files.</h3>
-            <p class="mt-3 text-sm leading-6 text-soft/75">
-              Clients preview the gallery, tick what they want, and the payment step sits directly behind download.
-            </p>
-            <a href="{% url 'accounts:login' %}" class="mt-5 inline-flex rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-glow">Open client portal</a>
-          </div>
-        </div>
+    <div class="sud-stat-row">
+      {% for item in portal_activity %}
+      <div class="sud-stat">
+        <strong>{{ forloop.counter }}</strong>
+        <span>{{ item.label }}: {{ item.value }}</span>
       </div>
+      {% endfor %}
     </div>
   </div>
 </section>
 
-<section class="px-4 pt-6">
-  <div class="mx-auto max-w-7xl rounded-[2.25rem] border border-white/10 bg-secondary/86 p-6 shadow-panel lg:p-8">
-    <div class="grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
-      <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">What clients notice</p>
-        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Less friction, more visible work.</h2>
-        <p class="mt-4 max-w-lg text-sm leading-7 text-soft/72">
-          The strongest SudPix experience is visual first: the work appears quickly, actions stay clear, and the portal keeps the delivery process easy to understand.
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-page-heading" style="background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80');">
+      <div class="sud-page-heading__content">
+        <h1>Start your next visual project with SudPix</h1>
+        <p>
+          Use the booking flow to send your service type, date, and project direction. We reply quickly and keep the next steps clear.
         </p>
-
-        <div class="mt-6 grid gap-3 text-sm text-soft/76">
-          <p class="rounded-[1.4rem] border border-white/10 bg-primary/72 px-4 py-3">Interactive portfolio previews</p>
-          <p class="rounded-[1.4rem] border border-white/10 bg-primary/72 px-4 py-3">Service pages with media-led presentation</p>
-          <p class="rounded-[1.4rem] border border-white/10 bg-primary/72 px-4 py-3">Client downloads gated by payment</p>
+        <div class="sud-banner__buttons">
+          <a href="{% url 'bookings:create' %}" class="sud-btn">Book a Service</a>
+          <a href="{% url 'core:contact' %}" class="sud-btn-ghost">Contact SudPix</a>
         </div>
       </div>
-
-      <div class="grid gap-5 md:grid-cols-3">
-        {% for testimonial in testimonials %}
-        <article class="rounded-[1.8rem] border border-white/10 bg-primary/74 p-6">
-          <p class="text-sm leading-7 text-soft/80">“{{ testimonial.quote }}”</p>
-          <div class="mt-5 border-t border-white/10 pt-4">
-            <p class="font-semibold">{{ testimonial.name }}</p>
-            <p class="text-sm text-muted">{{ testimonial.role }}</p>
-          </div>
-        </article>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="px-4 pb-4 pt-6">
-  <div class="mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] border border-white/10 shadow-panel">
-    <div class="grid lg:grid-cols-[0.92fr_1.08fr]">
-      <div class="relative min-h-[22rem] overflow-hidden">
-        <div class="absolute inset-0 bg-[linear-gradient(120deg,rgba(15,15,15,0.74),rgba(15,15,15,0.92)),url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center"></div>
-        <div class="relative p-8 lg:p-10">
-          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Start a project</p>
-          <h2 class="mt-4 font-display text-3xl font-bold sm:text-4xl">Give SudPix the date, service, and output you need.</h2>
-          <p class="mt-4 max-w-lg text-sm leading-7 text-soft/78">
-            This quick form keeps the front end light while still pushing visitors straight into a real booking request.
-          </p>
-        </div>
-      </div>
-
-      <form method="post" action="{% url 'bookings:create' %}" class="space-y-4 bg-secondary/92 p-8 lg:p-10">
-        {% csrf_token %}
-        <div class="grid gap-4 sm:grid-cols-2">
-          <input class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" type="text" name="client_name" placeholder="Client name" />
-          <input class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" type="email" name="email" placeholder="Email address" />
-        </div>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <input class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" type="text" name="phone" placeholder="Phone number" />
-          <select class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-accent" name="service">
-            <option value="">Select service</option>
-            <option>Photography</option>
-            <option>Videography</option>
-            <option>Branding</option>
-            <option>Graphic Design</option>
-          </select>
-        </div>
-        <input class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" type="date" name="event_date" />
-        <textarea class="min-h-[130px] rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-muted focus:border-accent" name="notes" placeholder="Project scope, location, deliverables, or output style"></textarea>
-        <button type="submit" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Submit Booking Request</button>
-      </form>
     </div>
   </div>
 </section>

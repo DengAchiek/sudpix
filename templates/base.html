@@ -23,8 +23,7 @@
               display: ['Manrope', 'ui-sans-serif', 'system-ui']
             },
             boxShadow: {
-              glow: '0 10px 35px rgba(232, 93, 4, 0.25)',
-              panel: '0 30px 90px rgba(0, 0, 0, 0.42)'
+              glow: '0 10px 35px rgba(232, 93, 4, 0.25)'
             }
           }
         }
@@ -38,65 +37,817 @@
     <meta name="apple-mobile-web-app-title" content="SudPix" />
     <meta name="theme-color" content="#0F0F0F" />
     <style>
-      .sudpix-panel {
-        background:
-          radial-gradient(circle at top left, rgba(212, 163, 115, 0.16), transparent 28%),
-          linear-gradient(180deg, rgba(27, 27, 27, 0.94), rgba(15, 15, 15, 0.98));
+      :root {
+        --sud-bg: #0f0f0f;
+        --sud-bg-soft: #171717;
+        --sud-line: rgba(255, 255, 255, 0.1);
+        --sud-line-soft: rgba(255, 255, 255, 0.06);
+        --sud-text: #f5f5f5;
+        --sud-muted: #a3a3a3;
+        --sud-gold: #d4a373;
+        --sud-accent: #e85d04;
       }
 
-      .sudpix-grid {
-        background-image:
-          linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-        background-size: 24px 24px;
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top, rgba(212, 163, 115, 0.1), transparent 24%),
+          linear-gradient(180deg, #090909 0%, #0f0f0f 32%, #121212 100%);
+        color: var(--sud-text);
+        font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      .sud-container {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .sud-section {
+        margin-top: 110px;
+      }
+
+      .sud-section-heading {
+        position: relative;
+        z-index: 2;
+        margin-bottom: 60px;
+      }
+
+      .sud-section-heading--center {
+        text-align: center;
+      }
+
+      .sud-section-heading__eyebrow {
+        display: inline-block;
+        font-size: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--sud-gold);
+      }
+
+      .sud-section-heading h2 {
+        margin-top: 12px;
+        color: var(--sud-text);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 800;
+        line-height: 1.18;
+      }
+
+      .sud-section-heading p {
+        margin-top: 22px;
+        color: rgba(245, 245, 245, 0.76);
+        font-size: 15px;
+        line-height: 29px;
+      }
+
+      .sud-btn,
+      .sud-btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border-radius: 12px;
+        padding: 12px 28px;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .sud-btn {
+        background: var(--sud-accent);
+        border: 1px solid var(--sud-accent);
+        color: #fff;
+        box-shadow: 0 10px 35px rgba(232, 93, 4, 0.25);
+      }
+
+      .sud-btn:hover {
+        background: transparent;
+        color: var(--sud-accent);
+      }
+
+      .sud-btn-ghost {
+        background: transparent;
+        border: 1px solid var(--sud-gold);
+        color: var(--sud-gold);
+      }
+
+      .sud-btn-ghost:hover {
+        background: var(--sud-gold);
+        color: #111;
+      }
+
+      .sud-header {
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        background: rgba(15, 15, 15, 0.88);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid var(--sud-line-soft);
+      }
+
+      .sud-main-nav {
+        min-height: 84px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .sud-logo {
+        flex: 0 0 auto;
+      }
+
+      .sud-logo img {
+        height: 50px;
+        width: auto;
+      }
+
+      .sud-nav {
+        flex: 1 1 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .sud-nav a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 16px;
+        border-radius: 12px;
+        color: rgba(245, 245, 245, 0.76);
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+      }
+
+      .sud-nav a:hover,
+      .sud-nav a.is-active {
+        color: var(--sud-gold);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .sud-header-actions {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .sud-menu-toggle {
+        display: none;
+      }
+
+      .sud-mobile-nav {
+        display: none;
+        padding: 0 0 24px;
+      }
+
+      .sud-mobile-nav nav {
+        display: grid;
+        gap: 10px;
+      }
+
+      .sud-mobile-nav a {
+        display: block;
+        border: 1px solid var(--sud-line);
+        border-radius: 12px;
+        padding: 14px 16px;
+        color: rgba(245, 245, 245, 0.78);
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .sud-mobile-nav .sud-btn,
+      .sud-mobile-nav .sud-btn-ghost {
+        width: 100%;
+        margin-top: 12px;
+      }
+
+      .sud-notice {
+        margin-top: 24px;
+        border: 1px solid var(--sud-line);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 16px 20px;
+        color: rgba(245, 245, 245, 0.86);
+        font-size: 14px;
+      }
+
+      .sud-banner {
+        position: relative;
+        overflow: hidden;
+        border-radius: 36px;
+        padding: 140px 0 170px;
+        background-position: center;
+        background-size: cover;
+      }
+
+      .sud-banner::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(15, 15, 15, 0.4), rgba(15, 15, 15, 0.88));
+      }
+
+      .sud-banner__content {
+        position: relative;
+        z-index: 2;
+        width: min(860px, 100%);
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .sud-banner__eyebrow {
+        color: var(--sud-gold);
+        font-size: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+      }
+
+      .sud-banner__title {
+        margin-top: 18px;
+        font-size: clamp(2.7rem, 6vw, 4.8rem);
+        line-height: 1.08;
+        font-weight: 800;
+        color: var(--sud-text);
+      }
+
+      .sud-banner__title em {
+        color: var(--sud-gold);
+        font-style: normal;
+      }
+
+      .sud-banner__text {
+        margin: 24px auto 0;
+        width: min(680px, 100%);
+        color: rgba(245, 245, 245, 0.8);
+        font-size: 16px;
+        line-height: 30px;
+      }
+
+      .sud-banner__buttons {
+        margin-top: 34px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+
+      .sud-feature-strip {
+        position: relative;
+        z-index: 4;
+        margin-top: -86px;
+      }
+
+      .sud-feature-strip__grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      .sud-media-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+        min-height: 320px;
+        border: 1px solid var(--sud-line);
+        background: var(--sud-bg-soft);
+      }
+
+      .sud-media-card img,
+      .sud-media-card video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .sud-media-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(15, 15, 15, 0.08), rgba(15, 15, 15, 0.86));
+      }
+
+      .sud-media-card__content {
+        position: absolute;
+        inset: auto 0 0;
+        z-index: 2;
+        padding: 24px;
+      }
+
+      .sud-media-card__meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+
+      .sud-tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid var(--sud-line);
+        background: rgba(15, 15, 15, 0.72);
+        color: var(--sud-gold);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .sud-tag--light {
+        color: rgba(245, 245, 245, 0.72);
+      }
+
+      .sud-media-card h3 {
+        color: var(--sud-text);
+        font-size: 24px;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      .sud-media-card p {
+        margin-top: 10px;
+        color: rgba(245, 245, 245, 0.76);
+        font-size: 14px;
+        line-height: 26px;
+      }
+
+      .sud-categories {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      .sud-category-item {
+        text-align: center;
+      }
+
+      .sud-category-item__icon {
+        width: 92px;
+        height: 92px;
+        margin: 0 auto;
+        border-radius: 50%;
+        border: 1px solid var(--sud-line);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+      }
+
+      .sud-category-item h4 {
+        margin-top: 18px;
+        color: var(--sud-text);
+        font-size: 22px;
+        font-weight: 800;
+      }
+
+      .sud-category-item span {
+        display: block;
+        margin-top: 8px;
+        color: rgba(245, 245, 245, 0.72);
+        font-size: 14px;
+      }
+
+      .sud-split-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px;
+      }
+
+      .sud-showcase-item {
+        overflow: hidden;
+        border-radius: 26px;
+        border: 1px solid var(--sud-line);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .sud-showcase-item__thumb {
+        position: relative;
+        overflow: hidden;
+        height: 320px;
+      }
+
+      .sud-showcase-item__thumb img,
+      .sud-showcase-item__thumb video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .sud-showcase-item__thumb .sud-tag {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        z-index: 2;
+      }
+
+      .sud-showcase-item__body {
+        padding: 26px;
+      }
+
+      .sud-showcase-item__body h3 {
+        color: var(--sud-text);
+        font-size: 26px;
+        font-weight: 800;
+        line-height: 1.22;
+      }
+
+      .sud-showcase-item__body p {
+        margin-top: 14px;
+        color: rgba(245, 245, 245, 0.76);
+        font-size: 15px;
+        line-height: 28px;
+      }
+
+      .sud-showcase-item__action {
+        margin-top: 18px;
+        color: var(--sud-gold);
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .sud-gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      .sud-gallery-grid--two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sud-stat-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .sud-stat {
+        border: 1px solid var(--sud-line);
+        border-radius: 20px;
+        padding: 22px;
+        background: rgba(255, 255, 255, 0.02);
+        text-align: center;
+      }
+
+      .sud-stat strong {
+        display: block;
+        color: var(--sud-text);
+        font-size: 34px;
+        font-weight: 800;
+      }
+
+      .sud-stat span {
+        display: block;
+        margin-top: 10px;
+        color: rgba(245, 245, 245, 0.68);
+        font-size: 14px;
+      }
+
+      .sud-page-heading {
+        position: relative;
+        overflow: hidden;
+        border-radius: 36px;
+        padding: 120px 0 90px;
+        background-position: center;
+        background-size: cover;
+        text-align: center;
+      }
+
+      .sud-page-heading::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(15, 15, 15, 0.42), rgba(15, 15, 15, 0.9));
+      }
+
+      .sud-page-heading__content {
+        position: relative;
+        z-index: 2;
+        width: min(820px, 100%);
+        margin: 0 auto;
+      }
+
+      .sud-page-heading h1 {
+        color: var(--sud-text);
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        line-height: 1.12;
+      }
+
+      .sud-page-heading p {
+        margin-top: 20px;
+        color: rgba(245, 245, 245, 0.8);
+        font-size: 16px;
+        line-height: 30px;
+      }
+
+      .sud-toolbar {
+        margin-top: 34px;
+        border: 1px solid var(--sud-line);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 22px;
+      }
+
+      .sud-toolbar__grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        align-items: end;
+      }
+
+      .sud-toolbar__block label {
+        display: block;
+        margin-bottom: 10px;
+        color: rgba(245, 245, 245, 0.76);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .sud-toolbar__value,
+      .sud-toolbar__block select,
+      .sud-toolbar__block input {
+        width: 100%;
+        min-height: 54px;
+        border: 1px solid var(--sud-line);
+        border-radius: 14px;
+        background: rgba(15, 15, 15, 0.62);
+        padding: 0 16px;
+        color: var(--sud-text);
+        font-size: 15px;
+      }
+
+      .sud-toolbar__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .sud-toolbar__chips a,
+      .sud-toolbar__chips span {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: 12px;
+        border: 1px solid var(--sud-line);
+        color: rgba(245, 245, 245, 0.76);
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .sud-toolbar__chips a.is-active,
+      .sud-toolbar__chips a:hover {
+        color: var(--sud-gold);
+        border-color: rgba(212, 163, 115, 0.36);
+        background: rgba(212, 163, 115, 0.1);
+      }
+
+      .sud-package-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      .sud-package-card {
+        overflow: hidden;
+        border-radius: 26px;
+        border: 1px solid var(--sud-line);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .sud-package-card img,
+      .sud-package-card video {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+      }
+
+      .sud-package-card__body {
+        padding: 24px;
+      }
+
+      .sud-package-card h3 {
+        color: var(--sud-text);
+        font-size: 24px;
+        font-weight: 800;
+      }
+
+      .sud-package-card p {
+        margin-top: 14px;
+        color: rgba(245, 245, 245, 0.74);
+        font-size: 15px;
+        line-height: 28px;
+      }
+
+      .sud-price {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        margin-top: 18px;
+        border-radius: 12px;
+        border: 1px solid rgba(212, 163, 115, 0.26);
+        padding: 0 16px;
+        color: var(--sud-gold);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .sud-bullet-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .sud-bullet-list li {
+        color: rgba(245, 245, 245, 0.76);
+        font-size: 15px;
+        line-height: 28px;
+      }
+
+      .sud-footer {
+        margin-top: 110px;
+        padding: 34px 0 42px;
+        border-top: 1px solid var(--sud-line-soft);
+      }
+
+      .sud-footer__inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        text-align: center;
+      }
+
+      .sud-footer__links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+      }
+
+      .sud-footer__links a {
+        color: rgba(245, 245, 245, 0.7);
+        font-size: 14px;
+      }
+
+      .sud-footer__links a:hover {
+        color: var(--sud-gold);
+      }
+
+      .sud-footer p {
+        color: rgba(245, 245, 245, 0.58);
+        font-size: 14px;
+      }
+
+      @media (max-width: 1100px) {
+        .sud-categories,
+        .sud-feature-strip__grid,
+        .sud-gallery-grid,
+        .sud-package-grid,
+        .sud-toolbar__grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 991px) {
+        .sud-main-nav {
+          min-height: 78px;
+        }
+
+        .sud-nav,
+        .sud-header-actions {
+          display: none;
+        }
+
+        .sud-menu-toggle {
+          margin-left: auto;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          border: 1px solid var(--sud-line);
+          color: var(--sud-text);
+          background: rgba(255, 255, 255, 0.03);
+        }
+
+        .sud-mobile-nav {
+          display: block;
+        }
+
+        .sud-split-grid,
+        .sud-stat-row {
+          grid-template-columns: 1fr;
+        }
+
+        .sud-banner {
+          padding: 120px 0 150px;
+        }
+      }
+
+      @media (max-width: 767px) {
+        .sud-container {
+          width: min(100%, calc(100% - 24px));
+        }
+
+        .sud-section {
+          margin-top: 90px;
+        }
+
+        .sud-banner,
+        .sud-page-heading {
+          border-radius: 28px;
+        }
+
+        .sud-banner__buttons {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .sud-feature-strip {
+          margin-top: -64px;
+        }
+
+        .sud-feature-strip__grid,
+        .sud-categories,
+        .sud-gallery-grid,
+        .sud-gallery-grid--two,
+        .sud-package-grid,
+        .sud-toolbar__grid {
+          grid-template-columns: 1fr;
+        }
+
+        .sud-logo img {
+          height: 44px;
+        }
       }
     </style>
     {% block extra_head %}{% endblock %}
   </head>
-  <body class="min-h-screen bg-[radial-gradient(circle_at_top,rgba(212,163,115,0.14),transparent_18%),linear-gradient(180deg,#050505,#0F0F0F_30%,#101010)] font-sans text-soft selection:bg-accent selection:text-white">
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      <div class="absolute inset-0 opacity-20 sudpix-grid"></div>
-      <div class="absolute right-[-6rem] top-[-7rem] h-72 w-72 rounded-full bg-gold/10 blur-3xl"></div>
-      <div class="absolute bottom-[-8rem] left-[-5rem] h-80 w-80 rounded-full bg-accent/10 blur-3xl"></div>
-    </div>
-
-    <header class="sticky top-0 z-50 px-4 pt-4">
-      <div class="mx-auto max-w-7xl overflow-hidden rounded-[2rem] border border-white/10 bg-primary/88 shadow-panel backdrop-blur-xl">
-        <div class="grid items-center gap-4 px-5 py-4 lg:grid-cols-[auto_1fr_auto] lg:px-8">
-          <a href="{% url 'core:home' %}" class="flex items-center">
-            <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Creative Studio" class="h-11 w-auto sm:h-12" />
+  <body class="text-soft selection:bg-accent selection:text-white">
+    <header class="sud-header">
+      <div class="sud-container">
+        <div class="sud-main-nav">
+          <a href="{% url 'core:home' %}" class="sud-logo">
+            <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Creative Studio" />
           </a>
 
           {% with namespace=request.resolver_match.namespace url_name=request.resolver_match.url_name %}
-          <nav class="hidden items-center justify-center gap-2 text-[13px] font-semibold uppercase tracking-[0.18em] lg:flex">
-            <a href="{% url 'core:home' %}" class="rounded-full px-4 py-2 transition {% if namespace == 'core' and url_name == 'home' %}bg-gold/12 text-gold{% else %}text-soft/72 hover:bg-white/5 hover:text-gold{% endif %}">Home</a>
-            <a href="{% url 'services:list' %}" class="rounded-full px-4 py-2 transition {% if namespace == 'services' %}bg-gold/12 text-gold{% else %}text-soft/72 hover:bg-white/5 hover:text-gold{% endif %}">Services</a>
-            <a href="{% url 'portfolio:list' %}" class="rounded-full px-4 py-2 transition {% if namespace == 'portfolio' %}bg-gold/12 text-gold{% else %}text-soft/72 hover:bg-white/5 hover:text-gold{% endif %}">Portfolio</a>
-            <a href="{% url 'bookings:create' %}" class="rounded-full px-4 py-2 transition {% if namespace == 'bookings' %}bg-gold/12 text-gold{% else %}text-soft/72 hover:bg-white/5 hover:text-gold{% endif %}">Book</a>
-            <a href="{% url 'core:contact' %}" class="rounded-full px-4 py-2 transition {% if namespace == 'core' and url_name == 'contact' %}bg-gold/12 text-gold{% else %}text-soft/72 hover:bg-white/5 hover:text-gold{% endif %}">Contact</a>
+          <nav class="sud-nav">
+            <a href="{% url 'core:home' %}" class="{% if namespace == 'core' and url_name == 'home' %}is-active{% endif %}">Home</a>
+            <a href="{% url 'services:list' %}" class="{% if namespace == 'services' %}is-active{% endif %}">Services</a>
+            <a href="{% url 'portfolio:list' %}" class="{% if namespace == 'portfolio' %}is-active{% endif %}">Portfolio</a>
+            <a href="{% url 'bookings:create' %}" class="{% if namespace == 'bookings' %}is-active{% endif %}">Book</a>
+            <a href="{% url 'core:contact' %}" class="{% if namespace == 'core' and url_name == 'contact' %}is-active{% endif %}">Contact</a>
           </nav>
           {% endwith %}
 
-          <div class="hidden items-center gap-3 lg:flex">
-            <span class="hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-soft/58 xl:inline-flex">
-              Media-first studio
-            </span>
+          <div class="sud-header-actions">
             {% if request.user.is_authenticated %}
             {% if request.user.is_staff %}
-            <a href="{% url 'dashboard:home' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">Staff Dashboard</a>
+            <a href="{% url 'dashboard:home' %}" class="sud-btn-ghost">Dashboard</a>
             {% else %}
-            <a href="{% url 'accounts:profile' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">My Account</a>
+            <a href="{% url 'accounts:profile' %}" class="sud-btn-ghost">My Account</a>
             {% endif %}
-            <a href="{% url 'accounts:logout' %}" class="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:translate-y-[-1px]">Logout</a>
+            <a href="{% url 'accounts:logout' %}" class="sud-btn">Logout</a>
             {% else %}
-            <a href="{% url 'accounts:login' %}" class="rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">Login</a>
-            <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:translate-y-[-1px]">Book a Service</a>
+            <a href="{% url 'accounts:login' %}" class="sud-btn-ghost">Login</a>
+            <a href="{% url 'bookings:create' %}" class="sud-btn">Book a Service</a>
             {% endif %}
           </div>
 
           <button
             type="button"
-            class="ml-auto flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-soft transition hover:border-gold/40 hover:text-gold lg:hidden"
+            class="sud-menu-toggle"
             data-mobile-menu-toggle
             aria-expanded="false"
             aria-controls="mobile-nav"
@@ -114,42 +865,38 @@
           </button>
         </div>
 
-        <div id="mobile-nav" data-mobile-menu hidden class="border-t border-white/10 bg-primary/96 lg:hidden">
-          <div class="space-y-5 px-5 py-5">
-            {% with namespace=request.resolver_match.namespace url_name=request.resolver_match.url_name %}
-            <nav class="grid gap-2 text-sm font-medium">
-              <a href="{% url 'core:home' %}" class="rounded-2xl border px-4 py-3 transition {% if namespace == 'core' and url_name == 'home' %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/78 hover:border-gold/35 hover:text-gold{% endif %}">Home</a>
-              <a href="{% url 'services:list' %}" class="rounded-2xl border px-4 py-3 transition {% if namespace == 'services' %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/78 hover:border-gold/35 hover:text-gold{% endif %}">Services</a>
-              <a href="{% url 'portfolio:list' %}" class="rounded-2xl border px-4 py-3 transition {% if namespace == 'portfolio' %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/78 hover:border-gold/35 hover:text-gold{% endif %}">Portfolio</a>
-              <a href="{% url 'bookings:create' %}" class="rounded-2xl border px-4 py-3 transition {% if namespace == 'bookings' %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/78 hover:border-gold/35 hover:text-gold{% endif %}">Book</a>
-              <a href="{% url 'core:contact' %}" class="rounded-2xl border px-4 py-3 transition {% if namespace == 'core' and url_name == 'contact' %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/78 hover:border-gold/35 hover:text-gold{% endif %}">Contact</a>
-            </nav>
-            {% endwith %}
+        <div id="mobile-nav" data-mobile-menu hidden class="sud-mobile-nav">
+          {% with namespace=request.resolver_match.namespace url_name=request.resolver_match.url_name %}
+          <nav>
+            <a href="{% url 'core:home' %}" class="{% if namespace == 'core' and url_name == 'home' %}is-active{% endif %}">Home</a>
+            <a href="{% url 'services:list' %}" class="{% if namespace == 'services' %}is-active{% endif %}">Services</a>
+            <a href="{% url 'portfolio:list' %}" class="{% if namespace == 'portfolio' %}is-active{% endif %}">Portfolio</a>
+            <a href="{% url 'bookings:create' %}" class="{% if namespace == 'bookings' %}is-active{% endif %}">Book</a>
+            <a href="{% url 'core:contact' %}" class="{% if namespace == 'core' and url_name == 'contact' %}is-active{% endif %}">Contact</a>
+          </nav>
+          {% endwith %}
 
-            <div class="grid gap-3">
-              {% if request.user.is_authenticated %}
-              {% if request.user.is_staff %}
-              <a href="{% url 'dashboard:home' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">Staff Dashboard</a>
-              {% else %}
-              <a href="{% url 'accounts:profile' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">My Account</a>
-              {% endif %}
-              <a href="{% url 'accounts:logout' %}" class="rounded-full bg-accent px-5 py-3 text-center text-sm font-semibold text-white shadow-glow">Logout</a>
-              {% else %}
-              <a href="{% url 'accounts:login' %}" class="rounded-full border border-white/15 px-5 py-3 text-center text-sm font-medium text-soft/78 transition hover:border-gold/45 hover:text-gold">Login</a>
-              <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-5 py-3 text-center text-sm font-semibold text-white shadow-glow">Book a Service</a>
-              {% endif %}
-            </div>
-          </div>
+          {% if request.user.is_authenticated %}
+          {% if request.user.is_staff %}
+          <a href="{% url 'dashboard:home' %}" class="sud-btn-ghost">Dashboard</a>
+          {% else %}
+          <a href="{% url 'accounts:profile' %}" class="sud-btn-ghost">My Account</a>
+          {% endif %}
+          <a href="{% url 'accounts:logout' %}" class="sud-btn">Logout</a>
+          {% else %}
+          <a href="{% url 'accounts:login' %}" class="sud-btn-ghost">Login</a>
+          <a href="{% url 'bookings:create' %}" class="sud-btn">Book a Service</a>
+          {% endif %}
         </div>
       </div>
     </header>
 
-    <main class="pb-4 pt-6">
+    <main>
       {% if messages %}
-      <div class="mx-auto max-w-7xl px-4 pb-6">
-        <div class="space-y-3">
+      <div class="sud-container">
+        <div class="space-y-3 pt-6">
           {% for message in messages %}
-          <div class="rounded-[1.5rem] border border-white/10 bg-secondary/80 px-5 py-4 text-sm text-soft/85 shadow-panel">{{ message }}</div>
+          <div class="sud-notice">{{ message }}</div>
           {% endfor %}
         </div>
       </div>
@@ -157,63 +904,18 @@
       {% block content %}{% endblock %}
     </main>
 
-    <footer class="px-4 pb-8 pt-12">
-      <div class="mx-auto max-w-7xl rounded-[2.25rem] border border-white/10 bg-secondary/88 p-8 shadow-panel backdrop-blur">
-        <div class="grid gap-10 lg:grid-cols-[1.05fr_0.7fr_0.7fr]">
-          <div>
-            <div class="flex items-center">
-              <img src="{% static 'branding/sudpix-logo.png' %}" alt="SudPix Creative Studio" class="h-12 w-auto sm:h-14" />
-            </div>
-            <p class="mt-5 max-w-xl text-sm leading-7 text-soft/70">
-              SudPix is built around premium visual delivery: photography, videography, branding, and design presented in a client-ready file experience.
-            </p>
-            <div class="mt-6 flex flex-wrap gap-2">
-              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/62">Photo galleries</span>
-              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/62">Video masters</span>
-              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/62">Brand kits</span>
-              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft/62">Client vault</span>
-            </div>
+    <footer class="sud-footer">
+      <div class="sud-container">
+        <div class="sud-footer__inner">
+          <div class="sud-footer__links">
+            <a href="{% url 'core:home' %}">Home</a>
+            <a href="{% url 'services:list' %}">Services</a>
+            <a href="{% url 'portfolio:list' %}">Portfolio</a>
+            <a href="{% url 'bookings:create' %}">Book</a>
+            <a href="{% url 'core:contact' %}">Contact</a>
           </div>
-
-          <div>
-            <h3 class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Navigate</h3>
-            <ul class="mt-5 space-y-3 text-sm text-soft/72">
-              <li><a href="{% url 'core:home' %}" class="transition hover:text-gold">Home</a></li>
-              <li><a href="{% url 'services:list' %}" class="transition hover:text-gold">Services</a></li>
-              <li><a href="{% url 'portfolio:list' %}" class="transition hover:text-gold">Portfolio</a></li>
-              <li><a href="{% url 'bookings:create' %}" class="transition hover:text-gold">Book a Service</a></li>
-              <li><a href="{% url 'accounts:login' %}" class="transition hover:text-gold">Login</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Reach SudPix</h3>
-            <ul class="mt-5 space-y-3 text-sm text-soft/72">
-              <li>Email: hello@sudpix.com</li>
-              <li>Phone: +254 768 774 232</li>
-              <li>WhatsApp: +254 768 774 232</li>
-              <li>Nairobi, Kenya</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="mt-8 grid gap-4 border-t border-white/10 pt-8 md:grid-cols-3">
-          <div class="rounded-[1.5rem] border border-white/10 bg-primary/70 p-5">
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Response</p>
-            <p class="mt-2 text-lg font-bold">Fast booking follow-up</p>
-          </div>
-          <div class="rounded-[1.5rem] border border-white/10 bg-primary/70 p-5">
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Access</p>
-            <p class="mt-2 text-lg font-bold">Client portal ready</p>
-          </div>
-          <div class="rounded-[1.5rem] border border-white/10 bg-primary/70 p-5">
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Coverage</p>
-            <p class="mt-2 text-lg font-bold">Media and brand services</p>
-          </div>
-        </div>
-
-        <div class="mt-8 border-t border-white/10 pt-5 text-center text-sm text-muted">
-          © 2026 SudPix. All rights reserved.
+          <p>SudPix Creative Studio, Nairobi Kenya. hello@sudpix.com · +254 768 774 232</p>
+          <p>© 2026 SudPix. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -255,7 +957,7 @@
         });
 
         window.addEventListener("resize", function() {
-          if (window.innerWidth >= 1024) {
+          if (window.innerWidth >= 992) {
             setMenuState(false);
           }
         });

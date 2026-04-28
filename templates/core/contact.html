@@ -3,115 +3,67 @@
 {% block title %}Contact SudPix{% endblock %}
 
 {% block content %}
-<section class="px-4">
-  <div class="relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] border border-white/10 shadow-panel">
-    <div class="absolute inset-0 bg-[linear-gradient(120deg,rgba(15,15,15,0.92),rgba(15,15,15,0.62)),url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,163,115,0.22),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(232,93,4,0.14),transparent_28%)]"></div>
-
-    <div class="relative grid gap-10 px-6 py-10 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-12">
-      <div class="max-w-2xl">
-        <span class="inline-flex rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.28em] text-gold">
-          Contact SudPix
-        </span>
-        <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
-          Reach the studio quickly and move straight into the next step.
-        </h1>
-        <p class="mt-5 max-w-xl text-base leading-7 text-soft/78 sm:text-lg">
-          Use SudPix for photography, videography, branding, graphic design, portal support, or a guided client-portal demo.
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-page-heading" style="background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80');">
+      <div class="sud-page-heading__content">
+        <div class="sud-banner__eyebrow">Contact SudPix</div>
+        <h1>Talk to the SudPix team about your next creative project</h1>
+        <p>
+          Reach out for photography, videography, branding, graphic design, portal support, or a guided client-portal demo.
         </p>
-
-        <div class="mt-8 flex flex-wrap gap-4">
-          <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Book a Service</a>
-          <a href="{% url 'bookings:create' %}?service=Client+Portal+Demo" class="rounded-full border border-white/15 bg-primary/45 px-6 py-3 font-semibold text-soft/84 transition hover:border-gold/45 hover:text-gold">Request a Demo</a>
-        </div>
       </div>
+    </div>
 
-      <div class="grid gap-4 sm:grid-cols-2">
-        <a href="mailto:hello@sudpix.com" class="rounded-[1.8rem] border border-white/10 bg-primary/68 p-6 backdrop-blur transition hover:border-gold/35 hover:bg-primary/82">
-          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-gold">Email</p>
-          <p class="mt-3 text-2xl font-bold">hello@sudpix.com</p>
-          <p class="mt-3 text-sm leading-6 text-soft/74">Quotes, briefs, brand projects, and file-support questions.</p>
-        </a>
-
-        <a href="tel:+254768774232" class="rounded-[1.8rem] border border-white/10 bg-primary/68 p-6 backdrop-blur transition hover:border-gold/35 hover:bg-primary/82">
-          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-gold">Phone</p>
-          <p class="mt-3 text-2xl font-bold">+254 768 774 232</p>
-          <p class="mt-3 text-sm leading-6 text-soft/74">Best for urgent project coordination and follow-up.</p>
-        </a>
-
-        <a href="https://wa.me/254768774232" class="rounded-[1.8rem] border border-white/10 bg-primary/68 p-6 backdrop-blur transition hover:border-gold/35 hover:bg-primary/82">
-          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-gold">WhatsApp</p>
-          <p class="mt-3 text-2xl font-bold">+254 768 774 232</p>
-          <p class="mt-3 text-sm leading-6 text-soft/74">Quick updates, portal assistance, and lighter project questions.</p>
-        </a>
-
-        <div class="rounded-[1.8rem] border border-white/10 bg-primary/68 p-6 backdrop-blur">
-          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-gold">Studio Base</p>
-          <p class="mt-3 text-2xl font-bold">Nairobi, Kenya</p>
-          <p class="mt-3 text-sm leading-6 text-soft/74">Available for city coverage and location-based assignments.</p>
+    <div class="sud-toolbar">
+      <div class="sud-toolbar__grid">
+        <div class="sud-toolbar__block">
+          <label>Email</label>
+          <div class="sud-toolbar__value">hello@sudpix.com</div>
+        </div>
+        <div class="sud-toolbar__block">
+          <label>Phone</label>
+          <div class="sud-toolbar__value">+254 768 774 232</div>
+        </div>
+        <div class="sud-toolbar__block">
+          <label>Studio Base</label>
+          <div class="sud-toolbar__value">Nairobi, Kenya</div>
+        </div>
+        <div class="sud-toolbar__block">
+          <a href="{% url 'bookings:create' %}" class="sud-btn">Book a Service</a>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="px-4 pt-6">
-  <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.08fr_0.92fr]">
-    <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
-      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">What To Share</p>
-      <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">A few details make the response faster and sharper.</h2>
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-split-grid">
+      <article class="sud-showcase-item">
+        <div class="sud-showcase-item__body">
+          <h3>Contact Channels</h3>
+          <ul class="sud-bullet-list mt-5">
+            <li>• Email: hello@sudpix.com</li>
+            <li>• Phone: +254 768 774 232</li>
+            <li>• WhatsApp: +254 768 774 232</li>
+            <li>• Studio Base: Nairobi, Kenya</li>
+          </ul>
+        </div>
+      </article>
 
-      <div class="mt-8 grid gap-4 md:grid-cols-3">
-        <div class="rounded-[1.7rem] border border-white/10 bg-primary/72 p-5">
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Service Type</p>
-          <p class="mt-3 text-lg font-bold">Photo, video, branding, design, or demo</p>
+      <article class="sud-showcase-item">
+        <div class="sud-showcase-item__body">
+          <h3>Best way to reach us</h3>
+          <p>
+            If you already know the service you need, the booking flow is the fastest path because it gives SudPix the date, service type, and project notes up front.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-4">
+            <a href="{% url 'bookings:create' %}" class="sud-btn">Book a Service</a>
+            <a href="{% url 'bookings:create' %}?service=Client+Portal+Demo" class="sud-btn-ghost">Request a Demo</a>
+          </div>
         </div>
-        <div class="rounded-[1.7rem] border border-white/10 bg-primary/72 p-5">
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Date & Location</p>
-          <p class="mt-3 text-lg font-bold">Event timing, venue, city, or target launch date</p>
-        </div>
-        <div class="rounded-[1.7rem] border border-white/10 bg-primary/72 p-5">
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Output Needed</p>
-          <p class="mt-3 text-lg font-bold">Albums, reels, campaign files, or print-ready assets</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
-      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Response Times</p>
-      <div class="mt-6 space-y-4">
-        <div class="rounded-[1.6rem] border border-white/10 bg-primary/72 p-5">
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">General inquiries</p>
-          <p class="mt-2 text-lg font-bold">Same day to 24 hours</p>
-        </div>
-        <div class="rounded-[1.6rem] border border-white/10 bg-primary/72 p-5">
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Portal support</p>
-          <p class="mt-2 text-lg font-bold">Priority follow-up</p>
-        </div>
-        <div class="rounded-[1.6rem] border border-white/10 bg-primary/72 p-5">
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Demo requests</p>
-          <p class="mt-2 text-lg font-bold">Scheduled directly with the team</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="px-4 pb-4 pt-6">
-  <div class="mx-auto max-w-7xl rounded-[2.25rem] border border-gold/20 bg-[linear-gradient(135deg,rgba(212,163,115,0.18),rgba(232,93,4,0.12))] p-6 shadow-panel lg:p-8">
-    <div class="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-      <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Need the fastest route?</p>
-        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Use the booking flow instead of a long message thread.</h2>
-        <p class="mt-4 max-w-2xl text-sm leading-7 text-soft/76">
-          If you already know the service you need, the booking page gives SudPix the details required to reply with better package guidance and next steps.
-        </p>
-      </div>
-
-      <div class="grid gap-3 self-start">
-        <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 text-center font-semibold text-white shadow-glow">Book a Service</a>
-        <a href="{% url 'bookings:create' %}?service=Client+Portal+Demo" class="rounded-full border border-white/15 px-6 py-3 text-center font-semibold text-soft/82 transition hover:border-gold/45 hover:text-gold">Request a Demo</a>
-      </div>
+      </article>
     </div>
   </div>
 </section>

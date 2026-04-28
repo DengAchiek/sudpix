@@ -3,302 +3,153 @@
 {% block title %}Services SudPix{% endblock %}
 
 {% block content %}
-<section class="px-4">
-  <div class="mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] border border-white/10 shadow-panel">
+<section class="sud-section">
+  <div class="sud-container">
     {% if active_service %}
-    <div id="service-detail" class="grid lg:grid-cols-[0.88fr_1.12fr]">
-      <div class="relative overflow-hidden">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,163,115,0.18),transparent_30%),linear-gradient(180deg,rgba(27,27,27,0.96),rgba(15,15,15,0.98))]"></div>
-        <div class="relative p-8 lg:p-10">
-          <div class="flex flex-wrap items-center gap-3">
-            <span class="inline-flex rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-gold">{{ active_service.badge }}</span>
-            <span class="inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-soft/68">{{ active_service.showcase_media.type }}</span>
-            <span class="inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-soft/68">{{ active_service.packages.all|length }} packages</span>
-          </div>
-
-          <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl">{{ active_service.heading }}</h1>
-          <p class="mt-5 max-w-2xl text-base leading-7 text-soft/78 sm:text-lg">{{ active_service.description }}</p>
-
-          <div class="mt-7 flex flex-wrap gap-3">
-            <a href="{% url 'bookings:create' %}?service={{ active_service.booking_service|urlencode }}" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">
-              {{ active_service.book_label }}
-            </a>
-            <a href="#service-packages" class="rounded-full border border-white/15 bg-white/5 px-6 py-3 font-semibold text-soft/80 transition hover:border-gold/40 hover:text-gold">
-              View Packages
-            </a>
-          </div>
-
-          <div class="mt-8 grid gap-4 sm:grid-cols-2">
-            <div class="rounded-[1.6rem] border border-white/10 bg-primary/72 p-5">
-              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Best for</p>
-              <div class="mt-4 flex flex-wrap gap-2">
-                {% for item in active_service.best_for_list %}
-                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-soft/76">{{ item }}</span>
-                {% empty %}
-                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-soft/65">Flexible creative briefs</span>
-                {% endfor %}
-              </div>
-            </div>
-
-            <div class="rounded-[1.6rem] border border-white/10 bg-primary/72 p-5">
-              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Included files</p>
-              <div class="mt-4 flex flex-wrap gap-2">
-                {% for item in active_service.included_list %}
-                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-soft/76">{{ item }}</span>
-                {% empty %}
-                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-soft/65">Custom deliverables</span>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="relative overflow-hidden border-t border-white/10 lg:border-l lg:border-t-0">
-        <div class="absolute inset-0">
-          {% if active_service.showcase_media.type == 'video' %}
-          <video
-            class="h-full w-full object-cover"
-            autoplay
-            muted
-            loop
-            playsinline
-            poster="{{ active_service.showcase_media.poster|default:active_service.showcase_media.url }}"
-          >
-            <source src="{{ active_service.showcase_media.url }}" type="video/mp4" />
-          </video>
-          {% else %}
-          <img src="{{ active_service.showcase_media.url }}" alt="{{ active_service.name }} showcase" class="h-full w-full object-cover" />
-          {% endif %}
-          <div class="absolute inset-0 bg-[linear-gradient(145deg,rgba(15,15,15,0.22),rgba(15,15,15,0.9)_70%)]"></div>
-        </div>
-        <div class="relative flex h-full min-h-[28rem] flex-col justify-end p-8 lg:p-10">
-          <div class="max-w-2xl rounded-[1.9rem] border border-white/10 bg-primary/68 p-6 backdrop-blur">
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-gold">{{ active_service.showcase_media.eyebrow }}</p>
-            <h2 class="mt-3 text-3xl font-bold">{{ active_service.showcase_media.title }}</h2>
-            <p class="mt-4 text-sm leading-7 text-soft/76">{{ active_service.showcase_media.description }}</p>
-          </div>
-        </div>
+    <div class="sud-page-heading" style="background-image: url('{% if active_service.showcase_media.poster %}{{ active_service.showcase_media.poster }}{% else %}{{ active_service.showcase_media.url }}{% endif %}');">
+      <div class="sud-page-heading__content">
+        <div class="sud-banner__eyebrow">{{ active_service.badge }}</div>
+        <h1>{{ active_service.heading }}</h1>
+        <p>{{ active_service.description }}</p>
       </div>
     </div>
 
-    <div id="service-categories" class="border-t border-white/10 bg-secondary/92 p-6 lg:p-8">
-      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div class="max-w-2xl">
-          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Browse Services</p>
-          <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Switch categories instantly without leaving the page rhythm.</h2>
-        </div>
-        <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/62">{{ service_categories|length }} service channels</span>
-      </div>
-
-      <div class="mt-8 grid gap-5 xl:grid-cols-4 md:grid-cols-2">
-        {% for service in service_categories %}
-        <a
-          href="{% url 'services:detail' service.slug %}#service-detail"
-          class="group overflow-hidden rounded-[2rem] border transition {% if service.slug == active_service.slug %}border-gold/35 bg-gold/10{% else %}border-white/10 bg-primary hover:-translate-y-1 hover:border-gold/35{% endif %}"
-          {% if service.slug == active_service.slug %}aria-current="page"{% endif %}
-        >
-          <div class="relative">
-            {% if service.showcase_media.type == 'video' %}
-            <video
-              class="h-72 w-full object-cover"
-              autoplay
-              muted
-              loop
-              playsinline
-              poster="{{ service.showcase_media.poster|default:service.showcase_media.url }}"
-            >
-              <source src="{{ service.showcase_media.url }}" type="video/mp4" />
-            </video>
-            {% else %}
-            <img src="{{ service.showcase_media.url }}" alt="{{ service.name }} preview" class="h-72 w-full object-cover transition duration-700 group-hover:scale-105" />
-            {% endif %}
-            <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/20 to-transparent"></div>
-            <div class="absolute left-5 top-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/82 text-xl backdrop-blur">{{ service.icon|default:"•" }}</div>
-            <div class="absolute right-5 top-5 rounded-full border border-white/10 bg-primary/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] {% if service.slug == active_service.slug %}text-gold{% else %}text-soft/70{% endif %}">
-              {{ service.showcase_media.type }}
-            </div>
-            <div class="absolute inset-x-0 bottom-0 p-5">
-              <div class="flex items-start justify-between gap-4">
-                <div class="max-w-xs">
-                  <h3 class="text-2xl font-bold transition {% if service.slug == active_service.slug %}text-gold{% else %}group-hover:text-gold{% endif %}">{{ service.name }}</h3>
-                  <p class="mt-2 text-sm leading-6 {% if service.slug == active_service.slug %}text-gold/78{% else %}text-soft/75{% endif %}">{{ service.teaser }}</p>
-                </div>
-                <span class="hidden rounded-full border border-white/10 bg-primary/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-soft/62 md:inline-flex">{{ service.packages.all|length }}</span>
-              </div>
-            </div>
+    <div class="sud-toolbar">
+      <div class="sud-toolbar__grid">
+        <div class="sud-toolbar__block">
+          <label>Browse Services</label>
+          <div class="sud-toolbar__chips">
+            {% for service in service_categories %}
+            <a href="{% url 'services:detail' service.slug %}#service-detail" class="{% if service.slug == active_service.slug %}is-active{% endif %}">
+              {{ service.name }}
+            </a>
+            {% endfor %}
           </div>
-        </a>
-        {% endfor %}
+        </div>
+        <div class="sud-toolbar__block">
+          <label>Media Type</label>
+          <div class="sud-toolbar__value">{{ active_service.showcase_media.type|upper }}</div>
+        </div>
+        <div class="sud-toolbar__block">
+          <label>Packages</label>
+          <div class="sud-toolbar__value">{{ active_service.packages.all|length }} Available</div>
+        </div>
+        <div class="sud-toolbar__block">
+          <a href="{% url 'bookings:create' %}?service={{ active_service.booking_service|urlencode }}" class="sud-btn">{{ active_service.book_label }}</a>
+        </div>
       </div>
     </div>
     {% else %}
-    <div id="service-detail" class="bg-secondary/94 p-10 lg:p-12">
-      <span class="inline-flex rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-gold">Services</span>
-      <h1 class="mt-6 font-display text-4xl font-bold">No services are published yet</h1>
-      <p class="mt-4 max-w-2xl text-sm leading-7 text-soft/75">
-        Add services and package pricing from the Django admin, and they will appear here automatically.
-      </p>
+    <div class="sud-page-heading" style="background-image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80');">
+      <div class="sud-page-heading__content">
+        <div class="sud-banner__eyebrow">Services</div>
+        <h1>No services are published yet</h1>
+        <p>Add services and package pricing from the Django admin, and they will appear here automatically.</p>
+      </div>
     </div>
     {% endif %}
   </div>
 </section>
 
 {% if active_service %}
-<section id="service-packages" class="px-4 pt-6">
-  <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.02fr_0.98fr]">
-    <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
-      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Media Preview</p>
-          <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">See the output style before you commit.</h2>
-        </div>
-        <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/62">{{ active_service.name }}</span>
-      </div>
-
-      {% if active_service.slug == 'photography' %}
-      <div class="mt-8 space-y-5">
-        <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-primary/72">
-          <img src="{{ active_service.showcase_media.url }}" alt="{{ active_service.name }} showcase" class="h-[26rem] w-full object-cover" />
-        </div>
-        <div class="grid gap-4 sm:grid-cols-2">
-          {% for sample in active_service.showcase_media.samples %}
-          <div class="group relative overflow-hidden rounded-[1.7rem] border border-white/10 bg-primary/72">
-            <img src="{{ sample.url }}" alt="{{ sample.label }} sample" class="h-56 w-full object-cover transition duration-700 group-hover:scale-105" />
-            <div class="absolute inset-0 bg-gradient-to-t from-primary/92 to-transparent"></div>
-            <div class="absolute inset-x-0 bottom-0 p-5">
-              <p class="text-xs font-semibold uppercase tracking-[0.24em] text-gold">Sample set</p>
-              <p class="mt-2 text-2xl font-bold">{{ sample.label }}</p>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-      {% else %}
-      <div class="mt-8 grid gap-5">
-        <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-primary/72">
-          {% if active_service.showcase_media.type == 'video' %}
-          <video class="h-[26rem] w-full object-cover" autoplay muted loop playsinline poster="{{ active_service.showcase_media.poster }}">
-            <source src="{{ active_service.showcase_media.url }}" type="video/mp4" />
-          </video>
-          {% else %}
-          <img src="{{ active_service.showcase_media.url }}" alt="{{ active_service.name }} showcase" class="h-[26rem] w-full object-cover" />
-          {% endif %}
-        </div>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <div class="rounded-[1.7rem] border border-white/10 bg-primary/72 p-5">
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Included files</p>
-            <div class="mt-4 flex flex-wrap gap-2">
-              {% for item in active_service.included_list %}
-              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-soft/76">{{ item }}</span>
-              {% empty %}
-              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-soft/65">Custom deliverables</span>
-              {% endfor %}
-            </div>
-          </div>
-          <div class="rounded-[1.7rem] border border-white/10 bg-primary/72 p-5">
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Best fit</p>
-            <div class="mt-4 flex flex-wrap gap-2">
-              {% for item in active_service.best_for_list %}
-              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-soft/76">{{ item }}</span>
-              {% empty %}
-              <span class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-soft/65">Flexible creative briefs</span>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endif %}
+<section class="sud-section" id="service-detail">
+  <div class="sud-container">
+    <div class="sud-section-heading sud-section-heading--center">
+      <div class="sud-section-heading__eyebrow">Photos &amp; Videos</div>
+      <h2>Featured SudPix service previews</h2>
     </div>
 
-    <div class="rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
-      <div class="flex items-end justify-between gap-4">
-        <div>
-          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">{{ active_service.packages_heading }}</p>
-          <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Dynamic packages pulled directly from admin.</h2>
-        </div>
-        <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/62">Pricing</span>
-      </div>
-
-      <div class="mt-8 space-y-4">
-        {% for package in active_service.packages.all %}
-        <div class="rounded-[1.75rem] border p-5 transition {% if package.highlighted %}border-gold/35 bg-gold/10{% else %}border-white/10 bg-primary/72{% endif %}">
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div class="max-w-lg">
-              <h3 class="text-xl font-bold">{{ package.name }}</h3>
-              <p class="mt-3 text-sm leading-7 {% if package.highlighted %}text-soft/80{% else %}text-soft/72{% endif %}">{{ package.description }}</p>
-            </div>
-            <span class="shrink-0 rounded-full border border-white/10 bg-primary/72 px-4 py-2 text-sm font-bold text-gold">{{ package.price_label }}</span>
+    <div class="sud-gallery-grid sud-gallery-grid--two">
+      {% for service in service_categories %}
+      <article class="sud-showcase-item">
+        <a href="{% url 'services:detail' service.slug %}#service-detail" class="block">
+          <div class="sud-showcase-item__thumb">
+            {% if service.showcase_media.type == 'video' %}
+            <video autoplay muted loop playsinline poster="{{ service.showcase_media.poster|default:service.showcase_media.url }}">
+              <source src="{{ service.showcase_media.url }}" type="video/mp4" />
+            </video>
+            {% else %}
+            <img src="{{ service.showcase_media.url }}" alt="{{ service.name }}" />
+            {% endif %}
+            <span class="sud-tag">{{ service.showcase_media.type }}</span>
           </div>
-        </div>
-        {% endfor %}
-      </div>
-
-      {% if active_service.slug == 'photography' %}
-      <div class="mt-6 grid gap-4 sm:grid-cols-3">
-        {% for stat in active_service.showcase_media.stats %}
-        <div class="rounded-[1.6rem] border border-white/10 bg-primary/72 p-4">
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ stat.label }}</p>
-          <p class="mt-2 text-lg font-bold">{{ stat.value }}</p>
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
-
-      <div class="mt-6 rounded-[1.8rem] border border-white/10 bg-primary/72 p-5">
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-gold">Booking path</p>
-        <p class="mt-3 text-sm leading-7 text-soft/75">
-          Once the package style matches your project, jump straight into the booking form and carry the selected service into the request.
-        </p>
-        <a href="{% url 'bookings:create' %}?service={{ active_service.booking_service|urlencode }}" class="mt-5 inline-flex rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-glow">
-          {{ active_service.book_label }}
+          <div class="sud-showcase-item__body">
+            <h3>{{ service.name }}</h3>
+            <p>{{ service.teaser }}</p>
+            <div class="sud-showcase-item__action">Open {{ service.name }} →</div>
+          </div>
         </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-{% if related_services %}
-<section class="px-4 pb-4 pt-6">
-  <div class="mx-auto max-w-7xl rounded-[2.25rem] border border-white/10 bg-secondary/88 p-6 shadow-panel lg:p-8">
-    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-      <div class="max-w-2xl">
-        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Related Services</p>
-        <h2 class="mt-3 font-display text-3xl font-bold sm:text-4xl">Keep moving through adjacent creative categories.</h2>
-      </div>
-      <a href="{% url 'bookings:create' %}" class="text-sm font-semibold text-gold transition hover:text-accent">Start a booking →</a>
-    </div>
-
-    <div class="mt-8 grid gap-5 md:grid-cols-3">
-      {% for service in related_services %}
-      <a href="{% url 'services:detail' service.slug %}#service-detail" class="group overflow-hidden rounded-[2rem] border border-white/10 bg-primary transition hover:-translate-y-1 hover:border-gold/35">
-        <div class="relative">
-          {% if service.showcase_media.type == 'video' %}
-          <video
-            class="h-72 w-full object-cover"
-            autoplay
-            muted
-            loop
-            playsinline
-            poster="{{ service.showcase_media.poster|default:service.showcase_media.url }}"
-          >
-            <source src="{{ service.showcase_media.url }}" type="video/mp4" />
-          </video>
-          {% else %}
-          <img src="{{ service.showcase_media.url }}" alt="{{ service.name }}" class="h-72 w-full object-cover transition duration-700 group-hover:scale-105" />
-          {% endif %}
-          <div class="absolute inset-0 bg-gradient-to-t from-primary via-primary/15 to-transparent"></div>
-          <div class="absolute left-5 top-5 rounded-full border border-white/10 bg-primary/78 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ service.showcase_media.type }}</div>
-          <div class="absolute inset-x-0 bottom-0 p-5">
-            <h3 class="text-2xl font-bold transition group-hover:text-gold">{{ service.name }}</h3>
-            <p class="mt-2 text-sm leading-6 text-soft/76">{{ service.teaser }}</p>
-          </div>
-        </div>
-      </a>
+      </article>
       {% endfor %}
     </div>
   </div>
 </section>
-{% endif %}
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-section-heading">
+      <div class="sud-section-heading__eyebrow">{{ active_service.packages_heading }}</div>
+      <h2>{{ active_service.name }} delivery styles and pricing</h2>
+      <p>
+        Browse the current packages below. These prices stay dynamic and continue pulling directly from the admin-managed service records.
+      </p>
+    </div>
+
+    <div class="sud-package-grid">
+      {% for package in active_service.packages.all %}
+      <article class="sud-package-card">
+        {% if active_service.showcase_media.type == 'video' %}
+        <video autoplay muted loop playsinline poster="{{ active_service.showcase_media.poster|default:active_service.showcase_media.url }}">
+          <source src="{{ active_service.showcase_media.url }}" type="video/mp4" />
+        </video>
+        {% else %}
+        <img src="{{ active_service.showcase_media.url }}" alt="{{ package.name }}" />
+        {% endif %}
+        <div class="sud-package-card__body">
+          <h3>{{ package.name }}</h3>
+          <p>{{ package.description }}</p>
+          <span class="sud-price">{{ package.price_label }}</span>
+          <div class="mt-5">
+            <a href="{% url 'bookings:create' %}?service={{ active_service.booking_service|urlencode }}" class="sud-btn-ghost">Choose package</a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-section-heading sud-section-heading--center">
+      <div class="sud-section-heading__eyebrow">Best Fit</div>
+      <h2>Where this service works best</h2>
+    </div>
+
+    <div class="sud-stat-row">
+      {% if active_service.best_for_list %}
+      {% for item in active_service.best_for_list|slice:":3" %}
+      <div class="sud-stat">
+        <strong>{{ forloop.counter }}</strong>
+        <span>{{ item }}</span>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="sud-stat">
+        <strong>1</strong>
+        <span>Flexible creative briefs</span>
+      </div>
+      <div class="sud-stat">
+        <strong>2</strong>
+        <span>Brand-aligned visual direction</span>
+      </div>
+      <div class="sud-stat">
+        <strong>3</strong>
+        <span>Portal-ready delivery</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
 {% endif %}
 {% endblock %}
