@@ -6,7 +6,13 @@
 <section class="sud-section">
   <div class="sud-container">
     {% if active_service %}
-    <div class="sud-page-heading" style="background-image: url('{% if active_service.showcase_media.poster %}{{ active_service.showcase_media.poster }}{% else %}{{ active_service.showcase_media.url }}{% endif %}');">
+    <div class="sud-page-heading sud-hero-carousel">
+      <div class="sud-hero-carousel__slides" aria-hidden="true">
+        <div class="sud-hero-carousel__slide" style="animation-delay: 0s; background-image: url('{% if active_service.showcase_media.poster %}{{ active_service.showcase_media.poster }}{% else %}{{ active_service.showcase_media.url }}{% endif %}');"></div>
+        <div class="sud-hero-carousel__slide" style="animation-delay: 6s; background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1800&q=80');"></div>
+        <div class="sud-hero-carousel__slide" style="animation-delay: 12s; background-image: url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1800&q=80');"></div>
+        <div class="sud-hero-carousel__slide" style="animation-delay: 18s; background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80');"></div>
+      </div>
       <div class="sud-page-heading__content">
         <div class="sud-banner__eyebrow">{{ active_service.badge }}</div>
         <h1>{{ active_service.heading }}</h1>
@@ -40,7 +46,13 @@
       </div>
     </div>
     {% else %}
-    <div class="sud-page-heading" style="background-image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80');">
+    <div class="sud-page-heading sud-hero-carousel">
+      <div class="sud-hero-carousel__slides" aria-hidden="true">
+        <div class="sud-hero-carousel__slide" style="animation-delay: 0s; background-image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80');"></div>
+        <div class="sud-hero-carousel__slide" style="animation-delay: 6s; background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1800&q=80');"></div>
+        <div class="sud-hero-carousel__slide" style="animation-delay: 12s; background-image: url('https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1800&q=80');"></div>
+        <div class="sud-hero-carousel__slide" style="animation-delay: 18s; background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80');"></div>
+      </div>
       <div class="sud-page-heading__content">
         <div class="sud-banner__eyebrow">Services</div>
         <h1>No services are published yet</h1>

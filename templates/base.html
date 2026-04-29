@@ -565,6 +565,49 @@
         line-height: 30px;
       }
 
+      .sud-hero-carousel {
+        background-image: none !important;
+      }
+
+      .sud-hero-carousel::before {
+        z-index: 1;
+      }
+
+      .sud-hero-carousel__slides {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+
+      .sud-hero-carousel__slide {
+        position: absolute;
+        inset: 0;
+        background-position: center;
+        background-size: cover;
+        opacity: 0;
+        transform: scale(1.04);
+        animation: sudHeroCarousel 24s infinite;
+      }
+
+      @keyframes sudHeroCarousel {
+        0%,
+        20% {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        25%,
+        95% {
+          opacity: 0;
+          transform: scale(1.06);
+        }
+
+        100% {
+          opacity: 0;
+          transform: scale(1.08);
+        }
+      }
+
       .sud-toolbar {
         margin-top: 34px;
         border: 1px solid var(--sud-line);
@@ -808,6 +851,18 @@
 
         .sud-logo img {
           height: 44px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .sud-hero-carousel__slide {
+          animation: none;
+          opacity: 0;
+          transform: none;
+        }
+
+        .sud-hero-carousel__slide:first-child {
+          opacity: 1;
         }
       }
     </style>
