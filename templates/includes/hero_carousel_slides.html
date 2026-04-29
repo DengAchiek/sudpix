@@ -1,0 +1,10 @@
+{% if hero.slides %}
+<div class="sud-hero-carousel__slides" aria-hidden="true">
+  {% for slide in hero.slides %}
+  <div
+    class="sud-hero-carousel__slide"
+    style="{% if hero.is_static %}opacity: 1; transform: none;{% else %}animation-delay: {{ slide.delay }}s; animation-duration: {{ hero.duration }}s;{% endif %} background-image: url('{{ slide.url }}');"
+  ></div>
+  {% endfor %}
+</div>
+{% endif %}

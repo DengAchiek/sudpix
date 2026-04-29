@@ -2,14 +2,22 @@ import tempfile
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
 from apps.cart.models import CartItem
+from apps.core.models import HeroCarousel, HeroCarouselSlide
 from apps.downloads.models import Download
 from apps.media_management.models import MediaAsset
 from apps.payments.models import Payment
 from apps.projects.models import Project
+
+ONE_PIXEL_GIF = (
+    b"GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00"
+    b"\xff\xff\xff!\xf9\x04\x01\x00\x00\x00\x00,\x00"
+    b"\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
+)
 
 
 class CorePageTests(TestCase):
@@ -75,6 +83,39 @@ class CorePageTests(TestCase):
             f'{reverse("bookings:create")}?service=Client+Portal+Demo',
             html=False,
         )
+
+
+class HeroCarouselAdminTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.temp_media = tempfile.TemporaryDirectory()
+        self.media_override = self.settings(
+            MEDIA_ROOT=self.temp_media.name,
+            MEDIA_URL="/media/",
+        )
+        self.media_override.enable()
+
+    def tearDown(self):
+        self.media_override.disable()
+        self.temp_media.cleanup()
+        super().tearDown()
+
+    def _uploaded_slide(self, name="hero.gif"):
+        return SimpleUploadedFile(name, ONE_PIXEL_GIF, content_type="image/gif")
+
+    def test_homepage_hero_uses_admin_uploaded_carousel_slide(self):
+        carousel = HeroCarousel.objects.create(section_key=HeroCarousel.Section.HOME_MAIN)
+        HeroCarouselSlide.objects.create(
+            carousel=carousel,
+            image=self._uploaded_slide(),
+            alt_text="Homepage hero",
+            display_order=0,
+        )
+
+        response = self.client.get(reverse("core:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "/media/hero_carousels/")
 
 
 class SeedPortalDemoCommandTests(TestCase):

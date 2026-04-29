@@ -1,6 +1,28 @@
 from django.views.generic import TemplateView
 
 from apps.portfolio.data import get_featured_portfolio_projects
+from apps.core.models import HeroCarousel
+from apps.core.utils import build_hero_carousel
+
+
+HOME_MAIN_HERO_FALLBACKS = [
+    "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1800&q=80",
+    "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1800&q=80",
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80",
+    "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1800&q=80",
+]
+HOME_CTA_HERO_FALLBACKS = [
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80",
+    "https://images.unsplash.com/photo-1516321134488-95a1c3ee9f9b?auto=format&fit=crop&w=1800&q=80",
+    "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1800&q=80",
+    "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=80",
+]
+CONTACT_HERO_FALLBACKS = [
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80",
+    "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1800&q=80",
+    "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=80",
+    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=80",
+]
 
 
 class HomeView(TemplateView):
@@ -103,6 +125,14 @@ class HomeView(TemplateView):
                         "quote": "Professional, responsive, and creatively sharp. SudPix is the kind of studio you trust with serious projects.",
                     },
                 ],
+                "home_main_hero": build_hero_carousel(
+                    HeroCarousel.Section.HOME_MAIN,
+                    HOME_MAIN_HERO_FALLBACKS,
+                ),
+                "home_cta_hero": build_hero_carousel(
+                    HeroCarousel.Section.HOME_CTA,
+                    HOME_CTA_HERO_FALLBACKS,
+                ),
             }
         )
         return context
@@ -110,6 +140,14 @@ class HomeView(TemplateView):
 
 class ContactView(TemplateView):
     template_name = "core/contact.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["contact_hero"] = build_hero_carousel(
+            HeroCarousel.Section.CONTACT_MAIN,
+            CONTACT_HERO_FALLBACKS,
+        )
+        return context
 
 
 class AboutView(TemplateView):
