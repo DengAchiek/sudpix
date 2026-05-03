@@ -12,6 +12,24 @@
   .dashboard-highlight {
     box-shadow: 0 0 0 1px rgba(212, 163, 115, 0.45), 0 24px 60px rgba(212, 163, 115, 0.12);
   }
+
+  .dashboard-window-shell {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 163, 115, 0.4) rgba(255, 255, 255, 0.06);
+  }
+
+  .dashboard-window-shell::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .dashboard-window-shell::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .dashboard-window-shell::-webkit-scrollbar-thumb {
+    background: rgba(212, 163, 115, 0.4);
+    border-radius: 999px;
+  }
   @media (prefers-reduced-motion: no-preference) {
     .dashboard-float {
       animation: dashboard-float 6s ease-in-out infinite;
@@ -53,8 +71,7 @@
     {% for metric in dashboard_cards %}
     <button
       type="button"
-      data-activity-card
-      data-target-section="{{ metric.target }}"
+      data-dashboard-window-trigger="{{ metric.target }}"
       class="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-white/[0.035] to-white/[0.015] p-5 text-left transition hover:border-gold/35 hover:shadow-gold"
     >
       <div class="flex items-start justify-between gap-4">
@@ -89,6 +106,59 @@
     </button>
     {% endfor %}
   </div>
+
+  <section class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.028] to-white/[0.012] p-6">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.26em] text-gold">Quick windows</p>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-white">Open any studio area without leaving the dashboard view.</h2>
+      </div>
+      <p class="max-w-2xl text-sm leading-6 text-soft/58">Each workspace opens as a focused window so you can upload, review selections, check payments, and inspect bookings without scrolling through one long page.</p>
+    </div>
+
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <button type="button" data-dashboard-window-trigger="uploads" class="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-left transition hover:border-gold/35 hover:shadow-gold">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Uploads</p>
+        <p class="mt-3 text-lg font-bold text-white">Upload to client folders</p>
+        <p class="mt-2 text-sm text-soft/58">Drag, drop, and send files straight into the assigned project.</p>
+      </button>
+      <button type="button" data-dashboard-window-trigger="gallery" class="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-left transition hover:border-gold/35 hover:shadow-gold">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Gallery</p>
+        <p class="mt-3 text-lg font-bold text-white">Latest uploaded files</p>
+        <p class="mt-2 text-sm text-soft/58">{{ gallery_uploads|length }} recent items ready for preview.</p>
+      </button>
+      <button type="button" data-dashboard-window-trigger="notifications" class="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-left transition hover:border-gold/35 hover:shadow-gold">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Alerts</p>
+        <p class="mt-3 text-lg font-bold text-white">Admin notifications</p>
+        <p class="mt-2 text-sm text-soft/58">{{ unread_notifications_count }} unread registration or studio alerts.</p>
+      </button>
+      <button type="button" data-dashboard-window-trigger="selected-files" class="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-left transition hover:border-gold/35 hover:shadow-gold">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Selections</p>
+        <p class="mt-3 text-lg font-bold text-white">Client picked files</p>
+        <p class="mt-2 text-sm text-soft/58">{{ selected_files_count }} active selections waiting for payment or review.</p>
+      </button>
+      <button type="button" data-dashboard-window-trigger="payments" class="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-left transition hover:border-gold/35 hover:shadow-gold">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Payments</p>
+        <p class="mt-3 text-lg font-bold text-white">Prompt and payment queue</p>
+        <p class="mt-2 text-sm text-soft/58">{{ pending_payments_count }} pending and {{ confirmed_payments_count }} confirmed.</p>
+      </button>
+      <button type="button" data-dashboard-window-trigger="bookings" class="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-left transition hover:border-gold/35 hover:shadow-gold">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Bookings</p>
+        <p class="mt-3 text-lg font-bold text-white">Service request queue</p>
+        <p class="mt-2 text-sm text-soft/58">{{ new_bookings_count }} fresh requests waiting for studio follow-up.</p>
+      </button>
+      <button type="button" data-dashboard-window-trigger="downloads" class="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-left transition hover:border-gold/35 hover:shadow-gold">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Downloads</p>
+        <p class="mt-3 text-lg font-bold text-white">Delivery history</p>
+        <p class="mt-2 text-sm text-soft/58">{{ downloads_count }} completed client downloads logged so far.</p>
+      </button>
+      <button type="button" data-dashboard-window-trigger="folders" class="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-left transition hover:border-gold/35 hover:shadow-gold">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Folders</p>
+        <p class="mt-3 text-lg font-bold text-white">Search client folders</p>
+        <p class="mt-2 text-sm text-soft/58">{{ projects_count }} project folders organized for studio delivery.</p>
+      </button>
+    </div>
+  </section>
 
   <div class="grid gap-6 xl:grid-cols-[1.45fr_0.95fr]">
     <section id="analytics" class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.015] p-6">
@@ -138,7 +208,7 @@
           <p class="text-2xl font-bold tracking-tight text-white">Files by Type</p>
           <p class="mt-2 text-sm text-soft/58">What clients are receiving most in the current studio window.</p>
         </div>
-        <button type="button" data-dashboard-reset class="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft/58 transition hover:border-gold/40 hover:text-gold">Show all activity</button>
+        <button type="button" data-dashboard-window-trigger="folders" class="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft/58 transition hover:border-gold/40 hover:text-gold">Open folders</button>
       </div>
 
       <div class="mt-8 space-y-6">
@@ -195,65 +265,37 @@
     </section>
   </div>
 
-  <div class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+  <div class="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
     <section class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.015] p-6">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div class="flex items-start justify-between gap-4">
         <div>
-          <p class="text-2xl font-bold tracking-tight text-white">Client Folders</p>
-          <p class="mt-2 text-sm text-soft/58">Search live folders, filter by status, and spot who is closest to download release.</p>
+          <p class="text-2xl font-bold tracking-tight text-white">Workspace windows</p>
+          <p class="mt-2 text-sm text-soft/58">The detailed studio areas now stay tucked into focused windows instead of stacking below the fold.</p>
         </div>
-        <div class="relative max-w-xs flex-1">
-          <svg aria-hidden="true" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-soft/35" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="M21 21l-4.35-4.35"></path>
-          </svg>
-          <input type="search" placeholder="Search folders" data-folder-search-input class="w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 pl-11 pr-4 text-sm text-white placeholder:text-soft/35 focus:border-gold/40 focus:outline-none" />
-        </div>
+        <span class="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">No long scroll</span>
       </div>
 
-      <div class="mt-6 flex flex-wrap gap-3">
-        {% for tab in folder_tabs %}
-        <button type="button" data-folder-tab data-folder-status="{{ tab.key }}" class="rounded-full border {% if forloop.first %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/60{% endif %} px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition hover:border-gold/35 hover:text-gold">
-          {{ tab.label }} <span class="ml-2 text-soft/40">{{ tab.count }}</span>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        <article class="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
+          <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Focused actions</p>
+          <p class="mt-3 text-lg font-bold text-white">Open only what you need</p>
+          <p class="mt-2 text-sm leading-6 text-soft/58">Uploads, alerts, client selections, folders, bookings, payments, and downloads now open as contained windows over the dashboard.</p>
+        </article>
+        <article class="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
+          <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Live data</p>
+          <p class="mt-3 text-lg font-bold text-white">Real SudPix content preserved</p>
+          <p class="mt-2 text-sm leading-6 text-soft/58">The windows still use the same upload forms, payment filters, previews, booking lists, and client activity already connected to the live backend.</p>
+        </article>
+        <button type="button" data-dashboard-window-trigger="folders" class="rounded-[1.5rem] border border-white/10 bg-black/20 p-5 text-left transition hover:border-gold/35 hover:shadow-gold">
+          <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Client folders</p>
+          <p class="mt-3 text-lg font-bold text-white">Search {{ projects_count }} project folders</p>
+          <p class="mt-2 text-sm leading-6 text-soft/58">Filter by ready, processing, pending, or completed status in a dedicated window.</p>
         </button>
-        {% endfor %}
-      </div>
-
-      <div class="mt-6 overflow-x-auto">
-        <table class="min-w-full text-left">
-          <thead class="text-xs uppercase tracking-[0.22em] text-soft/35">
-            <tr>
-              <th class="pb-4 font-medium">Folder</th>
-              <th class="pb-4 font-medium">Client</th>
-              <th class="pb-4 font-medium">Status</th>
-              <th class="pb-4 font-medium">Files</th>
-              <th class="pb-4 font-medium">Selected</th>
-              <th class="pb-4 font-medium">Downloads</th>
-            </tr>
-          </thead>
-          <tbody class="text-sm text-soft/82">
-            {% for row in client_folder_rows %}
-            <tr data-folder-row data-folder-status="{{ row.status_key }}" data-dashboard-searchable="{{ row.search_text }}" class="border-t border-white/8 align-top">
-              <td class="py-4 pr-4">
-                <p class="font-semibold text-white">{{ row.title }}</p>
-                <p class="mt-1 text-xs uppercase tracking-[0.2em] text-soft/35">Engagement {{ row.engagement }}</p>
-              </td>
-              <td class="py-4 pr-4">{{ row.client }}</td>
-              <td class="py-4 pr-4">
-                <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-soft/70">{{ row.status }}</span>
-              </td>
-              <td class="py-4 pr-4">{{ row.asset_count }}</td>
-              <td class="py-4 pr-4">{{ row.selection_count }}</td>
-              <td class="py-4">{{ row.download_count }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="6" class="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-8 text-sm text-soft/58">No project folders are available yet.</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        <div data-folder-empty hidden class="mt-4 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-6 text-sm text-soft/58">No folders match this search or filter.</div>
+        <button type="button" data-dashboard-window-trigger="downloads" class="rounded-[1.5rem] border border-white/10 bg-black/20 p-5 text-left transition hover:border-gold/35 hover:shadow-gold">
+          <p class="text-sm font-semibold uppercase tracking-[0.22em] text-gold">Delivery log</p>
+          <p class="mt-3 text-lg font-bold text-white">{{ downloads_count }} download events</p>
+          <p class="mt-2 text-sm leading-6 text-soft/58">Open the release history window to review completed client downloads without leaving the overview.</p>
+        </button>
       </div>
     </section>
 
@@ -299,17 +341,93 @@
       </div>
     </section>
   </div>
+</section>
 
-  <div class="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
-    <section id="upload-workspace" data-dashboard-section="uploads" class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.015] p-6">
+<div data-dashboard-window="folders" hidden class="fixed inset-0 z-[72] hidden items-center justify-center bg-black/82 px-4 py-8 backdrop-blur-sm">
+  <button type="button" data-dashboard-window-close class="absolute inset-0" aria-label="Close client folders window"></button>
+  <section class="dashboard-window-shell relative z-[73] max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0b0b0c] p-6 shadow-2xl">
+    <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-gold">Client folders</p>
+        <h2 class="mt-2 text-2xl font-bold text-white">Project folders and delivery readiness</h2>
+      </div>
+      <button type="button" data-dashboard-window-dismiss class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-gold/35 hover:text-gold">Close</button>
+    </div>
+    <div class="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <p class="text-sm text-soft/58">Search live folders, filter by status, and spot who is closest to download release.</p>
+      </div>
+      <div class="relative max-w-xs flex-1">
+        <svg aria-hidden="true" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-soft/35" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="M21 21l-4.35-4.35"></path>
+        </svg>
+        <input type="search" placeholder="Search folders" data-folder-search-input class="w-full rounded-2xl border border-white/10 bg-white/[0.03] py-3 pl-11 pr-4 text-sm text-white placeholder:text-soft/35 focus:border-gold/40 focus:outline-none" />
+      </div>
+    </div>
+    <div class="mt-6 flex flex-wrap gap-3">
+      {% for tab in folder_tabs %}
+      <button type="button" data-folder-tab data-folder-status="{{ tab.key }}" class="rounded-full border {% if forloop.first %}border-gold/35 bg-gold/10 text-gold{% else %}border-white/10 text-soft/60{% endif %} px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition hover:border-gold/35 hover:text-gold">
+        {{ tab.label }} <span class="ml-2 text-soft/40">{{ tab.count }}</span>
+      </button>
+      {% endfor %}
+    </div>
+    <div class="mt-6 overflow-x-auto">
+      <table class="min-w-full text-left">
+        <thead class="text-xs uppercase tracking-[0.22em] text-soft/35">
+          <tr>
+            <th class="pb-4 font-medium">Folder</th>
+            <th class="pb-4 font-medium">Client</th>
+            <th class="pb-4 font-medium">Status</th>
+            <th class="pb-4 font-medium">Files</th>
+            <th class="pb-4 font-medium">Selected</th>
+            <th class="pb-4 font-medium">Downloads</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm text-soft/82">
+          {% for row in client_folder_rows %}
+          <tr data-folder-row data-folder-status="{{ row.status_key }}" data-dashboard-searchable="{{ row.search_text }}" class="border-t border-white/8 align-top">
+            <td class="py-4 pr-4">
+              <p class="font-semibold text-white">{{ row.title }}</p>
+              <p class="mt-1 text-xs uppercase tracking-[0.2em] text-soft/35">Engagement {{ row.engagement }}</p>
+            </td>
+            <td class="py-4 pr-4">{{ row.client }}</td>
+            <td class="py-4 pr-4">
+              <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-soft/70">{{ row.status }}</span>
+            </td>
+            <td class="py-4 pr-4">{{ row.asset_count }}</td>
+            <td class="py-4 pr-4">{{ row.selection_count }}</td>
+            <td class="py-4">{{ row.download_count }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-8 text-sm text-soft/58">No project folders are available yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div data-folder-empty hidden class="mt-4 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-6 text-sm text-soft/58">No folders match this search or filter.</div>
+    </div>
+  </section>
+</div>
+
+<div data-dashboard-window="uploads"{% if form.errors %} data-dashboard-window-autostart="true"{% endif %} hidden class="fixed inset-0 z-[72] hidden items-center justify-center bg-black/82 px-4 py-8 backdrop-blur-sm">
+  <button type="button" data-dashboard-window-close class="absolute inset-0" aria-label="Close uploads window"></button>
+  <section data-dashboard-section="uploads" class="dashboard-window-shell relative z-[73] max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0b0b0c] p-6 shadow-2xl">
+    <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-gold">Uploads</p>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-white">Upload files</h2>
+      </div>
+      <button type="button" data-dashboard-window-dismiss class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-gold/35 hover:text-gold">Close</button>
+    </div>
+    <div class="mt-6">
       <div class="flex items-center justify-between gap-4">
         <div>
-          <p class="text-2xl font-bold tracking-tight text-white">Upload files</p>
-          <p class="mt-2 text-sm text-soft/58">Send multiple photos or videos into a client folder from the studio side.</p>
+          <p class="text-sm text-soft/58">Send multiple photos or videos into a client folder from the studio side.</p>
         </div>
         <span class="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">Staff only</span>
       </div>
-
       <form method="post" enctype="multipart/form-data" class="mt-6 space-y-5">
         {% csrf_token %}
         <div>
@@ -319,7 +437,6 @@
           <p class="mt-2 text-sm text-red-300">{{ form.client.errors|join:", " }}</p>
           {% endif %}
         </div>
-
         <div class="rounded-[1.75rem] border border-dashed border-gold/30 bg-gradient-to-br from-gold/10 to-accent/10 p-5 transition hover:border-accent/70 hover:shadow-glow" data-batch-dropzone tabindex="0" role="button" aria-label="Drag and drop files to upload">
           <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Batch Upload</p>
           <h3 class="mt-3 text-xl font-bold text-white">Drag and drop photos or videos here</h3>
@@ -327,196 +444,235 @@
           <div class="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-semibold text-white/85" data-batch-upload-meta>No files selected yet.</div>
           {{ form.batch_files }}
         </div>
-
         <div class="grid gap-3 sm:grid-cols-2" data-batch-upload-preview hidden></div>
         {% if form.batch_files.errors %}
         <p class="mt-2 text-sm text-red-300">{{ form.batch_files.errors|join:", " }}</p>
         {% endif %}
-
         <button type="submit" class="inline-flex rounded-full bg-gradient-to-r from-gold to-accent px-6 py-3 text-sm font-semibold text-white shadow-glow">Upload to Client</button>
       </form>
-    </section>
+    </div>
+  </section>
+</div>
 
-    <section id="gallery" class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.015] p-6">
-      <div class="flex items-center justify-between gap-4">
-        <div>
-          <p class="text-2xl font-bold tracking-tight text-white">Recent Upload Activity</p>
-          <p class="mt-2 text-sm text-soft/58">The latest files added to client folders, displayed in the same polished gallery language clients see.</p>
+<div data-dashboard-window="gallery" hidden class="fixed inset-0 z-[72] hidden items-center justify-center bg-black/82 px-4 py-8 backdrop-blur-sm">
+  <button type="button" data-dashboard-window-close class="absolute inset-0" aria-label="Close upload gallery window"></button>
+  <section class="dashboard-window-shell relative z-[73] max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0b0b0c] p-6 shadow-2xl">
+    <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-gold">Gallery</p>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-white">Recent Upload Activity</h2>
+      </div>
+      <button type="button" data-dashboard-window-dismiss class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-gold/35 hover:text-gold">Close</button>
+    </div>
+    <div class="mt-6 flex items-center justify-between gap-4">
+      <p class="text-sm text-soft/58">The latest files added to client folders, displayed in the same polished gallery language clients see.</p>
+      <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/55">{{ gallery_uploads|length }} shown</span>
+    </div>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {% for media_file in gallery_uploads %}
+      <article data-dashboard-searchable="{{ media_file.title }} {{ media_file.project.title }} {{ media_file.project.client.username }}" class="group relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20">
+        <img src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" class="h-52 w-full object-cover transition duration-300 group-hover:scale-[1.03]">
+        <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
+          <div class="flex flex-wrap gap-2">
+            <span class="rounded-full border border-white/10 bg-black/55 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft">{{ media_file.get_kind_display }}</span>
+            <span class="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">{{ media_file.project.client.username }}</span>
+          </div>
+          <button
+            type="button"
+            class="rounded-full bg-black/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-accent"
+            data-preview-trigger
+            data-preview-url="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}{{ media_file.asset_url }}{% else %}{{ media_file.preview_url }}{% endif %}"
+            data-preview-kind="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}video{% else %}image{% endif %}"
+            data-preview-title="{{ media_file.title }}"
+            data-preview-subtitle="{{ media_file.project.title }} • {{ media_file.project.client.username }}"
+          >
+            Open
+          </button>
         </div>
-        <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/55">{{ gallery_uploads|length }} shown</span>
-      </div>
-
-      <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {% for media_file in gallery_uploads %}
-        <article data-dashboard-searchable="{{ media_file.title }} {{ media_file.project.title }} {{ media_file.project.client.username }}" class="group relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20">
-          <img src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" class="h-52 w-full object-cover transition duration-300 group-hover:scale-[1.03]">
-          <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
-            <div class="flex flex-wrap gap-2">
-              <span class="rounded-full border border-white/10 bg-black/55 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft">{{ media_file.get_kind_display }}</span>
-              <span class="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">{{ media_file.project.client.username }}</span>
-            </div>
-            <button
-              type="button"
-              class="rounded-full bg-black/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-accent"
-              data-preview-trigger
-              data-preview-url="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}{{ media_file.asset_url }}{% else %}{{ media_file.preview_url }}{% endif %}"
-              data-preview-kind="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}video{% else %}image{% endif %}"
-              data-preview-title="{{ media_file.title }}"
-              data-preview-subtitle="{{ media_file.project.title }} • {{ media_file.project.client.username }}"
-            >
-              Open
-            </button>
-          </div>
-          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black via-black/75 to-transparent"></div>
-          <div class="absolute inset-x-4 bottom-4">
-            <p class="font-semibold text-white">{{ media_file.title }}</p>
-            <p class="mt-1 text-xs uppercase tracking-[0.18em] text-soft/42">{{ media_file.project.title }}</p>
-          </div>
-        </article>
-        {% empty %}
-        <div class="rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.02] p-8 text-sm text-soft/58 sm:col-span-2 xl:col-span-3">No uploads yet.</div>
-        {% endfor %}
-      </div>
-    </section>
-  </div>
-
-  <div class="grid gap-6 xl:grid-cols-2">
-    <section id="alerts" data-dashboard-section="notifications" class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.015] p-6">
-      <div class="flex items-center justify-between gap-4">
-        <div>
-          <p class="text-2xl font-bold tracking-tight text-white">Admin Notifications</p>
-          <p class="mt-2 text-sm text-soft/58">New signups and studio alerts that need quick follow-up.</p>
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black via-black/75 to-transparent"></div>
+        <div class="absolute inset-x-4 bottom-4">
+          <p class="font-semibold text-white">{{ media_file.title }}</p>
+          <p class="mt-1 text-xs uppercase tracking-[0.18em] text-soft/42">{{ media_file.project.title }}</p>
         </div>
-        <span class="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ unread_notifications_count }} unread</span>
-      </div>
+      </article>
+      {% empty %}
+      <div class="rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.02] p-8 text-sm text-soft/58 sm:col-span-2 xl:col-span-3">No uploads yet.</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
 
-      <div class="mt-6 space-y-3">
-        {% for notification in recent_notifications %}
-        <article data-dashboard-searchable="{{ notification.title }} {{ notification.message }}" class="rounded-[1.4rem] border {% if notification.is_read %}border-white/10{% else %}border-gold/25{% endif %} bg-black/20 p-4">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="font-semibold text-white">{{ notification.title }}</p>
-              <p class="mt-2 text-sm leading-6 text-soft/62">{{ notification.message }}</p>
-              <p class="mt-3 text-[11px] uppercase tracking-[0.22em] text-soft/35">{{ notification.created_at|date:"d M Y, H:i" }}</p>
-            </div>
-            <span class="rounded-full px-3 py-1 text-xs font-semibold {% if notification.is_read %}border border-white/10 text-soft/55{% else %}border border-gold/30 bg-gold/10 text-gold{% endif %}">
-              {% if notification.is_read %}Read{% else %}Unread{% endif %}
-            </span>
+<div data-dashboard-window="notifications" hidden class="fixed inset-0 z-[72] hidden items-center justify-center bg-black/82 px-4 py-8 backdrop-blur-sm">
+  <button type="button" data-dashboard-window-close class="absolute inset-0" aria-label="Close alerts window"></button>
+  <section data-dashboard-section="notifications" class="dashboard-window-shell relative z-[73] max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0b0b0c] p-6 shadow-2xl">
+    <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-gold">Alerts</p>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-white">Admin Notifications</h2>
+      </div>
+      <button type="button" data-dashboard-window-dismiss class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-gold/35 hover:text-gold">Close</button>
+    </div>
+    <div class="mt-6 flex items-center justify-between gap-4">
+      <p class="text-sm text-soft/58">New signups and studio alerts that need quick follow-up.</p>
+      <span class="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">{{ unread_notifications_count }} unread</span>
+    </div>
+    <div class="mt-6 space-y-3">
+      {% for notification in recent_notifications %}
+      <article data-dashboard-searchable="{{ notification.title }} {{ notification.message }}" class="rounded-[1.4rem] border {% if notification.is_read %}border-white/10{% else %}border-gold/25{% endif %} bg-black/20 p-4">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="font-semibold text-white">{{ notification.title }}</p>
+            <p class="mt-2 text-sm leading-6 text-soft/62">{{ notification.message }}</p>
+            <p class="mt-3 text-[11px] uppercase tracking-[0.22em] text-soft/35">{{ notification.created_at|date:"d M Y, H:i" }}</p>
           </div>
-        </article>
-        {% empty %}
-        <div class="rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-soft/58">No admin notifications yet.</div>
-        {% endfor %}
-      </div>
-    </section>
-
-    <section id="selected-files" data-dashboard-section="selected-files" class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.015] p-6">
-      <div class="flex items-center justify-between gap-4">
-        <div>
-          <p class="text-2xl font-bold tracking-tight text-white">Files Selected by Clients</p>
-          <p class="mt-2 text-sm text-soft/58">See exactly what clients have ticked for payment and download.</p>
+          <span class="rounded-full px-3 py-1 text-xs font-semibold {% if notification.is_read %}border border-white/10 text-soft/55{% else %}border border-gold/30 bg-gold/10 text-gold{% endif %}">
+            {% if notification.is_read %}Read{% else %}Unread{% endif %}
+          </span>
         </div>
-        <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/55">{{ recent_selections|length }} recent</span>
-      </div>
+      </article>
+      {% empty %}
+      <div class="rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-soft/58">No admin notifications yet.</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
 
-      <div class="mt-6 grid gap-4 sm:grid-cols-2">
-        {% for item in recent_selections %}
-        <article data-dashboard-searchable="{{ item.media_asset.title }} {{ item.media_asset.project.title }} {{ item.user.username }}" class="group relative overflow-hidden rounded-[1.5rem] border border-gold/25 bg-black/20 shadow-gold">
-          <img src="{{ item.media_asset.preview_url }}" alt="{{ item.media_asset.title }}" class="h-56 w-full object-cover transition duration-300 group-hover:scale-[1.03]">
-          <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
-            <div class="flex flex-wrap gap-2">
-              <span class="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">Selected</span>
-              <span class="rounded-full border border-white/10 bg-black/55 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft">{{ item.user.username }}</span>
-            </div>
-            <button
-              type="button"
-              class="rounded-full bg-black/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-accent"
-              data-preview-trigger
-              data-preview-url="{% if item.media_asset.kind == 'video' and item.media_asset.has_downloadable_file %}{{ item.media_asset.asset_url }}{% else %}{{ item.media_asset.preview_url }}{% endif %}"
-              data-preview-kind="{% if item.media_asset.kind == 'video' and item.media_asset.has_downloadable_file %}video{% else %}image{% endif %}"
-              data-preview-title="{{ item.media_asset.title }}"
-              data-preview-subtitle="{{ item.media_asset.project.title }} • {{ item.user.username }}"
-            >
-              Open
-            </button>
-          </div>
-          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black via-black/75 to-transparent"></div>
-          <div class="absolute inset-x-4 bottom-4">
-            <p class="font-semibold text-white">{{ item.media_asset.title }}</p>
-            <p class="mt-1 text-xs uppercase tracking-[0.18em] text-soft/42">{{ item.media_asset.project.title }}</p>
-          </div>
-        </article>
-        {% empty %}
-        <div class="rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.02] p-8 text-sm text-soft/58 sm:col-span-2">No active file selections right now.</div>
-        {% endfor %}
+<div data-dashboard-window="selected-files" hidden class="fixed inset-0 z-[72] hidden items-center justify-center bg-black/82 px-4 py-8 backdrop-blur-sm">
+  <button type="button" data-dashboard-window-close class="absolute inset-0" aria-label="Close selected files window"></button>
+  <section data-dashboard-section="selected-files" class="dashboard-window-shell relative z-[73] max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0b0b0c] p-6 shadow-2xl">
+    <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-gold">Selections</p>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-white">Files Selected by Clients</h2>
       </div>
-    </section>
-  </div>
+      <button type="button" data-dashboard-window-dismiss class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-gold/35 hover:text-gold">Close</button>
+    </div>
+    <div class="mt-6 flex items-center justify-between gap-4">
+      <p class="text-sm text-soft/58">See exactly what clients have ticked for payment and download.</p>
+      <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-soft/55">{{ recent_selections|length }} recent</span>
+    </div>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {% for item in recent_selections %}
+      <article data-dashboard-searchable="{{ item.media_asset.title }} {{ item.media_asset.project.title }} {{ item.user.username }}" class="group relative overflow-hidden rounded-[1.5rem] border border-gold/25 bg-black/20 shadow-gold">
+        <img src="{{ item.media_asset.preview_url }}" alt="{{ item.media_asset.title }}" class="h-56 w-full object-cover transition duration-300 group-hover:scale-[1.03]">
+        <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
+          <div class="flex flex-wrap gap-2">
+            <span class="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">Selected</span>
+            <span class="rounded-full border border-white/10 bg-black/55 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft">{{ item.user.username }}</span>
+          </div>
+          <button
+            type="button"
+            class="rounded-full bg-black/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-accent"
+            data-preview-trigger
+            data-preview-url="{% if item.media_asset.kind == 'video' and item.media_asset.has_downloadable_file %}{{ item.media_asset.asset_url }}{% else %}{{ item.media_asset.preview_url }}{% endif %}"
+            data-preview-kind="{% if item.media_asset.kind == 'video' and item.media_asset.has_downloadable_file %}video{% else %}image{% endif %}"
+            data-preview-title="{{ item.media_asset.title }}"
+            data-preview-subtitle="{{ item.media_asset.project.title }} • {{ item.user.username }}"
+          >
+            Open
+          </button>
+        </div>
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black via-black/75 to-transparent"></div>
+        <div class="absolute inset-x-4 bottom-4">
+          <p class="font-semibold text-white">{{ item.media_asset.title }}</p>
+          <p class="mt-1 text-xs uppercase tracking-[0.18em] text-soft/42">{{ item.media_asset.project.title }}</p>
+        </div>
+      </article>
+      {% empty %}
+      <div class="rounded-[1.5rem] border border-dashed border-white/10 bg-white/[0.02] p-8 text-sm text-soft/58 sm:col-span-2 lg:col-span-3">No active file selections right now.</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
 
-  <div class="grid gap-6 xl:grid-cols-[1fr_1fr_0.92fr]">
-    <section id="payments" data-dashboard-section="payments" class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.015] p-6">
-      <p class="text-2xl font-bold tracking-tight text-white">Payment Status</p>
-      <p class="mt-2 text-sm text-soft/58">Monitor download prompts, confirmations, and follow-up cases.</p>
-      <div class="mt-5 flex flex-wrap gap-3">
-        <button type="button" data-payment-filter-button data-payment-filter="all" class="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold transition hover:border-gold/50">All</button>
-        <button type="button" data-payment-filter-button data-payment-filter="pending" class="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft/60 transition hover:border-gold/35 hover:text-gold">Pending</button>
-        <button type="button" data-payment-filter-button data-payment-filter="confirmed" class="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft/60 transition hover:border-gold/35 hover:text-gold">Confirmed</button>
+<div data-dashboard-window="payments" hidden class="fixed inset-0 z-[72] hidden items-center justify-center bg-black/82 px-4 py-8 backdrop-blur-sm">
+  <button type="button" data-dashboard-window-close class="absolute inset-0" aria-label="Close payments window"></button>
+  <section data-dashboard-section="payments" class="dashboard-window-shell relative z-[73] max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0b0b0c] p-6 shadow-2xl">
+    <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-gold">Payments</p>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-white">Payment Status</h2>
       </div>
-      <div class="mt-6 space-y-3">
-        {% for payment in recent_payments %}
-        <article data-dashboard-searchable="{{ payment.user.username }} {{ payment.project_label }} {{ payment.selected_file_label }}" data-payment-item data-payment-status="{{ payment.status }}" class="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="font-semibold text-white">{{ payment.user.username }} • {{ payment.formatted_amount }}</p>
-              <p class="mt-2 text-sm leading-6 text-soft/62">{{ payment.project_label }} • {{ payment.selected_file_label }}</p>
-            </div>
-            <span class="rounded-full px-3 py-1 text-xs font-semibold {{ payment.status_badge_class }}">{{ payment.get_status_display }}</span>
+      <button type="button" data-dashboard-window-dismiss class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-gold/35 hover:text-gold">Close</button>
+    </div>
+    <p class="mt-6 text-sm text-soft/58">Monitor download prompts, confirmations, and follow-up cases.</p>
+    <div class="mt-5 flex flex-wrap gap-3">
+      <button type="button" data-payment-filter-button data-payment-filter="all" class="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold transition hover:border-gold/50">All</button>
+      <button type="button" data-payment-filter-button data-payment-filter="pending" class="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft/60 transition hover:border-gold/35 hover:text-gold">Pending</button>
+      <button type="button" data-payment-filter-button data-payment-filter="confirmed" class="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-soft/60 transition hover:border-gold/35 hover:text-gold">Confirmed</button>
+    </div>
+    <div class="mt-6 space-y-3">
+      {% for payment in recent_payments %}
+      <article data-dashboard-searchable="{{ payment.user.username }} {{ payment.project_label }} {{ payment.selected_file_label }}" data-payment-item data-payment-status="{{ payment.status }}" class="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="font-semibold text-white">{{ payment.user.username }} • {{ payment.formatted_amount }}</p>
+            <p class="mt-2 text-sm leading-6 text-soft/62">{{ payment.project_label }} • {{ payment.selected_file_label }}</p>
           </div>
-        </article>
-        {% empty %}
-        <div class="rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-soft/58">No payment activity yet.</div>
-        {% endfor %}
-        <div data-payment-empty hidden class="rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-soft/58">No payments match this filter right now.</div>
-      </div>
-    </section>
+          <span class="rounded-full px-3 py-1 text-xs font-semibold {{ payment.status_badge_class }}">{{ payment.get_status_display }}</span>
+        </div>
+      </article>
+      {% empty %}
+      <div class="rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-soft/58">No payment activity yet.</div>
+      {% endfor %}
+      <div data-payment-empty hidden class="rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-soft/58">No payments match this filter right now.</div>
+    </div>
+  </section>
+</div>
 
-    <section id="bookings" data-dashboard-section="bookings" class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.015] p-6">
-      <p class="text-2xl font-bold tracking-tight text-white">Service Bookings</p>
-      <p class="mt-2 text-sm text-soft/58">Booking demand flowing from the portal into the studio queue.</p>
-      <div class="mt-6 space-y-3">
-        {% for booking in recent_bookings %}
-        <article data-dashboard-searchable="{{ booking.client_name }} {{ booking.service }} {{ booking.email }}" class="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="font-semibold text-white">{{ booking.client_name }} • {{ booking.service }}</p>
-              <p class="mt-2 text-sm leading-6 text-soft/62">{{ booking.email }} • {{ booking.event_date|date:"d M Y" }}</p>
-            </div>
-            <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-soft/70">{{ booking.get_status_display }}</span>
+<div data-dashboard-window="bookings" hidden class="fixed inset-0 z-[72] hidden items-center justify-center bg-black/82 px-4 py-8 backdrop-blur-sm">
+  <button type="button" data-dashboard-window-close class="absolute inset-0" aria-label="Close bookings window"></button>
+  <section data-dashboard-section="bookings" class="dashboard-window-shell relative z-[73] max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0b0b0c] p-6 shadow-2xl">
+    <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-gold">Bookings</p>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-white">Service Bookings</h2>
+      </div>
+      <button type="button" data-dashboard-window-dismiss class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-gold/35 hover:text-gold">Close</button>
+    </div>
+    <p class="mt-6 text-sm text-soft/58">Booking demand flowing from the portal into the studio queue.</p>
+    <div class="mt-6 space-y-3">
+      {% for booking in recent_bookings %}
+      <article data-dashboard-searchable="{{ booking.client_name }} {{ booking.service }} {{ booking.email }}" class="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="font-semibold text-white">{{ booking.client_name }} • {{ booking.service }}</p>
+            <p class="mt-2 text-sm leading-6 text-soft/62">{{ booking.email }} • {{ booking.event_date|date:"d M Y" }}</p>
           </div>
-        </article>
-        {% empty %}
-        <div class="rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-soft/58">No bookings yet.</div>
-        {% endfor %}
-      </div>
-    </section>
+          <span class="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-soft/70">{{ booking.get_status_display }}</span>
+        </div>
+      </article>
+      {% empty %}
+      <div class="rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-soft/58">No bookings yet.</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
 
-    <section id="downloads" data-dashboard-section="downloads" class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.015] p-6">
-      <p class="text-2xl font-bold tracking-tight text-white">Files Downloaded</p>
-      <p class="mt-2 text-sm text-soft/58">Delivery log for files already released to clients.</p>
-      <div class="mt-6 space-y-3">
-        {% for event in recent_downloads %}
-        <article data-dashboard-searchable="{{ event.media_asset.title }} {{ event.media_asset.project.title }} {{ event.user.username }}" class="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
-          <p class="font-semibold text-white">{{ event.media_asset.title }}</p>
-          <p class="mt-2 text-sm leading-6 text-soft/62">{{ event.user.username }} • {{ event.media_asset.project.title }}</p>
-          <p class="mt-3 text-[11px] uppercase tracking-[0.22em] text-soft/35">{{ event.downloaded_at|date:"d M Y, H:i" }}</p>
-        </article>
-        {% empty %}
-        <div class="rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-soft/58">No downloads have been logged yet.</div>
-        {% endfor %}
+<div data-dashboard-window="downloads" hidden class="fixed inset-0 z-[72] hidden items-center justify-center bg-black/82 px-4 py-8 backdrop-blur-sm">
+  <button type="button" data-dashboard-window-close class="absolute inset-0" aria-label="Close downloads window"></button>
+  <section data-dashboard-section="downloads" class="dashboard-window-shell relative z-[73] max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] border border-white/10 bg-[#0b0b0c] p-6 shadow-2xl">
+    <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-gold">Downloads</p>
+        <h2 class="mt-2 text-2xl font-bold tracking-tight text-white">Files Downloaded</h2>
       </div>
-    </section>
-  </div>
-</section>
+      <button type="button" data-dashboard-window-dismiss class="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:border-gold/35 hover:text-gold">Close</button>
+    </div>
+    <p class="mt-6 text-sm text-soft/58">Delivery log for files already released to clients.</p>
+    <div class="mt-6 space-y-3">
+      {% for event in recent_downloads %}
+      <article data-dashboard-searchable="{{ event.media_asset.title }} {{ event.media_asset.project.title }} {{ event.user.username }}" class="rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+        <p class="font-semibold text-white">{{ event.media_asset.title }}</p>
+        <p class="mt-2 text-sm leading-6 text-soft/62">{{ event.user.username }} • {{ event.media_asset.project.title }}</p>
+        <p class="mt-3 text-[11px] uppercase tracking-[0.22em] text-soft/35">{{ event.downloaded_at|date:"d M Y, H:i" }}</p>
+      </article>
+      {% empty %}
+      <div class="rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-soft/58">No downloads have been logged yet.</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
 
 <div data-preview-modal hidden class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/85 px-4 py-8 backdrop-blur-sm">
   <button type="button" data-preview-close class="absolute inset-0 cursor-default" aria-label="Close preview"></button>
@@ -686,7 +842,10 @@
       modal.hidden = true;
       modal.classList.add("hidden");
       modal.classList.remove("flex");
-      document.body.classList.remove("overflow-hidden");
+
+      if (!document.querySelector("[data-dashboard-window].flex")) {
+        document.body.classList.remove("overflow-hidden");
+      }
 
       image.classList.add("hidden");
       image.removeAttribute("src");
@@ -739,34 +898,107 @@
   })();
 
   (function() {
-    var cards = document.querySelectorAll("[data-activity-card]");
-    var resetButton = document.querySelector("[data-dashboard-reset]");
-    var sections = document.querySelectorAll("[data-dashboard-section]");
+    var triggers = document.querySelectorAll("[data-dashboard-window-trigger]");
+    var windows = document.querySelectorAll("[data-dashboard-window]");
 
-    function clearHighlights() {
-      sections.forEach(function(section) {
-        section.classList.remove("dashboard-highlight");
-      });
+    if (!triggers.length || !windows.length) {
+      return;
     }
 
-    cards.forEach(function(card) {
-      card.addEventListener("click", function() {
-        var targetKey = card.dataset.targetSection;
-        var target = document.querySelector('[data-dashboard-section="' + targetKey + '"]');
+    function closeWindow(windowNode) {
+      if (!windowNode) {
+        return;
+      }
 
-        clearHighlights();
-        if (!target) {
+      windowNode.hidden = true;
+      windowNode.classList.add("hidden");
+      windowNode.classList.remove("flex");
+
+      var highlightedSection = windowNode.querySelector("[data-dashboard-section]");
+      if (highlightedSection) {
+        highlightedSection.classList.remove("dashboard-highlight");
+      }
+
+      if (!document.querySelector("[data-dashboard-window].flex") && !document.querySelector("[data-preview-modal].flex")) {
+        document.body.classList.remove("overflow-hidden");
+      }
+    }
+
+    function openWindow(key, options) {
+      var targetWindow = document.querySelector('[data-dashboard-window="' + key + '"]');
+      if (!targetWindow) {
+        return;
+      }
+
+      windows.forEach(function(windowNode) {
+        if (windowNode !== targetWindow) {
+          closeWindow(windowNode);
+        }
+      });
+
+      targetWindow.hidden = false;
+      targetWindow.classList.remove("hidden");
+      targetWindow.classList.add("flex");
+      document.body.classList.add("overflow-hidden");
+
+      var highlightedSection = targetWindow.querySelector("[data-dashboard-section]");
+      if (highlightedSection) {
+        highlightedSection.classList.add("dashboard-highlight");
+      }
+
+      var shell = targetWindow.querySelector(".dashboard-window-shell");
+      if (shell) {
+        shell.scrollTop = 0;
+      }
+
+      if (options && options.paymentFilter && typeof window.applyDashboardPaymentFilter === "function") {
+        window.applyDashboardPaymentFilter(options.paymentFilter);
+      }
+    }
+
+    triggers.forEach(function(trigger) {
+      trigger.addEventListener("click", function(event) {
+        var key = trigger.dataset.dashboardWindowTrigger;
+        if (!key) {
           return;
         }
 
-        target.classList.add("dashboard-highlight");
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        event.preventDefault();
+        openWindow(key, {
+          paymentFilter: trigger.dataset.paymentFilterTarget || "",
+        });
       });
     });
 
-    if (resetButton) {
-      resetButton.addEventListener("click", clearHighlights);
+    windows.forEach(function(windowNode) {
+      windowNode.querySelectorAll("[data-dashboard-window-close], [data-dashboard-window-dismiss]").forEach(function(button) {
+        button.addEventListener("click", function() {
+          closeWindow(windowNode);
+        });
+      });
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      if (document.querySelector("[data-preview-modal].flex")) {
+        return;
+      }
+
+      var openWindowNode = document.querySelector("[data-dashboard-window].flex");
+      if (openWindowNode) {
+        closeWindow(openWindowNode);
+      }
+    });
+
+    var autostartWindow = document.querySelector("[data-dashboard-window-autostart='true']");
+    if (autostartWindow) {
+      openWindow(autostartWindow.dataset.dashboardWindow);
     }
+
+    window.openSudPixDashboardWindow = openWindow;
   })();
 
   (function() {
@@ -806,6 +1038,9 @@
         applyFilter(button.dataset.paymentFilter || "all");
       });
     });
+
+    window.applyDashboardPaymentFilter = applyFilter;
+    applyFilter("all");
   })();
 
   (function() {
