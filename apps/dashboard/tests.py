@@ -105,13 +105,16 @@ class StaffDashboardTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "staff/base.html")
-        self.assertContains(response, "Client activity and uploads")
-        self.assertContains(response, "Separate from the public site layout")
-        self.assertContains(response, "Tap any activity card")
-        self.assertContains(response, "Show all activity")
-        self.assertContains(response, "New Signups")
+        self.assertContains(response, "Studio dashboard")
+        self.assertContains(response, "SudPix analytics for uploads")
+        self.assertContains(response, "Export Data")
+        self.assertContains(response, "Search the dashboard")
+        self.assertContains(response, "Operations Timeline")
+        self.assertContains(response, "Files by Type")
+        self.assertContains(response, "Client Folders")
+        self.assertContains(response, "Workflow Coverage")
         self.assertContains(response, "Admin Notifications")
-        self.assertContains(response, "Uploaded Gallery")
+        self.assertContains(response, "Recent Upload Activity")
         self.assertContains(response, "Ceremony Frame.jpg")
         self.assertContains(response, self.media_asset.preview_url)
         self.assertContains(response, "data-preview-modal")
@@ -121,6 +124,18 @@ class StaffDashboardTests(TestCase):
         self.assertContains(response, "Batch Upload")
         self.assertContains(response, "Client name")
 
+    def test_staff_dashboard_can_export_csv(self):
+        self.client.force_login(self.staff_user)
+
+        response = self.client.get(reverse("dashboard:home"), {"export": "csv", "period": "90"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertIn("attachment; filename=", response["Content-Disposition"])
+        self.assertContains(response, "SudPix Analytics Dashboard")
+        self.assertContains(response, "File Selection Rate")
+        self.assertContains(response, "Wedding Folder")
+
     def test_django_admin_has_separate_backend_branding(self):
         self.client.force_login(self.staff_user)
 
@@ -128,7 +143,8 @@ class StaffDashboardTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "SudPix Django Admin")
-        self.assertContains(response, "Backend data and user management stay separate")
+        self.assertContains(response, "Staff Workspace")
+        self.assertContains(response, "Public Site")
 
     def test_staff_can_upload_files_from_site_dashboard(self):
         self.client.force_login(self.staff_user)
