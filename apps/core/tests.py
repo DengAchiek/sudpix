@@ -95,7 +95,7 @@ class CorePageTests(TestCase):
         response = self.client.get(reverse("core:contact"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "hello@sudpix.com")
+        self.assertContains(response, "sudpix4@gmail.com")
         self.assertContains(response, "+254 768 774 232")
         self.assertContains(response, "Nairobi, Kenya")
         self.assertContains(response, reverse("bookings:create"))
