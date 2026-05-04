@@ -60,6 +60,15 @@ class CorePageTests(TestCase):
         self.assertContains(response, reverse("portfolio:detail", args=["corporate-campaign"]))
         self.assertContains(response, reverse("portfolio:detail", args=["live-event-film"]))
 
+    def test_shared_navigation_uses_about_link_and_keeps_booking_cta(self):
+        response = self.client.get(reverse("core:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'href="{reverse("core:about")}"', html=False)
+        self.assertContains(response, ">About<", html=False)
+        self.assertContains(response, f'href="{reverse("bookings:create")}"', html=False)
+        self.assertContains(response, "Book a Service")
+
     def test_home_gallery_section_shows_photo_and_video_media(self):
         response = self.client.get(reverse("core:home"))
 
