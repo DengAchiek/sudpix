@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+
+{% block title %}About SudPix{% endblock %}
+
+{% block extra_head %}
+<style>
+  .sud-about-hero {
+    min-height: 460px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 32px;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .sud-about-hero .sud-page-heading__content {
+    text-align: center;
+  }
+
+  .sud-about-breadcrumb {
+    margin-top: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    color: rgba(245, 245, 245, 0.9);
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .sud-about-breadcrumb span {
+    color: rgba(245, 245, 245, 0.48);
+  }
+
+  .sud-about-breadcrumb strong {
+    color: var(--sud-gold);
+    font-weight: 700;
+  }
+
+  .sud-about-intro {
+    margin: 34px auto 0;
+    max-width: 780px;
+    text-align: center;
+    color: rgba(245, 245, 245, 0.76);
+    font-size: 18px;
+    line-height: 34px;
+  }
+
+  .sud-about-story {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: center;
+  }
+
+  .sud-about-story__image {
+    overflow: hidden;
+    border-radius: 28px;
+    border: 1px solid var(--sud-line);
+    min-height: 100%;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .sud-about-story__image img {
+    width: 100%;
+    height: 100%;
+    min-height: 460px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .sud-about-story__body {
+    border-radius: 28px;
+    border: 1px solid var(--sud-line);
+    background: rgba(255, 255, 255, 0.025);
+    padding: 38px;
+  }
+
+  .sud-about-story__eyebrow {
+    display: inline-block;
+    color: var(--sud-gold);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .sud-about-story__body h2 {
+    margin-top: 16px;
+    color: var(--sud-text);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.18;
+  }
+
+  .sud-about-story__body p {
+    margin-top: 18px;
+    color: rgba(245, 245, 245, 0.76);
+    font-size: 16px;
+    line-height: 31px;
+  }
+
+  .sud-about-checklist {
+    margin-top: 24px;
+    display: grid;
+    gap: 14px;
+  }
+
+  .sud-about-checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    color: rgba(245, 245, 245, 0.82);
+    font-size: 16px;
+    line-height: 30px;
+  }
+
+  .sud-about-checklist li::before {
+    content: "✓";
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(232, 93, 4, 0.16);
+    color: var(--sud-accent);
+    font-size: 14px;
+    font-weight: 800;
+    margin-top: 2px;
+  }
+
+  .sud-about-process {
+    border-radius: 32px;
+    border: 1px solid var(--sud-line);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+    padding: 54px 32px;
+  }
+
+  .sud-about-process-grid {
+    margin-top: 34px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .sud-about-process-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid var(--sud-line);
+    background: rgba(10, 10, 10, 0.78);
+    padding: 34px 28px 30px;
+    min-height: 250px;
+  }
+
+  .sud-about-process-card__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 68px;
+    min-height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--sud-gold), var(--sud-accent));
+    color: #111;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+  }
+
+  .sud-about-process-card h3 {
+    margin-top: 22px;
+    color: var(--sud-text);
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .sud-about-process-card p {
+    margin-top: 16px;
+    color: rgba(245, 245, 245, 0.74);
+    font-size: 16px;
+    line-height: 30px;
+  }
+
+  @media (max-width: 1100px) {
+    .sud-about-story,
+    .sud-about-process-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 991px) {
+    .sud-about-hero {
+      min-height: 400px;
+      padding: 100px 24px;
+    }
+
+    .sud-about-story {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .sud-about-process {
+      padding: 40px 22px;
+    }
+
+    .sud-about-process-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sud-about-story__body {
+      padding: 30px 24px;
+    }
+
+    .sud-about-story__image img {
+      min-height: 320px;
+    }
+
+    .sud-about-breadcrumb {
+      gap: 10px;
+      font-size: 15px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-page-heading sud-about-hero" style="background-image: url('{{ about_hero_image }}');">
+      <div class="sud-page-heading__content">
+        <h1>About Us</h1>
+        <div class="sud-about-breadcrumb">
+          <a href="{% url 'core:home' %}" class="text-white hover:text-gold">Home</a>
+          <span>/</span>
+          <strong>About Us</strong>
+        </div>
+      </div>
+    </div>
+
+    <p class="sud-about-intro">
+      {{ about_intro_text }}
+    </p>
+  </div>
+</section>
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-about-story">
+      <div class="sud-about-story__image">
+        <img src="{{ about_story_image }}" alt="SudPix creative production story" />
+      </div>
+
+      <div class="sud-about-story__body">
+        <span class="sud-about-story__eyebrow">Who We Are</span>
+        <h2>SudPix creates photo, video, and brand files that feel premium from first capture to final delivery.</h2>
+        <p>
+          We work with individuals, brands, and event clients who want strong creative direction and a clean file-delivery experience. The studio is built to make the process feel sharp, visual, and easy to follow from briefing to download.
+        </p>
+        <p>
+          Every SudPix project balances artistry with structure, so clients get polished visuals, organized delivery, and communication that stays clear at each step.
+        </p>
+        <ul class="sud-about-checklist">
+          {% for item in about_story_points %}
+          <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+        <div class="mt-8">
+          <a href="{% url 'portfolio:list' %}" class="sud-btn">View Our Work</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-about-process">
+      <div class="sud-section-heading mb-0">
+        <div class="sud-section-heading__eyebrow">Our Process</div>
+        <h2>How SudPix moves a creative project from idea to delivered media</h2>
+      </div>
+
+      <div class="sud-about-process-grid">
+        {% for step in about_process_steps %}
+        <article class="sud-about-process-card">
+          <div class="sud-about-process-card__number">{{ step.number }}</div>
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.description }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

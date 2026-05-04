@@ -105,6 +105,17 @@ class CorePageTests(TestCase):
             html=False,
         )
 
+    def test_about_page_shows_story_and_process_sections(self):
+        response = self.client.get(reverse("core:about"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "About Us")
+        self.assertContains(response, "Who We Are")
+        self.assertContains(response, "View Our Work")
+        self.assertContains(response, "Our Process")
+        self.assertContains(response, "Discussion")
+        self.assertContains(response, "Follow Up")
+
 
 class HeroCarouselAdminTests(TestCase):
     def setUp(self):

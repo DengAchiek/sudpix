@@ -23,6 +23,12 @@ CONTACT_HERO_FALLBACKS = [
     "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=80",
     "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=80",
 ]
+ABOUT_HERO_IMAGE = (
+    "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1800&q=80"
+)
+ABOUT_STORY_IMAGE = (
+    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
+)
 
 
 def build_home_media_gallery():
@@ -218,6 +224,58 @@ class ContactView(TemplateView):
 
 class AboutView(TemplateView):
     template_name = "core/about.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "about_hero_image": ABOUT_HERO_IMAGE,
+                "about_story_image": ABOUT_STORY_IMAGE,
+                "about_intro_text": (
+                    "SudPix is a creative studio built around premium photography, cinematic videography, "
+                    "brand visuals, and polished digital delivery for modern clients."
+                ),
+                "about_story_points": [
+                    "Full-service visual coverage for events, campaigns, and products",
+                    "Clean editing, organized file delivery, and secure client access",
+                    "Fast communication and studio workflows that stay easy to follow",
+                    "Creative direction shaped around premium presentation and final use",
+                ],
+                "about_process_steps": [
+                    {
+                        "number": "01",
+                        "title": "Discussion",
+                        "description": "We align on the goal, audience, timing, and visual mood before any production starts.",
+                    },
+                    {
+                        "number": "02",
+                        "title": "Strategy",
+                        "description": "SudPix maps the right service mix, coverage format, and file output for the project.",
+                    },
+                    {
+                        "number": "03",
+                        "title": "Core Concept",
+                        "description": "We shape the creative direction, styling cues, and story structure for the final work.",
+                    },
+                    {
+                        "number": "04",
+                        "title": "Feasibility",
+                        "description": "The team locks locations, timing, asset needs, and delivery expectations with clarity.",
+                    },
+                    {
+                        "number": "05",
+                        "title": "Execution",
+                        "description": "Production and editing move forward with a strong focus on premium media quality.",
+                    },
+                    {
+                        "number": "06",
+                        "title": "Follow Up",
+                        "description": "Clients preview, select, pay, and download through the SudPix delivery workflow.",
+                    },
+                ],
+            }
+        )
+        return context
 
 
 class FAQView(TemplateView):
