@@ -241,6 +241,52 @@ class AboutView(TemplateView):
                     "Fast communication and studio workflows that stay easy to follow",
                     "Creative direction shaped around premium presentation and final use",
                 ],
+                "about_work_intro": {
+                    "title": "How we work?",
+                    "lead": (
+                        "SudPix keeps every project visual, organized, and easy to follow from the first brief "
+                        "to the final downloadable files."
+                    ),
+                    "description": (
+                        "Our workflow is built for modern media clients who want premium output without a confusing "
+                        "back-and-forth process. We guide the direction, schedule the production, and prepare the "
+                        "final files inside a clean delivery system."
+                    ),
+                },
+                "about_work_steps": [
+                    {
+                        "badge": "01",
+                        "title": "Tell us about your project",
+                        "description": "Share the event, campaign, or brand goal so we can shape the right creative direction.",
+                    },
+                    {
+                        "badge": "02",
+                        "title": "We schedule the shoot",
+                        "description": "SudPix aligns dates, coverage needs, and production details before any capture starts.",
+                    },
+                    {
+                        "badge": "03",
+                        "title": "We prepare delivery",
+                        "description": "After editing, we organize the files into a polished client-ready gallery and download flow.",
+                    },
+                ],
+                "about_team_members": [
+                    {
+                        "name": "Simon Lado",
+                        "role": "Lead Photographer",
+                        "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43b?auto=format&fit=crop&w=900&q=80",
+                    },
+                    {
+                        "name": "Daniel Ochieng",
+                        "role": "Creative Director",
+                        "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80",
+                    },
+                    {
+                        "name": "Brian Deng",
+                        "role": "Visual Designer",
+                        "image": "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=80",
+                    },
+                ],
                 "about_process_steps": [
                     {
                         "number": "01",

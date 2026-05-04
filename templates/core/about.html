@@ -38,6 +38,15 @@
     font-weight: 700;
   }
 
+  .sud-about-breadcrumb a {
+    color: rgba(245, 245, 245, 0.9);
+    transition: color 0.2s ease;
+  }
+
+  .sud-about-breadcrumb a:hover {
+    color: var(--sud-gold);
+  }
+
   .sud-about-intro {
     margin: 34px auto 0;
     max-width: 780px;
@@ -130,6 +139,180 @@
     margin-top: 2px;
   }
 
+  .sud-about-work {
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+    gap: 34px;
+    align-items: start;
+    border-radius: 32px;
+    border: 1px solid var(--sud-line);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
+    padding: 40px;
+  }
+
+  .sud-about-work__intro h2 {
+    color: var(--sud-text);
+    font-size: clamp(2rem, 4vw, 3.35rem);
+    font-weight: 800;
+    line-height: 1.08;
+  }
+
+  .sud-about-work__lead {
+    margin-top: 18px;
+    color: rgba(245, 245, 245, 0.88);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.7;
+  }
+
+  .sud-about-work__intro p:last-of-type {
+    margin-top: 18px;
+    color: rgba(245, 245, 245, 0.74);
+    font-size: 16px;
+    line-height: 30px;
+  }
+
+  .sud-about-work__actions {
+    margin-top: 28px;
+  }
+
+  .sud-about-work__steps {
+    display: grid;
+    gap: 0;
+  }
+
+  .sud-about-work__step {
+    display: grid;
+    grid-template-columns: 74px minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+    padding: 6px 0 22px;
+  }
+
+  .sud-about-work__step + .sud-about-work__step {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 22px;
+  }
+
+  .sud-about-work__badge {
+    width: 58px;
+    height: 58px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--sud-gold), var(--sud-accent));
+    color: #111;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+
+  .sud-about-work__step h3 {
+    color: var(--sud-text);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .sud-about-work__step p {
+    margin-top: 10px;
+    color: rgba(245, 245, 245, 0.72);
+    font-size: 15px;
+    line-height: 28px;
+  }
+
+  .sud-about-team {
+    border-radius: 32px;
+    border: 1px solid var(--sud-line);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
+    padding: 54px 32px;
+  }
+
+  .sud-about-team__heading {
+    text-align: center;
+  }
+
+  .sud-about-team__heading span {
+    display: inline-block;
+    color: var(--sud-gold);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .sud-about-team__heading h2 {
+    margin-top: 14px;
+    color: var(--sud-text);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+  }
+
+  .sud-about-team-grid {
+    margin-top: 34px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .sud-about-team-card {
+    overflow: hidden;
+    border-radius: 26px;
+    border: 1px solid var(--sud-line);
+    background: rgba(12, 12, 12, 0.78);
+  }
+
+  .sud-about-team-card__image {
+    position: relative;
+  }
+
+  .sud-about-team-card__image img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .sud-about-team-card__icon {
+    position: absolute;
+    left: 50%;
+    bottom: -22px;
+    transform: translateX(-50%);
+    width: 52px;
+    height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 6px solid rgba(12, 12, 12, 0.96);
+    background: linear-gradient(135deg, var(--sud-gold), var(--sud-accent));
+    color: #111;
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .sud-about-team-card__body {
+    padding: 36px 24px 28px;
+    text-align: center;
+  }
+
+  .sud-about-team-card__body h3 {
+    color: var(--sud-text);
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  .sud-about-team-card__body p {
+    margin-top: 12px;
+    color: var(--sud-gold);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
   .sud-about-process {
     border-radius: 32px;
     border: 1px solid var(--sud-line);
@@ -185,6 +368,8 @@
 
   @media (max-width: 1100px) {
     .sud-about-story,
+    .sud-about-work,
+    .sud-about-team-grid,
     .sud-about-process-grid {
       grid-template-columns: 1fr 1fr;
     }
@@ -199,13 +384,21 @@
     .sud-about-story {
       grid-template-columns: 1fr;
     }
+
+    .sud-about-work {
+      grid-template-columns: 1fr;
+      padding: 34px 28px;
+    }
   }
 
   @media (max-width: 767px) {
+    .sud-about-work,
+    .sud-about-team,
     .sud-about-process {
       padding: 40px 22px;
     }
 
+    .sud-about-team-grid,
     .sud-about-process-grid {
       grid-template-columns: 1fr;
     }
@@ -222,6 +415,15 @@
       gap: 10px;
       font-size: 15px;
     }
+
+    .sud-about-work__step {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .sud-about-team-card__image img {
+      height: 320px;
+    }
   }
 </style>
 {% endblock %}
@@ -233,7 +435,7 @@
       <div class="sud-page-heading__content">
         <h1>About Us</h1>
         <div class="sud-about-breadcrumb">
-          <a href="{% url 'core:home' %}" class="text-white hover:text-gold">Home</a>
+          <a href="{% url 'core:home' %}">Home</a>
           <span>/</span>
           <strong>About Us</strong>
         </div>
@@ -270,6 +472,59 @@
         <div class="mt-8">
           <a href="{% url 'portfolio:list' %}" class="sud-btn">View Our Work</a>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-about-work">
+      <div class="sud-about-work__intro">
+        <h2>{{ about_work_intro.title }}</h2>
+        <p class="sud-about-work__lead">{{ about_work_intro.lead }}</p>
+        <p>{{ about_work_intro.description }}</p>
+        <div class="sud-about-work__actions">
+          <a href="{% url 'bookings:create' %}" class="sud-btn">Start a Project</a>
+        </div>
+      </div>
+
+      <div class="sud-about-work__steps">
+        {% for step in about_work_steps %}
+        <article class="sud-about-work__step">
+          <div class="sud-about-work__badge">{{ step.badge }}</div>
+          <div>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-about-team">
+      <div class="sud-about-team__heading">
+        <span>The Team Of Professionals</span>
+        <h2>Innovative Team</h2>
+      </div>
+
+      <div class="sud-about-team-grid">
+        {% for member in about_team_members %}
+        <article class="sud-about-team-card">
+          <div class="sud-about-team-card__image">
+            <img src="{{ member.image }}" alt="{{ member.name }} at SudPix" />
+            <div class="sud-about-team-card__icon">S</div>
+          </div>
+          <div class="sud-about-team-card__body">
+            <h3>{{ member.name }}</h3>
+            <p>{{ member.role }}</p>
+          </div>
+        </article>
+        {% endfor %}
       </div>
     </div>
   </div>
