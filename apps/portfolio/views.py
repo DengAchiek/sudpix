@@ -10,9 +10,39 @@ from .data import get_portfolio_project, get_portfolio_projects
 class PortfolioListView(TemplateView):
     template_name = "portfolio/list.html"
 
+    def build_gallery_tiles(self, projects):
+        curated_images = []
+
+        for project in projects:
+            curated_images.append(
+                {
+                    "slug": project["slug"],
+                    "title": project["title"],
+                    "category": project["category"],
+                    "image": project["image"],
+                    "tag": project["delivery_mode"],
+                }
+            )
+
+        for project in projects:
+            for image in project["gallery"][:1]:
+                curated_images.append(
+                    {
+                        "slug": project["slug"],
+                        "title": project["title"],
+                        "category": project["category"],
+                        "image": image,
+                        "tag": project["formats"][0],
+                    }
+                )
+
+        return curated_images[:6]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["projects"] = get_portfolio_projects()
+        projects = get_portfolio_projects()
+        context["projects"] = projects
+        context["portfolio_gallery_tiles"] = self.build_gallery_tiles(projects)
         context["portfolio_stats"] = [
             {"label": "Projects delivered", "value": "250+"},
             {"label": "Creative categories", "value": "4"},

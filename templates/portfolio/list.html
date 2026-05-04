@@ -2,83 +2,234 @@
 
 {% block title %}Portfolio SudPix{% endblock %}
 
+{% block extra_head %}
+<style>
+  .sud-portfolio-hero {
+    min-height: 460px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 32px;
+  }
+
+  .sud-portfolio-hero .sud-page-heading__content {
+    text-align: center;
+  }
+
+  .sud-portfolio-breadcrumb {
+    margin-top: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    color: rgba(245, 245, 245, 0.92);
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .sud-portfolio-breadcrumb span {
+    color: rgba(245, 245, 245, 0.42);
+  }
+
+  .sud-portfolio-breadcrumb strong {
+    color: var(--sud-gold);
+    font-weight: 700;
+  }
+
+  .sud-portfolio-breadcrumb a {
+    color: rgba(245, 245, 245, 0.92);
+    transition: color 0.2s ease;
+  }
+
+  .sud-portfolio-breadcrumb a:hover {
+    color: var(--sud-gold);
+  }
+
+  .sud-portfolio-summary {
+    margin: 34px auto 0;
+    max-width: 820px;
+    text-align: center;
+    color: rgba(245, 245, 245, 0.74);
+    font-size: 17px;
+    line-height: 32px;
+  }
+
+  .sud-portfolio-grid {
+    margin-top: 46px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px;
+  }
+
+  .sud-portfolio-tile {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    border: 1px solid var(--sud-line);
+    background: rgba(255, 255, 255, 0.03);
+    min-height: 300px;
+  }
+
+  .sud-portfolio-tile img {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .sud-portfolio-tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 15, 15, 0.12), rgba(15, 15, 15, 0.86));
+  }
+
+  .sud-portfolio-tile:hover img {
+    transform: scale(1.04);
+  }
+
+  .sud-portfolio-tile__content {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    padding: 22px;
+  }
+
+  .sud-portfolio-tile__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .sud-portfolio-tile__meta .sud-tag:last-child {
+    color: rgba(245, 245, 245, 0.8);
+  }
+
+  .sud-portfolio-tile h3 {
+    color: var(--sud-text);
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.18;
+  }
+
+  .sud-portfolio-tile p {
+    margin-top: 8px;
+    color: rgba(245, 245, 245, 0.72);
+    font-size: 14px;
+    line-height: 27px;
+  }
+
+  .sud-portfolio-footer {
+    margin-top: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--sud-gold);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .sud-portfolio-stats {
+    margin-top: 54px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .sud-portfolio-stat {
+    border-radius: 20px;
+    border: 1px solid var(--sud-line);
+    background: rgba(255, 255, 255, 0.025);
+    padding: 26px 24px;
+    text-align: center;
+  }
+
+  .sud-portfolio-stat strong {
+    display: block;
+    color: var(--sud-text);
+    font-size: 34px;
+    font-weight: 800;
+  }
+
+  .sud-portfolio-stat span {
+    display: block;
+    margin-top: 10px;
+    color: rgba(245, 245, 245, 0.64);
+    font-size: 14px;
+  }
+
+  @media (max-width: 1100px) {
+    .sud-portfolio-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 991px) {
+    .sud-portfolio-hero {
+      min-height: 400px;
+      padding: 100px 24px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .sud-portfolio-grid,
+    .sud-portfolio-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .sud-portfolio-breadcrumb {
+      gap: 10px;
+      font-size: 15px;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="sud-section">
   <div class="sud-container">
-    <div class="sud-page-heading sud-hero-carousel">
+    <div class="sud-page-heading sud-hero-carousel sud-portfolio-hero">
       {% include "includes/hero_carousel_slides.html" with hero=portfolio_list_hero %}
       <div class="sud-page-heading__content">
-        <div class="sud-banner__eyebrow">Selected Work</div>
-        <h1>A visual wall of SudPix projects and delivery styles</h1>
-        <p>
-          Open projects by category, preview the media style immediately, and move into the matching service when the output feels right for your brief.
-        </p>
-      </div>
-    </div>
-
-    <div class="sud-toolbar">
-      <div class="sud-toolbar__grid">
-        <div class="sud-toolbar__block">
-          <label>Project Categories</label>
-          <div class="sud-toolbar__chips">
-            {% for project in projects %}
-            <a href="{% url 'portfolio:detail' project.slug %}">{{ project.category }}</a>
-            {% endfor %}
-          </div>
-        </div>
-        <div class="sud-toolbar__block">
-          <label>Projects</label>
-          <div class="sud-toolbar__value">{{ projects|length }} Available</div>
-        </div>
-        <div class="sud-toolbar__block">
-          <label>Creative Areas</label>
-          <div class="sud-toolbar__value">{{ portfolio_stats.1.value }}</div>
-        </div>
-        <div class="sud-toolbar__block">
-          <a href="{% url 'bookings:create' %}" class="sud-btn">Start Your Project</a>
+        <h1>Portfolio</h1>
+        <div class="sud-portfolio-breadcrumb">
+          <a href="{% url 'core:home' %}">Home</a>
+          <span>/</span>
+          <strong>Portfolio</strong>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<section class="sud-section">
-  <div class="sud-container">
-    <div class="sud-section-heading sud-section-heading--center">
-      <div class="sud-section-heading__eyebrow">Photos &amp; Videos At SudPix</div>
-      <h2>Featured projects across photography, video, branding, and design</h2>
-    </div>
+    <p class="sud-portfolio-summary">
+      Browse a cleaner SudPix gallery wall built around premium stills, video frames, and polished brand visuals. Each image opens the full project so the visual style leads first.
+    </p>
 
-    <div class="sud-gallery-grid sud-gallery-grid--two">
-      {% for project in projects %}
-      <article class="sud-showcase-item">
-        <a href="{% url 'portfolio:detail' project.slug %}" class="block">
-          <div class="sud-showcase-item__thumb">
-            <img src="{{ project.image }}" alt="{{ project.title }}" />
-            <span class="sud-tag">{{ project.category }}</span>
+    <div class="sud-portfolio-grid">
+      {% for item in portfolio_gallery_tiles %}
+      <a href="{% url 'portfolio:detail' item.slug %}" class="sud-portfolio-tile">
+        <img src="{{ item.image }}" alt="{{ item.title }}" />
+        <div class="sud-portfolio-tile__content">
+          <div class="sud-portfolio-tile__meta">
+            <span class="sud-tag">{{ item.category }}</span>
+            <span class="sud-tag">{{ item.tag }}</span>
           </div>
-          <div class="sud-showcase-item__body">
-            <h3>{{ project.title }}</h3>
-            <p>{{ project.summary }}</p>
-            <div class="sud-showcase-item__action">Open project →</div>
-          </div>
-        </a>
-      </article>
+          <h3>{{ item.title }}</h3>
+          <p>Open the SudPix project preview and explore the full delivery direction.</p>
+          <div class="sud-portfolio-footer">View Project →</div>
+        </div>
+      </a>
       {% endfor %}
     </div>
-  </div>
-</section>
 
-<section class="sud-section">
-  <div class="sud-container">
-    <div class="sud-section-heading sud-section-heading--center">
-      <div class="sud-section-heading__eyebrow">Portfolio Metrics</div>
-      <h2>Visible project totals and delivery rhythm</h2>
-    </div>
-
-    <div class="sud-stat-row">
+    <div class="sud-portfolio-stats">
       {% for stat in portfolio_stats %}
-      <div class="sud-stat">
+      <div class="sud-portfolio-stat">
         <strong>{{ stat.value }}</strong>
         <span>{{ stat.label }}</span>
       </div>

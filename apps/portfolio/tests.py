@@ -7,6 +7,8 @@ class PortfolioPageTests(TestCase):
         response = self.client.get(reverse("portfolio:list"))
 
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Portfolio")
+        self.assertContains(response, "View Project")
         self.assertContains(response, reverse("portfolio:detail", args=["wedding-story"]))
 
     def test_portfolio_detail_page_renders(self):
