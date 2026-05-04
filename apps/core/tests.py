@@ -60,6 +60,18 @@ class CorePageTests(TestCase):
         self.assertContains(response, reverse("portfolio:detail", args=["corporate-campaign"]))
         self.assertContains(response, reverse("portfolio:detail", args=["live-event-film"]))
 
+    def test_home_gallery_section_shows_photo_and_video_media(self):
+        response = self.client.get(reverse("core:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Media Gallery")
+        self.assertContains(response, "Photo Gallery")
+        self.assertContains(response, "Video Gallery")
+        self.assertContains(response, "Couple portraits")
+        self.assertContains(response, "Main recap cut")
+        self.assertContains(response, reverse("portfolio:detail", args=["wedding-story"]))
+        self.assertContains(response, reverse("portfolio:detail", args=["live-event-film"]))
+
     def test_home_demo_button_links_to_demo_booking_flow(self):
         response = self.client.get(reverse("core:home"))
 

@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from apps.portfolio.data import get_featured_portfolio_projects
+from apps.portfolio.data import get_featured_portfolio_projects, get_portfolio_projects
 from apps.core.models import HeroCarousel
 from apps.core.utils import build_hero_carousel
 
@@ -23,6 +23,71 @@ CONTACT_HERO_FALLBACKS = [
     "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=80",
     "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=80",
 ]
+
+
+def build_home_media_gallery():
+    projects = {project["slug"]: project for project in get_portfolio_projects()}
+    photo_project = projects["wedding-story"]
+    video_project = projects["live-event-film"]
+
+    return {
+        "photos": [
+            {
+                "slug": photo_project["slug"],
+                "image": photo_project["image"],
+                "title": "Couple portraits",
+                "collection": photo_project["title"],
+                "caption": "Refined wedding portraits built for timeless gallery delivery.",
+            },
+            {
+                "slug": photo_project["slug"],
+                "image": photo_project["gallery"][0],
+                "title": "Ceremony details",
+                "collection": photo_project["title"],
+                "caption": "Clean stills shaped around emotion, style, and event atmosphere.",
+            },
+            {
+                "slug": photo_project["slug"],
+                "image": photo_project["gallery"][1],
+                "title": "Reception moments",
+                "collection": photo_project["title"],
+                "caption": "Guest reactions, decor, and movement captured as polished frames.",
+            },
+            {
+                "slug": photo_project["slug"],
+                "image": photo_project["gallery"][2],
+                "title": "Golden-hour edit",
+                "collection": photo_project["title"],
+                "caption": "Warm editorial light and premium finishing across the final selects.",
+            },
+        ],
+        "videos": [
+            {
+                "slug": video_project["slug"],
+                "image": video_project["image"],
+                "title": "Main recap cut",
+                "eyebrow": "Videography",
+                "runtime": video_project["metrics"][1]["value"],
+                "caption": "The hero event film shaped for premium post-event release and promotion.",
+            },
+            {
+                "slug": video_project["slug"],
+                "image": video_project["gallery"][0],
+                "title": "Opening energy",
+                "eyebrow": "Event coverage",
+                "runtime": "45 sec",
+                "caption": "Fast, cinematic coverage of the first crowd and stage moments.",
+            },
+            {
+                "slug": video_project["slug"],
+                "image": video_project["gallery"][1],
+                "title": "Audience reactions",
+                "eyebrow": "Highlight clip",
+                "runtime": "30 sec",
+                "caption": "Short-form social-ready moments captured for reels and recap cutdowns.",
+            },
+        ],
+    }
 
 
 class HomeView(TemplateView):
@@ -96,6 +161,7 @@ class HomeView(TemplateView):
                     },
                 ],
                 "portfolio_preview": get_featured_portfolio_projects(limit=3),
+                "home_media_gallery": build_home_media_gallery(),
                 "process_steps": [
                     {"number": "01", "title": "Choose a service", "description": "Pick photo, video, branding, or design."},
                     {"number": "02", "title": "Book your slot", "description": "Send the date and creative brief."},
