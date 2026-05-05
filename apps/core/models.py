@@ -59,3 +59,35 @@ class HeroCarouselSlide(models.Model):
     def __str__(self):
         label = self.alt_text or f"Slide {self.pk or ''}".strip()
         return f"{self.carousel} - {label}"
+
+
+class HomeGalleryItem(models.Model):
+    class Section(models.TextChoices):
+        PHOTOGRAPHY = "photography", "Homepage Photography Gallery"
+        VIDEOGRAPHY = "videography", "Homepage Videography Gallery"
+
+    section = models.CharField(max_length=24, choices=Section.choices)
+    title = models.CharField(
+        max_length=120,
+        blank=True,
+        help_text="Optional admin label for easier recognition.",
+    )
+    image = models.ImageField(upload_to="home_gallery/%Y/%m/%d/")
+    alt_text = models.CharField(max_length=160, blank=True)
+    project_slug = models.CharField(
+        max_length=80,
+        blank=True,
+        help_text="Optional portfolio project slug to open when this image is clicked.",
+    )
+    display_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("section", "display_order", "id")
+        verbose_name = "Homepage gallery item"
+        verbose_name_plural = "Homepage gallery items"
+
+    def __str__(self):
+        return self.title or self.alt_text or self.get_section_display()
