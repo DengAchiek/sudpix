@@ -125,6 +125,19 @@ class ClientPortalTests(TestCase):
         self.assertNotContains(response, "KES 80")
         self.assertNotContains(response, "KES 500")
 
+    def test_files_page_supports_video_preview_and_forward_modal(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("client:files"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'aria-label="Preview {self.locked_photo.title}"', html=False)
+        self.assertContains(response, f'aria-label="Preview {self.locked_video.title}"', html=False)
+        self.assertContains(response, 'data-preview-kind="video"', html=False)
+        self.assertContains(response, self.locked_video.file.url, html=False)
+        self.assertContains(response, "data-file-preview-modal", html=False)
+        self.assertContains(response, "Select for Download")
+
     def test_projects_route_redirects_to_uploaded_media_library(self):
         self.client.force_login(self.user)
 
