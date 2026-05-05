@@ -29,70 +29,45 @@ ABOUT_HERO_IMAGE = (
 ABOUT_STORY_IMAGE = (
     "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80"
 )
+HOME_PHOTO_GALLERY_FALLBACKS = [
+    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80",
+]
+HOME_VIDEO_GALLERY_FALLBACKS = [
+    "https://images.unsplash.com/photo-1505236858219-8359eb29e329?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
+]
+
+
+def build_media_grid(slug, title, images):
+    return [
+        {
+            "slug": slug,
+            "title": f"{title} {index}",
+            "image": image,
+        }
+        for index, image in enumerate(images, start=1)
+    ]
 
 
 def build_home_media_gallery():
     projects = {project["slug"]: project for project in get_portfolio_projects()}
     photo_project = projects["wedding-story"]
     video_project = projects["live-event-film"]
+    photo_images = [
+        photo_project["image"],
+        *photo_project["gallery"],
+        *HOME_PHOTO_GALLERY_FALLBACKS,
+    ]
+    video_images = [
+        video_project["image"],
+        *video_project["gallery"],
+        *HOME_VIDEO_GALLERY_FALLBACKS,
+    ]
 
     return {
-        "photos": [
-            {
-                "slug": photo_project["slug"],
-                "image": photo_project["image"],
-                "title": "Couple portraits",
-                "collection": photo_project["title"],
-                "caption": "Refined wedding portraits built for timeless gallery delivery.",
-            },
-            {
-                "slug": photo_project["slug"],
-                "image": photo_project["gallery"][0],
-                "title": "Ceremony details",
-                "collection": photo_project["title"],
-                "caption": "Clean stills shaped around emotion, style, and event atmosphere.",
-            },
-            {
-                "slug": photo_project["slug"],
-                "image": photo_project["gallery"][1],
-                "title": "Reception moments",
-                "collection": photo_project["title"],
-                "caption": "Guest reactions, decor, and movement captured as polished frames.",
-            },
-            {
-                "slug": photo_project["slug"],
-                "image": photo_project["gallery"][2],
-                "title": "Golden-hour edit",
-                "collection": photo_project["title"],
-                "caption": "Warm editorial light and premium finishing across the final selects.",
-            },
-        ],
-        "videos": [
-            {
-                "slug": video_project["slug"],
-                "image": video_project["image"],
-                "title": "Main recap cut",
-                "eyebrow": "Videography",
-                "runtime": video_project["metrics"][1]["value"],
-                "caption": "The hero event film shaped for premium post-event release and promotion.",
-            },
-            {
-                "slug": video_project["slug"],
-                "image": video_project["gallery"][0],
-                "title": "Opening energy",
-                "eyebrow": "Event coverage",
-                "runtime": "45 sec",
-                "caption": "Fast, cinematic coverage of the first crowd and stage moments.",
-            },
-            {
-                "slug": video_project["slug"],
-                "image": video_project["gallery"][1],
-                "title": "Audience reactions",
-                "eyebrow": "Highlight clip",
-                "runtime": "30 sec",
-                "caption": "Short-form social-ready moments captured for reels and recap cutdowns.",
-            },
-        ],
+        "photos": build_media_grid(photo_project["slug"], photo_project["title"], photo_images),
+        "videos": build_media_grid(video_project["slug"], video_project["title"], video_images),
     }
 
 

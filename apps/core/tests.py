@@ -73,11 +73,10 @@ class CorePageTests(TestCase):
         response = self.client.get(reverse("core:home"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Media Gallery")
-        self.assertContains(response, "Photo Gallery")
-        self.assertContains(response, "Video Gallery")
-        self.assertContains(response, "Couple portraits")
-        self.assertContains(response, "Main recap cut")
+        self.assertContains(response, "Photography Gallery")
+        self.assertContains(response, "Videography Gallery")
+        self.assertNotContains(response, "Couple portraits")
+        self.assertNotContains(response, "Main recap cut")
         self.assertContains(response, reverse("portfolio:detail", args=["wedding-story"]))
         self.assertContains(response, reverse("portfolio:detail", args=["live-event-film"]))
 

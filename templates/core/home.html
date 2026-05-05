@@ -2,6 +2,75 @@
 
 {% block title %}SudPix Creative Studio{% endblock %}
 
+{% block extra_head %}
+<style>
+  .sud-home-gallery-stack {
+    display: grid;
+    gap: 36px;
+  }
+
+  .sud-home-gallery-block {
+    display: grid;
+    gap: 14px;
+  }
+
+  .sud-home-gallery-label {
+    color: var(--sud-text);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .sud-home-gallery-board {
+    border-radius: 30px;
+    background: #f5f2eb;
+    padding: 26px;
+  }
+
+  .sud-home-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .sud-home-gallery-tile {
+    display: block;
+    overflow: hidden;
+    background: #ebe5da;
+  }
+
+  .sud-home-gallery-tile img {
+    width: 100%;
+    aspect-ratio: 1.42 / 1;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+  }
+
+  .sud-home-gallery-tile:hover img {
+    transform: scale(1.03);
+  }
+
+  @media (max-width: 991px) {
+    .sud-home-gallery-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .sud-home-gallery-board {
+      padding: 18px;
+    }
+
+    .sud-home-gallery-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="sud-section">
   <div class="sud-container">
@@ -45,75 +114,30 @@
 
 <section class="sud-section">
   <div class="sud-container">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div class="sud-section-heading mb-0">
-        <div class="sud-section-heading__eyebrow">Media Gallery</div>
-        <h2>Photo frames and video highlights from recent SudPix work</h2>
-        <p>
-          Browse selected stills and motion scenes from the SudPix archive, then open the full project page when a style or edit direction matches your brief.
-        </p>
-      </div>
-      <a href="{% url 'portfolio:list' %}" class="sud-btn-ghost">Open Full Gallery</a>
-    </div>
-
-    <div class="mt-14">
-      <div>
-        <div class="mb-5 flex items-center justify-between gap-4">
-          <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Photo Gallery</p>
-            <h3 class="mt-2 text-2xl font-extrabold text-white">Selected stills</h3>
-          </div>
-          <span class="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/60">{{ home_media_gallery.photos|length }} frames</span>
-        </div>
-
-        <div class="sud-gallery-grid sud-gallery-grid--two">
-          {% for item in home_media_gallery.photos %}
-          <a href="{% url 'portfolio:detail' item.slug %}" class="sud-media-card">
-            <img src="{{ item.image }}" alt="{{ item.title }}" />
-            <div class="sud-media-card__content">
-              <div class="sud-media-card__meta">
-                <span class="sud-tag">Photo</span>
-                <span class="sud-tag sud-tag--light">{{ item.collection }}</span>
-              </div>
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.caption }}</p>
-            </div>
-          </a>
-          {% endfor %}
-        </div>
-      </div>
-
-      <div class="mt-12">
-        <div class="mb-5 flex items-center justify-between gap-4">
-          <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Video Gallery</p>
-            <h3 class="mt-2 text-2xl font-extrabold text-white">Highlighted clips</h3>
-          </div>
-          <span class="rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft/60">{{ home_media_gallery.videos|length }} cuts</span>
-        </div>
-
-        <div class="space-y-6">
-          {% for item in home_media_gallery.videos %}
-          <article class="sud-showcase-item">
-            <a href="{% url 'portfolio:detail' item.slug %}" class="block">
-              <div class="sud-showcase-item__thumb">
-                <img src="{{ item.image }}" alt="{{ item.title }}" />
-                <span class="sud-tag">{{ item.eyebrow }}</span>
-                <span class="absolute bottom-4 right-4 z-[2] inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/65 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
-                  <svg aria-hidden="true" class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5.14v13.72a1 1 0 001.52.85l10.86-6.86a1 1 0 000-1.7L9.52 4.29A1 1 0 008 5.14z"></path>
-                  </svg>
-                  {{ item.runtime }}
-                </span>
-              </div>
-              <div class="sud-showcase-item__body">
-                <h3>{{ item.title }}</h3>
-                <p>{{ item.caption }}</p>
-                <div class="sud-showcase-item__action">Open video project →</div>
-              </div>
+    <div class="sud-home-gallery-stack">
+      <div class="sud-home-gallery-block">
+        <p class="sud-home-gallery-label">Photography Gallery</p>
+        <div class="sud-home-gallery-board">
+          <div class="sud-home-gallery-grid">
+            {% for item in home_media_gallery.photos %}
+            <a href="{% url 'portfolio:detail' item.slug %}" class="sud-home-gallery-tile" aria-label="Open photography project">
+              <img src="{{ item.image }}" alt="{{ item.title }}" />
             </a>
-          </article>
-          {% endfor %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="sud-home-gallery-block">
+        <p class="sud-home-gallery-label">Videography Gallery</p>
+        <div class="sud-home-gallery-board">
+          <div class="sud-home-gallery-grid">
+            {% for item in home_media_gallery.videos %}
+            <a href="{% url 'portfolio:detail' item.slug %}" class="sud-home-gallery-tile" aria-label="Open videography project">
+              <img src="{{ item.image }}" alt="{{ item.title }}" />
+            </a>
+            {% endfor %}
+          </div>
         </div>
       </div>
     </div>
