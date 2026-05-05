@@ -223,6 +223,16 @@ EMAIL_BACKEND = (
     or "django.core.mail.backends.console.EmailBackend"
 )
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@sudpix.local").strip() or "noreply@sudpix.local"
+BOOKING_NOTIFICATION_EMAIL = (
+    os.getenv("BOOKING_NOTIFICATION_EMAIL", "sudpix4@gmail.com").strip()
+    or "sudpix4@gmail.com"
+)
+EMAIL_HOST = os.getenv("EMAIL_HOST", "").strip()
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "").strip()
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=True)
+EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", default=False)
 
 MPESA_ENVIRONMENT = os.getenv("MPESA_ENVIRONMENT", "sandbox").strip().lower() or "sandbox"
 MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY", "").strip()

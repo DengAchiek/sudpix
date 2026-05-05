@@ -1,7 +1,7 @@
 from datetime import date
 
-from django.contrib.messages import get_messages
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
@@ -45,25 +45,39 @@ class BookingPageTests(TestCase):
         self.assertNotContains(response, 'for="id_email"', html=False)
         self.assertNotContains(response, 'for="id_phone"', html=False)
 
-    def test_booking_post_creates_request_and_redirects_with_success_message(self):
-        response = self.client.post(
-            reverse("bookings:create"),
-            {
-                "service": BookingRequest.Service.PHOTOGRAPHY,
-                "client_name": "Jane Client",
-                "email": "jane@example.com",
-                "phone": "+254700000000",
-                "event_date": "2026-04-10",
-                "notes": "Wedding photography coverage for a full day event.",
-            },
-        )
+    def test_booking_post_creates_request_and_redirects_to_submitted_state(self):
+        with self.settings(
+            EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+            BOOKING_NOTIFICATION_EMAIL="sudpix4@gmail.com",
+        ):
+            response = self.client.post(
+                reverse("bookings:create"),
+                {
+                    "service": BookingRequest.Service.PHOTOGRAPHY,
+                    "client_name": "Jane Client",
+                    "email": "jane@example.com",
+                    "phone": "+254700000000",
+                    "event_date": "2026-04-10",
+                    "notes": "Wedding photography coverage for a full day event.",
+                },
+            )
 
-        self.assertRedirects(response, reverse("bookings:create"))
-        messages = [message.message for message in get_messages(response.wsgi_request)]
-        self.assertIn("Your booking request has been submitted successfully.", messages)
+        self.assertRedirects(response, f"{reverse('bookings:create')}?submitted=1")
         booking_request = BookingRequest.objects.get()
         self.assertEqual(booking_request.client_name, "Jane Client")
         self.assertEqual(booking_request.status, BookingRequest.Status.NEW)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ["sudpix4@gmail.com"])
+        self.assertIn("Jane Client", mail.outbox[0].body)
+
+    def test_booking_submitted_state_shows_thank_you_panel(self):
+        response = self.client.get(f"{reverse('bookings:create')}?submitted=1")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Thank you for booking with SudPix.")
+        self.assertContains(response, "Book Another Service")
+        self.assertContains(response, "Browse More Services")
+        self.assertNotContains(response, "Submit Booking Request")
 
     def test_logged_in_client_booking_post_uses_account_details_automatically(self):
         client_user = get_user_model().objects.create_user(
@@ -75,22 +89,28 @@ class BookingPageTests(TestCase):
         )
         self.client.force_login(client_user)
 
-        response = self.client.post(
-            reverse("bookings:create"),
-            {
-                "service": BookingRequest.Service.VIDEOGRAPHY,
-                "event_date": "2026-04-11",
-                "notes": "Need a short launch film.",
-            },
-        )
+        with self.settings(
+            EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+            BOOKING_NOTIFICATION_EMAIL="sudpix4@gmail.com",
+        ):
+            response = self.client.post(
+                reverse("bookings:create"),
+                {
+                    "service": BookingRequest.Service.VIDEOGRAPHY,
+                    "event_date": "2026-04-11",
+                    "notes": "Need a short launch film.",
+                },
+            )
 
-        self.assertRedirects(response, reverse("bookings:create"))
+        self.assertRedirects(response, f"{reverse('bookings:create')}?submitted=1")
         booking_request = BookingRequest.objects.get()
         self.assertEqual(booking_request.client_account, client_user)
         self.assertEqual(booking_request.client_name, "Portal Client")
         self.assertEqual(booking_request.email, "portalclient@example.com")
         self.assertEqual(booking_request.phone, "")
         self.assertEqual(booking_request.service, BookingRequest.Service.VIDEOGRAPHY)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Signed-in client: portalclient", mail.outbox[0].body)
 
     def test_booking_post_with_invalid_data_shows_form_errors(self):
         response = self.client.post(

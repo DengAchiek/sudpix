@@ -315,6 +315,7 @@
     var previewPaymentLink = document.querySelector("[data-file-preview-payment-link]");
     var previewDownloadLink = document.querySelector("[data-file-preview-download-link]");
     var activePreviewTrigger = null;
+    var previewClickTimers = new WeakMap();
 
     if (!forms.length && !previewTriggers.length) {
       return;
@@ -352,6 +353,28 @@
       setSummaryCount("[data-selected-files-count]", payload.selected_files_count);
       setSummaryCount("[data-selected-photos-count]", payload.selected_photo_count);
       setSummaryCount("[data-selected-videos-count]", payload.selected_video_count);
+    }
+
+    function clearPreviewTimer(trigger) {
+      var timerId = previewClickTimers.get(trigger);
+      if (timerId) {
+        window.clearTimeout(timerId);
+        previewClickTimers.delete(trigger);
+      }
+    }
+
+    function triggerGridSelection(form) {
+      var submitButton = form.querySelector("[data-gallery-toggle]");
+      if (!submitButton) {
+        return;
+      }
+
+      if (form.requestSubmit) {
+        form.requestSubmit(submitButton);
+        return;
+      }
+
+      submitButton.click();
     }
 
     function togglePreviewControl(element, hidden) {
@@ -536,7 +559,28 @@
     });
 
     previewTriggers.forEach(function(trigger) {
-      trigger.addEventListener("click", function() {
+      var parentForm = trigger.closest("[data-gallery-form]");
+
+      if (!parentForm) {
+        trigger.addEventListener("click", function() {
+          openPreview(trigger);
+        });
+        return;
+      }
+
+      trigger.addEventListener("click", function(event) {
+        event.preventDefault();
+        clearPreviewTimer(trigger);
+        var timerId = window.setTimeout(function() {
+          triggerGridSelection(parentForm);
+          previewClickTimers.delete(trigger);
+        }, 220);
+        previewClickTimers.set(trigger, timerId);
+      });
+
+      trigger.addEventListener("dblclick", function(event) {
+        event.preventDefault();
+        clearPreviewTimer(trigger);
         openPreview(trigger);
       });
     });

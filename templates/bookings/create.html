@@ -38,18 +38,28 @@
       </div>
     </div>
 
+    {% if booking_submitted %}
+    <div class="grid gap-5 rounded-[1.5rem] border border-white/10 bg-primary/80 p-6 backdrop-blur">
+      <div class="rounded-2xl border border-green-400/20 bg-green-500/10 px-5 py-4 text-base font-medium text-green-100">
+        Thank you for booking with SudPix. We shall get in touch with you as soon as possible.
+      </div>
+
+      <div class="rounded-3xl border border-white/10 bg-black/20 p-6">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">What Happens Next</p>
+        <div class="mt-4 space-y-3 text-sm leading-7 text-soft/75">
+          <p>Our team will review your request and respond with the next steps.</p>
+          <p>You can book another service right away or continue browsing the SudPix service categories below.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 text-center font-semibold text-white shadow-glow">Book Another Service</a>
+        <a href="{% url 'services:list' %}" class="rounded-full border border-white/15 px-6 py-3 text-center font-semibold hover:border-gold/50 hover:text-gold">Browse More Services</a>
+      </div>
+    </div>
+    {% else %}
     <form method="post" class="grid gap-4 rounded-[1.5rem] border border-white/10 bg-primary/80 p-6 backdrop-blur">
       {% csrf_token %}
-
-      {% if messages %}
-      <div class="space-y-3 sm:col-span-2">
-        {% for message in messages %}
-        <div class="rounded-2xl border border-green-400/20 bg-green-500/10 px-4 py-3 text-sm text-green-100">
-          {{ message }}
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
 
       {% if form.non_field_errors %}
       <div class="space-y-2 sm:col-span-2 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
@@ -145,6 +155,7 @@
 
       <button type="submit" class="rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">{% if is_demo_request %}Submit Demo Request{% else %}Submit Booking Request{% endif %}</button>
     </form>
+    {% endif %}
   </div>
 </section>
 {% endblock %}
