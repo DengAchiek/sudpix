@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.bookings.models import BookingRequest
+from apps.notifications.models import AdminNotification
 from apps.projects.models import Project
 
 
@@ -69,6 +70,9 @@ class BookingPageTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to, ["sudpix4@gmail.com"])
         self.assertIn("Jane Client", mail.outbox[0].body)
+        notification = AdminNotification.objects.get()
+        self.assertEqual(notification.kind, AdminNotification.Kind.BOOKING_REQUESTED)
+        self.assertIn("Jane Client", notification.message)
 
     def test_booking_submitted_state_shows_thank_you_panel(self):
         response = self.client.get(f"{reverse('bookings:create')}?submitted=1")
@@ -111,6 +115,8 @@ class BookingPageTests(TestCase):
         self.assertEqual(booking_request.service, BookingRequest.Service.VIDEOGRAPHY)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn("Signed-in client: portalclient", mail.outbox[0].body)
+        notification = AdminNotification.objects.get()
+        self.assertEqual(notification.related_user, client_user)
 
     def test_booking_post_with_invalid_data_shows_form_errors(self):
         response = self.client.post(

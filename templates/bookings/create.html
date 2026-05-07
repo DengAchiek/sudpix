@@ -52,9 +52,19 @@
         </div>
       </div>
 
-      <div class="flex flex-col gap-3 sm:flex-row">
-        <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 text-center font-semibold text-white shadow-glow">Book Another Service</a>
-        <a href="{% url 'services:list' %}" class="rounded-full border border-white/15 px-6 py-3 text-center font-semibold hover:border-gold/50 hover:text-gold">Browse More Services</a>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <a
+          href="{% url 'bookings:create' %}"
+          class="inline-flex min-h-[4rem] items-center justify-center rounded-full bg-gradient-to-r from-accent to-[#ff8d24] px-8 py-4 text-center text-base font-semibold text-white shadow-glow transition duration-200 hover:-translate-y-0.5 hover:brightness-110"
+        >
+          Book Another Service
+        </a>
+        <a
+          href="{% url 'services:list' %}"
+          class="inline-flex min-h-[4rem] items-center justify-center rounded-full border border-white/15 bg-white/[0.02] px-8 py-4 text-center text-base font-semibold text-white transition duration-200 hover:border-gold/45 hover:bg-gold/8 hover:text-gold"
+        >
+          Browse More Services
+        </a>
       </div>
     </div>
     {% else %}

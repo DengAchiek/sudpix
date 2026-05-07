@@ -6,6 +6,8 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.views.generic import CreateView
 
+from apps.notifications.models import create_booking_request_notification
+
 from .forms import BookingRequestForm
 from .models import BookingRequest
 
@@ -58,6 +60,7 @@ class BookingCreateView(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        create_booking_request_notification(self.object)
         self.send_booking_notification(self.object)
         return response
 
@@ -68,7 +71,34 @@ class BookingCreateView(CreateView):
     def send_booking_notification(self, booking_request):
         recipient = getattr(settings, "BOOKING_NOTIFICATION_EMAIL", "").strip()
         if not recipient:
+            logger.warning(
+                "Booking notification email skipped for booking %s because "
+                "BOOKING_NOTIFICATION_EMAIL is not configured.",
+                booking_request.pk,
+            )
             return
+
+        backend = getattr(settings, "EMAIL_BACKEND", "").strip()
+        if backend == "django.core.mail.backends.console.EmailBackend":
+            logger.warning(
+                "Booking notification email for booking %s is using the console "
+                "email backend. Configure SMTP settings to send real email to %s.",
+                booking_request.pk,
+                recipient,
+            )
+        elif backend == "django.core.mail.backends.smtp.EmailBackend":
+            missing_settings = [
+                setting_name
+                for setting_name in ("EMAIL_HOST", "EMAIL_HOST_USER", "EMAIL_HOST_PASSWORD")
+                if not getattr(settings, setting_name, "").strip()
+            ]
+            if missing_settings:
+                logger.warning(
+                    "Booking notification email for booking %s is using SMTP but "
+                    "missing %s.",
+                    booking_request.pk,
+                    ", ".join(missing_settings),
+                )
 
         portal_label = (
             f"Signed-in client: {booking_request.client_account.get_username()}"

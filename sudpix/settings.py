@@ -218,21 +218,31 @@ if find_spec("whitenoise") is not None:
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "client:dashboard"
 LOGOUT_REDIRECT_URL = "core:home"
-EMAIL_BACKEND = (
-    os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend").strip()
-    or "django.core.mail.backends.console.EmailBackend"
-)
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@sudpix.local").strip() or "noreply@sudpix.local"
-BOOKING_NOTIFICATION_EMAIL = (
-    os.getenv("BOOKING_NOTIFICATION_EMAIL", "sudpix4@gmail.com").strip()
-    or "sudpix4@gmail.com"
-)
 EMAIL_HOST = os.getenv("EMAIL_HOST", "").strip()
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "").strip()
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=True)
 EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", default=False)
+
+configured_email_backend = os.getenv("EMAIL_BACKEND", "").strip()
+if configured_email_backend:
+    EMAIL_BACKEND = configured_email_backend
+elif EMAIL_HOST or EMAIL_HOST_USER or EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+DEFAULT_FROM_EMAIL = (
+    os.getenv("DEFAULT_FROM_EMAIL", "").strip()
+    or EMAIL_HOST_USER
+    or "noreply@sudpix.local"
+)
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+BOOKING_NOTIFICATION_EMAIL = (
+    os.getenv("BOOKING_NOTIFICATION_EMAIL", "sudpix4@gmail.com").strip()
+    or "sudpix4@gmail.com"
+)
 
 MPESA_ENVIRONMENT = os.getenv("MPESA_ENVIRONMENT", "sandbox").strip().lower() or "sandbox"
 MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY", "").strip()
