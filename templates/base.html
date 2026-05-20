@@ -895,7 +895,7 @@
             {% endif %}
             <a href="{% url 'accounts:logout' %}" class="sud-btn">Logout</a>
             {% else %}
-            <a href="{% url 'accounts:login' %}" class="sud-btn-ghost">Login</a>
+            <a href="{% url 'accounts:client_login' %}" class="sud-btn-ghost">Login</a>
             <a href="{% url 'bookings:create' %}" class="sud-btn">Book a Service</a>
             {% endif %}
           </div>
@@ -939,7 +939,7 @@
           {% endif %}
           <a href="{% url 'accounts:logout' %}" class="sud-btn">Logout</a>
           {% else %}
-          <a href="{% url 'accounts:login' %}" class="sud-btn-ghost">Login</a>
+          <a href="{% url 'accounts:client_login' %}" class="sud-btn-ghost">Login</a>
           <a href="{% url 'bookings:create' %}" class="sud-btn">Book a Service</a>
           {% endif %}
         </div>

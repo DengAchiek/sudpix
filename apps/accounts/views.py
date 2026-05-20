@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import FormView, TemplateView
+from urllib.parse import urlencode
 
 from apps.notifications.models import create_client_registration_notification
 
@@ -19,7 +20,11 @@ class LoginChoiceView(TemplateView):
             if request.user.is_staff:
                 return redirect("dashboard:home")
             return redirect("client:dashboard")
-        return super().dispatch(request, *args, **kwargs)
+        query_string = ""
+        next_url = request.GET.get("next", "").strip()
+        if next_url:
+            query_string = f"?{urlencode({'next': next_url})}"
+        return redirect(f"{reverse_lazy('accounts:client_login')}{query_string}")
 
 
 class ClientLoginView(LoginView):

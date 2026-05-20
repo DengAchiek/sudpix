@@ -91,3 +91,22 @@ class HomeGalleryItem(models.Model):
 
     def __str__(self):
         return self.title or self.alt_text or self.get_section_display()
+
+
+class AboutTeamMember(models.Model):
+    name = models.CharField(max_length=120)
+    role = models.CharField(max_length=120)
+    image = models.ImageField(upload_to="about_team/%Y/%m/%d/")
+    alt_text = models.CharField(max_length=160, blank=True)
+    display_order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("display_order", "id")
+        verbose_name = "About team member"
+        verbose_name_plural = "About team members"
+
+    def __str__(self):
+        return self.name

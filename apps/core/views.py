@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 
 from apps.portfolio.data import get_featured_portfolio_projects, get_portfolio_projects
-from apps.core.models import HeroCarousel, HomeGalleryItem
+from apps.core.models import AboutTeamMember, HeroCarousel, HomeGalleryItem
 from apps.core.utils import build_hero_carousel
 
 
@@ -36,6 +36,26 @@ HOME_PHOTO_GALLERY_FALLBACKS = [
 HOME_VIDEO_GALLERY_FALLBACKS = [
     "https://images.unsplash.com/photo-1505236858219-8359eb29e329?auto=format&fit=crop&w=1200&q=80",
     "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
+]
+ABOUT_TEAM_MEMBER_FALLBACKS = [
+    {
+        "name": "Simon Lado",
+        "role": "Lead Photographer",
+        "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43b?auto=format&fit=crop&w=900&q=80",
+        "alt_text": "Simon Lado at SudPix",
+    },
+    {
+        "name": "Daniel Ochieng",
+        "role": "Creative Director",
+        "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80",
+        "alt_text": "Daniel Ochieng at SudPix",
+    },
+    {
+        "name": "Brian Deng",
+        "role": "Visual Designer",
+        "image": "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=80",
+        "alt_text": "Brian Deng at SudPix",
+    },
 ]
 
 
@@ -99,6 +119,26 @@ def build_home_media_gallery():
             video_project["title"],
         ),
     }
+
+
+def build_about_team_members():
+    team_members = list(
+        AboutTeamMember.objects.filter(is_active=True).order_by("display_order", "id")
+    )
+
+    if team_members:
+        return [
+            {
+                "name": member.name,
+                "role": member.role,
+                "image": member.image.url,
+                "alt_text": member.alt_text or f"{member.name} at SudPix",
+            }
+            for member in team_members
+            if member.image
+        ]
+
+    return ABOUT_TEAM_MEMBER_FALLBACKS
 
 
 class HomeView(TemplateView):
@@ -275,23 +315,7 @@ class AboutView(TemplateView):
                         "description": "After editing, we organize the files into a polished client-ready gallery and download flow.",
                     },
                 ],
-                "about_team_members": [
-                    {
-                        "name": "Simon Lado",
-                        "role": "Lead Photographer",
-                        "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43b?auto=format&fit=crop&w=900&q=80",
-                    },
-                    {
-                        "name": "Daniel Ochieng",
-                        "role": "Creative Director",
-                        "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80",
-                    },
-                    {
-                        "name": "Brian Deng",
-                        "role": "Visual Designer",
-                        "image": "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=900&q=80",
-                    },
-                ],
+                "about_team_members": build_about_team_members(),
                 "about_process_steps": [
                     {
                         "number": "01",

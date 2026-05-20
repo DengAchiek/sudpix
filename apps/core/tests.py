@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.cart.models import CartItem
-from apps.core.models import HeroCarousel, HeroCarouselSlide, HomeGalleryItem
+from apps.core.models import AboutTeamMember, HeroCarousel, HeroCarouselSlide, HomeGalleryItem
 from apps.downloads.models import Download
 from apps.media_management.models import MediaAsset
 from apps.payments.models import Payment
@@ -174,6 +174,22 @@ class HeroCarouselAdminTests(TestCase):
         self.assertContains(response, "/media/home_gallery/")
         self.assertContains(response, reverse("portfolio:detail", args=["wedding-story"]))
         self.assertContains(response, reverse("portfolio:detail", args=["live-event-film"]))
+
+    def test_about_page_team_uses_admin_uploaded_members(self):
+        AboutTeamMember.objects.create(
+            name="Mary Studio",
+            role="Studio Producer",
+            image=self._uploaded_slide("about-team.gif"),
+            alt_text="Mary Studio at SudPix",
+            display_order=0,
+        )
+
+        response = self.client.get(reverse("core:about"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Mary Studio")
+        self.assertContains(response, "/media/about_team/")
+        self.assertNotContains(response, "Simon Lado")
 
 
 class SeedPortalDemoCommandTests(TestCase):

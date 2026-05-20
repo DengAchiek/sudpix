@@ -11,13 +11,21 @@ from apps.projects.models import Project, build_client_upload_folder_slug
 
 
 class AccountPageTests(TestCase):
-    def test_login_page_renders(self):
+    def test_login_page_redirects_to_client_login(self):
         response = self.client.get(reverse("accounts:login"))
 
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Choose how you want to log in")
-        self.assertContains(response, reverse("accounts:client_login"))
-        self.assertContains(response, reverse("accounts:admin_login"))
+        self.assertRedirects(response, reverse("accounts:client_login"))
+
+    def test_login_page_preserves_next_when_redirecting_to_client_login(self):
+        response = self.client.get(
+            reverse("accounts:login"),
+            {"next": reverse("client:files")},
+        )
+
+        self.assertRedirects(
+            response,
+            f"{reverse('accounts:client_login')}?next={reverse('client:files')}",
+        )
 
     def test_client_login_page_renders(self):
         response = self.client.get(reverse("accounts:client_login"))
@@ -55,7 +63,8 @@ class AccountPageTests(TestCase):
         response = self.client.get(reverse("accounts:password_reset"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Recover your client or admin account")
+        self.assertContains(response, "Recover your SudPix account")
+        self.assertNotContains(response, "Staff accounts for the admin dashboard and upload tools")
 
     def test_register_creates_user_and_logs_them_in(self):
         response = self.client.post(
@@ -221,7 +230,24 @@ class AccountPageTests(TestCase):
         self.assertRedirects(
             response,
             f"{reverse('accounts:login')}?next={reverse('accounts:profile')}",
+            fetch_redirect_response=False,
         )
+
+    def test_public_client_login_page_hides_admin_entry_points(self):
+        response = self.client.get(reverse("accounts:client_login"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Back to login choices")
+        self.assertNotContains(response, reverse("accounts:admin_login"))
+
+    def test_public_password_reset_pages_hide_admin_links(self):
+        done_response = self.client.get(reverse("accounts:password_reset_done"))
+        complete_response = self.client.get(reverse("accounts:password_reset_complete"))
+
+        self.assertEqual(done_response.status_code, 200)
+        self.assertEqual(complete_response.status_code, 200)
+        self.assertNotContains(done_response, reverse("accounts:admin_login"))
+        self.assertNotContains(complete_response, reverse("accounts:admin_login"))
 
     def test_logout_redirects_to_home_page(self):
         user = get_user_model().objects.create_user(

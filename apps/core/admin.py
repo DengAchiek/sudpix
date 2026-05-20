@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import HeroCarousel, HeroCarouselSlide, HomeGalleryItem
+from .models import AboutTeamMember, HeroCarousel, HeroCarouselSlide, HomeGalleryItem
 
 
 class HeroCarouselSlideInline(admin.TabularInline):
@@ -105,4 +105,33 @@ class HomeGalleryItemAdmin(admin.ModelAdmin):
             '<img src="{}" alt="{}" style="height: 72px; width: 128px; object-fit: cover; border-radius: 8px;" />',
             obj.image.url,
             obj.alt_text or obj.title or obj.get_section_display(),
+        )
+
+
+@admin.register(AboutTeamMember)
+class AboutTeamMemberAdmin(admin.ModelAdmin):
+    list_display = ("name", "role", "display_order", "is_active", "preview")
+    list_filter = ("is_active",)
+    search_fields = ("name", "role", "alt_text")
+    ordering = ("display_order", "id")
+    list_editable = ("display_order", "is_active")
+    fields = (
+        "name",
+        "role",
+        "image",
+        "alt_text",
+        "display_order",
+        "is_active",
+        "preview",
+    )
+    readonly_fields = ("preview",)
+
+    @admin.display(description="Preview")
+    def preview(self, obj):
+        if not obj.pk or not obj.image:
+            return "Upload an image"
+        return format_html(
+            '<img src="{}" alt="{}" style="height: 72px; width: 128px; object-fit: cover; border-radius: 8px;" />',
+            obj.image.url,
+            obj.alt_text or obj.name,
         )

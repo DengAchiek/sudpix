@@ -99,6 +99,7 @@ class ClientPortalTests(TestCase):
         self.assertRedirects(
             response,
             f"{reverse('accounts:login')}?next={reverse('client:dashboard')}",
+            fetch_redirect_response=False,
         )
 
     def test_client_portal_pages_render_for_authenticated_user(self):
