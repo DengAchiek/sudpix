@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
+from django.utils import timezone
 from django.utils.text import slugify
 
 from apps.projects.models import Project, ensure_client_upload_folder, initialize_project_workspace
@@ -47,6 +48,9 @@ class BookingRequest(models.Model):
         blank=True,
         null=True,
     )
+    portal_invite_sent_at = models.DateTimeField(blank=True, null=True)
+    last_progress_notified_status = models.CharField(max_length=20, blank=True)
+    progress_notified_at = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -100,7 +104,42 @@ class BookingRequest(models.Model):
                 "updated_at",
             )
         )
+        self.send_portal_invite()
         return project
+
+    def transition_to_status(self, status):
+        if status == self.status:
+            return False
+
+        self.status = status
+        self.save(update_fields=("status", "updated_at"))
+        self.send_progress_notification()
+        return True
+
+    def send_progress_notification(self, *, force=False):
+        from .services import send_booking_progress_notification
+
+        return send_booking_progress_notification(self, force=force)
+
+    def send_portal_invite(self, *, force=False):
+        from .services import send_booking_portal_invite
+
+        return send_booking_portal_invite(self, force=force)
+
+    def mark_progress_notified(self):
+        self.last_progress_notified_status = self.status
+        self.progress_notified_at = timezone.now()
+        self.save(
+            update_fields=(
+                "last_progress_notified_status",
+                "progress_notified_at",
+                "updated_at",
+            )
+        )
+
+    def mark_portal_invite_sent(self):
+        self.portal_invite_sent_at = timezone.now()
+        self.save(update_fields=("portal_invite_sent_at", "updated_at"))
 
     def get_or_create_client_account(self):
         if self.client_account_id:

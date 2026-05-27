@@ -239,6 +239,7 @@ DEFAULT_FROM_EMAIL = (
     or "noreply@sudpix.local"
 )
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+SUDPIX_SITE_URL = os.getenv("SUDPIX_SITE_URL", "https://sudpix.com").strip().rstrip("/")
 BOOKING_NOTIFICATION_EMAIL = (
     os.getenv("BOOKING_NOTIFICATION_EMAIL", "sudpix4@gmail.com").strip()
     or "sudpix4@gmail.com"

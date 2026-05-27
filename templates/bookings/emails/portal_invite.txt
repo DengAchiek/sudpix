@@ -1,0 +1,18 @@
+Hi {{ booking.client_name }},
+
+Your SudPix client workspace is ready for {{ project.title }}.
+
+Inside the workspace you can review your brief, track milestones, leave feedback, request revisions, approve delivery, complete payment, and download final files.
+
+{% if activation_url %}Set your portal password and open your workspace:
+{{ activation_url }}
+{% else %}Open your workspace:
+{{ project_url }}
+
+Need to sign in first?
+{{ login_url }}
+{% endif %}
+Username: {{ user.get_username }}
+
+SudPix Creative Studio
+{{ site_url }}

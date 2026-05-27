@@ -1,0 +1,19 @@
+Hi {{ booking.client_name }},
+
+{{ headline }}
+
+{{ message }}
+
+Booking summary:
+- Service: {{ booking.service }}
+- Project date: {{ booking.event_date }}
+- Status: {{ booking.get_status_display }}
+
+Project notes:
+{{ booking.notes }}
+
+You can always continue with SudPix here:
+{{ login_url }}
+
+SudPix Creative Studio
+{{ site_url }}

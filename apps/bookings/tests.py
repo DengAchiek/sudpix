@@ -1,10 +1,13 @@
 from datetime import date
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from django.core import mail
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from apps.bookings.models import BookingRequest
 from apps.notifications.models import AdminNotification
@@ -67,9 +70,14 @@ class BookingPageTests(TestCase):
         booking_request = BookingRequest.objects.get()
         self.assertEqual(booking_request.client_name, "Jane Client")
         self.assertEqual(booking_request.status, BookingRequest.Status.NEW)
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(booking_request.last_progress_notified_status, BookingRequest.Status.NEW)
+        self.assertIsNotNone(booking_request.progress_notified_at)
+        self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[0].to, ["sudpix4@gmail.com"])
         self.assertIn("Jane Client", mail.outbox[0].body)
+        self.assertEqual(mail.outbox[1].to, ["jane@example.com"])
+        self.assertIn("We received your SudPix booking request", mail.outbox[1].subject)
+        self.assertIn("Your booking request is in the SudPix queue.", mail.outbox[1].body)
         notification = AdminNotification.objects.get()
         self.assertEqual(notification.kind, AdminNotification.Kind.BOOKING_REQUESTED)
         self.assertIn("Jane Client", notification.message)
@@ -79,6 +87,8 @@ class BookingPageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Thank you for booking with SudPix.")
+        self.assertContains(response, "We have sent a confirmation email")
+        self.assertContains(response, "email your secure access link automatically")
         self.assertContains(response, "Book Another Service")
         self.assertContains(response, "Browse More Services")
         self.assertNotContains(response, "Submit Booking Request")
@@ -113,8 +123,9 @@ class BookingPageTests(TestCase):
         self.assertEqual(booking_request.email, "portalclient@example.com")
         self.assertEqual(booking_request.phone, "")
         self.assertEqual(booking_request.service, BookingRequest.Service.VIDEOGRAPHY)
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 2)
         self.assertIn("Signed-in client: portalclient", mail.outbox[0].body)
+        self.assertEqual(mail.outbox[1].to, ["portalclient@example.com"])
         notification = AdminNotification.objects.get()
         self.assertEqual(notification.related_user, client_user)
 
@@ -159,6 +170,12 @@ class BookingPageTests(TestCase):
         self.assertEqual(ProjectMilestone.objects.filter(project=project).count(), 7)
         self.assertTrue(ProjectApproval.objects.filter(project=project).exists())
         self.assertTrue(FinalDelivery.objects.filter(project=project).exists())
+        self.assertIsNotNone(booking_request.portal_invite_sent_at)
+        self.assertEqual(len(mail.outbox), 1)
+        uid = urlsafe_base64_encode(force_bytes(project.client.pk))
+        token = default_token_generator.make_token(project.client)
+        self.assertIn(reverse("accounts:password_reset_confirm", args=[uid, token]), mail.outbox[0].body)
+        self.assertIn(project.title, mail.outbox[0].subject)
 
     def test_confirmed_booking_uses_existing_user_by_email_when_converted(self):
         existing_user = get_user_model().objects.create_user(
@@ -179,6 +196,44 @@ class BookingPageTests(TestCase):
         project = booking_request.convert_to_project()
 
         self.assertEqual(project.client, existing_user)
+        booking_request.refresh_from_db()
+        self.assertIsNotNone(booking_request.portal_invite_sent_at)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(project.get_absolute_url(), mail.outbox[0].body)
+        self.assertNotIn(reverse("accounts:password_reset"), mail.outbox[0].body)
+
+    def test_booking_progress_status_changes_send_client_updates_once(self):
+        booking_request = BookingRequest.objects.create(
+            service=BookingRequest.Service.PHOTOGRAPHY,
+            client_name="Progress Client",
+            email="progress@example.com",
+            phone="+254700000004",
+            event_date=date(2026, 7, 7),
+            notes="Corporate headshots.",
+            status=BookingRequest.Status.NEW,
+        )
+
+        changed = booking_request.transition_to_status(BookingRequest.Status.CONTACTED)
+
+        booking_request.refresh_from_db()
+        self.assertTrue(changed)
+        self.assertEqual(booking_request.status, BookingRequest.Status.CONTACTED)
+        self.assertEqual(booking_request.last_progress_notified_status, BookingRequest.Status.CONTACTED)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("SudPix has started your booking review", mail.outbox[0].subject)
+        self.assertIn("Corporate headshots.", mail.outbox[0].body)
+
+        unchanged = booking_request.transition_to_status(BookingRequest.Status.CONTACTED)
+
+        self.assertFalse(unchanged)
+        self.assertEqual(len(mail.outbox), 1)
+
+        booking_request.transition_to_status(BookingRequest.Status.QUOTED)
+
+        booking_request.refresh_from_db()
+        self.assertEqual(booking_request.last_progress_notified_status, BookingRequest.Status.QUOTED)
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertIn("Your SudPix booking has been quoted", mail.outbox[1].subject)
 
     def test_only_confirmed_booking_can_be_converted(self):
         booking_request = BookingRequest.objects.create(

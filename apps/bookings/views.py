@@ -62,6 +62,7 @@ class BookingCreateView(CreateView):
         response = super().form_valid(form)
         create_booking_request_notification(self.object)
         self.send_booking_notification(self.object)
+        self.object.send_progress_notification()
         return response
 
     def get_success_url(self):
