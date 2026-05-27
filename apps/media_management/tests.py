@@ -9,8 +9,9 @@ from django.test import TestCase
 from django.urls import reverse
 from PIL import Image
 
-from apps.projects.models import Project, ensure_client_upload_folder
+from apps.projects.models import Project, ProjectMilestone
 
+from .forms import infer_media_kind
 from .models import MediaAsset
 
 
@@ -62,6 +63,13 @@ class MediaAssetModelTests(TestCase):
         self.assertNotEqual(media_asset.preview_url, media_asset.file.url)
         self.assertFalse(media_asset.preview_is_protected)
 
+    def test_brand_assets_are_classified_for_workspace_delivery(self):
+        design = SimpleUploadedFile("logo-lockup.svg", b"<svg></svg>", content_type="image/svg+xml")
+        deck = SimpleUploadedFile("brand-deck.pdf", b"pdf", content_type="application/pdf")
+
+        self.assertEqual(infer_media_kind(design), MediaAsset.Kind.DESIGN)
+        self.assertEqual(infer_media_kind(deck), MediaAsset.Kind.DOCUMENT)
+
 
 class MediaAssetAdminTests(TestCase):
     def setUp(self):
@@ -100,17 +108,24 @@ class MediaAssetAdminTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Client name")
-        self.assertContains(response, "Drag and drop many images or videos here")
+        self.assertContains(response, "Project workspace")
+        self.assertContains(response, "Drag and drop client deliverables here")
         self.assertContains(response, 'data-batch-dropzone')
         self.assertNotContains(response, "Price")
         self.assertNotContains(response, "Highlight")
         self.assertNotContains(response, "Edited")
 
     def test_admin_can_upload_multiple_local_images_for_one_project(self):
+        gallery_milestone = ProjectMilestone.objects.create(
+            project=self.project,
+            title="Gallery uploaded",
+            status=ProjectMilestone.Status.ACTIVE,
+        )
         response = self.client.post(
             reverse("admin:media_management_mediaasset_add"),
             {
                 "client": self.portal_user.pk,
+                "project": self.project.pk,
                 "batch_files": [
                     SimpleUploadedFile(
                         "wedding-01.jpg",
@@ -128,8 +143,7 @@ class MediaAssetAdminTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 302)
-        upload_folder = ensure_client_upload_folder(self.portal_user)
-        assets = list(MediaAsset.objects.filter(project=upload_folder).order_by("title"))
+        assets = list(MediaAsset.objects.filter(project=self.project).order_by("title"))
         self.assertEqual(len(assets), 2)
         self.assertEqual(assets[0].title, "wedding 01")
         self.assertEqual(assets[1].title, "wedding 02")
@@ -137,13 +151,15 @@ class MediaAssetAdminTests(TestCase):
         self.assertTrue(all(asset.file for asset in assets))
         self.assertTrue(all(asset.preview_image for asset in assets))
         self.assertTrue(all(asset.preview_is_protected for asset in assets))
+        gallery_milestone.refresh_from_db()
+        self.assertEqual(gallery_milestone.status, ProjectMilestone.Status.COMPLETED)
         for asset in assets:
             with asset.file.open("rb") as original, asset.preview_image.open("rb") as preview:
                 self.assertNotEqual(original.read(), preview.read())
 
         self.client.logout()
         self.client.force_login(self.portal_user)
-        portal_response = self.client.get(f"{reverse('client:files')}?project={upload_folder.slug}")
+        portal_response = self.client.get(f"{reverse('client:files')}?project={self.project.slug}")
         self.assertContains(portal_response, "wedding 01")
         self.assertContains(portal_response, "wedding 02")
         self.assertContains(

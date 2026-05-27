@@ -3,36 +3,43 @@ from django.utils import timezone
 
 from apps.downloads.models import Download
 from .models import Payment
+from .services import lock_downloads_for_payment, unlock_downloads_for_payment
 
 
 @admin.action(description="Mark selected payments as confirmed")
 def mark_as_confirmed(modeladmin, request, queryset):
     timestamp = timezone.now()
-    count = queryset.update(status=Payment.Status.CONFIRMED, paid_at=timestamp)
-    Download.objects.filter(payment__in=queryset).update(
-        status=Download.Status.READY,
-        available_at=timestamp,
-    )
+    payments = list(queryset)
+    for payment in payments:
+        payment.status = Payment.Status.CONFIRMED
+        payment.paid_at = timestamp
+        payment.save(update_fields=("status", "paid_at"))
+        unlock_downloads_for_payment(payment)
+    count = len(payments)
     modeladmin.message_user(request, f"{count} payment(s) marked as confirmed.")
 
 
 @admin.action(description="Mark selected payments as pending")
 def mark_as_pending(modeladmin, request, queryset):
-    count = queryset.update(status=Payment.Status.PENDING, paid_at=None)
-    Download.objects.filter(payment__in=queryset).update(
-        status=Download.Status.PROCESSING,
-        available_at=None,
-    )
+    payments = list(queryset)
+    for payment in payments:
+        payment.status = Payment.Status.PENDING
+        payment.paid_at = None
+        payment.save(update_fields=("status", "paid_at"))
+        lock_downloads_for_payment(payment, download_status=Download.Status.PROCESSING)
+    count = len(payments)
     modeladmin.message_user(request, f"{count} payment(s) moved back to pending.")
 
 
 @admin.action(description="Mark selected payments as failed")
 def mark_as_failed(modeladmin, request, queryset):
-    count = queryset.update(status=Payment.Status.FAILED, paid_at=None)
-    Download.objects.filter(payment__in=queryset).update(
-        status=Download.Status.LOCKED,
-        available_at=None,
-    )
+    payments = list(queryset)
+    for payment in payments:
+        payment.status = Payment.Status.FAILED
+        payment.paid_at = None
+        payment.save(update_fields=("status", "paid_at"))
+        lock_downloads_for_payment(payment)
+    count = len(payments)
     modeladmin.message_user(request, f"{count} payment(s) marked as failed.")
 
 

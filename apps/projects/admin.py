@@ -4,7 +4,55 @@ from django.db.models import Count
 from apps.downloads.models import Download
 from apps.media_management.models import MediaAsset
 from apps.payments.models import Payment
-from .models import Project
+from .models import (
+    FinalDelivery,
+    Project,
+    ProjectApproval,
+    ProjectBrief,
+    ProjectFeedback,
+    ProjectMilestone,
+    RevisionRequest,
+)
+
+
+class ProjectBriefInline(admin.StackedInline):
+    model = ProjectBrief
+    extra = 0
+    max_num = 1
+
+
+class ProjectMilestoneInline(admin.TabularInline):
+    model = ProjectMilestone
+    extra = 0
+    fields = ("display_order", "title", "status", "due_date", "completed_at")
+
+
+class ProjectApprovalInline(admin.StackedInline):
+    model = ProjectApproval
+    extra = 0
+    max_num = 1
+    readonly_fields = ("decided_at",)
+
+
+class FinalDeliveryInline(admin.StackedInline):
+    model = FinalDelivery
+    extra = 0
+    max_num = 1
+    readonly_fields = ("released_at",)
+
+
+class RevisionRequestInline(admin.TabularInline):
+    model = RevisionRequest
+    extra = 0
+    fields = ("title", "media_asset", "status", "requested_by", "created_at")
+    readonly_fields = ("requested_by", "created_at")
+
+
+class ProjectFeedbackInline(admin.TabularInline):
+    model = ProjectFeedback
+    extra = 0
+    fields = ("area", "author", "message", "studio_reply", "is_resolved", "created_at")
+    readonly_fields = ("author", "created_at")
 
 
 class MediaAssetInline(admin.TabularInline):
@@ -41,7 +89,17 @@ class DownloadInline(admin.TabularInline):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    inlines = (MediaAssetInline, PaymentInline, DownloadInline)
+    inlines = (
+        ProjectBriefInline,
+        ProjectMilestoneInline,
+        ProjectApprovalInline,
+        FinalDeliveryInline,
+        RevisionRequestInline,
+        ProjectFeedbackInline,
+        MediaAssetInline,
+        PaymentInline,
+        DownloadInline,
+    )
     list_display = (
         "title",
         "client",

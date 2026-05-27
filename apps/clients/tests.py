@@ -14,7 +14,15 @@ from apps.cart.models import CartItem
 from apps.dashboard.models import DownloadEvent
 from apps.media_management.models import MediaAsset
 from apps.payments.models import Payment
-from apps.projects.models import Project
+from apps.projects.models import (
+    FinalDelivery,
+    Project,
+    ProjectApproval,
+    ProjectBrief,
+    ProjectFeedback,
+    ProjectMilestone,
+    RevisionRequest,
+)
 
 
 def uploaded_jpeg(name, size=(1800, 1200)):
@@ -100,6 +108,29 @@ class ClientPortalTests(TestCase):
             status=Payment.Status.CONFIRMED,
         )
         self.confirmed_payment.media_assets.add(self.unlocked_photo)
+        self.brief = ProjectBrief.objects.create(
+            project=self.locked_project,
+            objective="Launch a premium Nairobi brand campaign.",
+            deliverables="Campaign photography and launch reel.",
+            creative_direction="High contrast, minimal styling.",
+        )
+        ProjectMilestone.objects.create(
+            project=self.locked_project,
+            title="Brief received",
+            status=ProjectMilestone.Status.COMPLETED,
+            display_order=1,
+        )
+        ProjectMilestone.objects.create(
+            project=self.locked_project,
+            title="Client approval",
+            status=ProjectMilestone.Status.ACTIVE,
+            display_order=2,
+        )
+        FinalDelivery.objects.create(
+            project=self.locked_project,
+            status=FinalDelivery.Status.READY,
+            summary="Campaign assets prepared for review.",
+        )
 
     def test_client_portal_requires_login(self):
         response = self.client.get(reverse("client:dashboard"))
@@ -113,7 +144,7 @@ class ClientPortalTests(TestCase):
     def test_client_portal_pages_render_for_authenticated_user(self):
         self.client.force_login(self.user)
 
-        for route_name in ("client:dashboard", "client:files", "client:cart", "client:checkout", "client:payments", "client:downloads"):
+        for route_name in ("client:dashboard", "client:projects", "client:files", "client:cart", "client:checkout", "client:payments", "client:downloads"):
             with self.subTest(route_name=route_name):
                 response = self.client.get(reverse(route_name))
                 self.assertEqual(response.status_code, 200)
@@ -124,7 +155,7 @@ class ClientPortalTests(TestCase):
         response = self.client.get(reverse("client:files"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Your Photos & Videos")
+        self.assertContains(response, "Your Project Files")
         self.assertContains(response, "data-gallery-form")
         self.assertContains(response, f'aria-label="Select {self.locked_photo.title} for download"', html=False)
         self.assertContains(response, f'aria-label="Select {self.locked_video.title} for download"', html=False)
@@ -191,19 +222,149 @@ class ClientPortalTests(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
-    def test_projects_route_redirects_to_uploaded_media_library(self):
+    def test_projects_route_lists_real_workspaces(self):
         self.client.force_login(self.user)
 
         response = self.client.get(reverse("client:projects"))
 
-        self.assertRedirects(response, reverse("client:files"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "My Projects")
+        self.assertContains(response, self.locked_project.title)
+        self.assertContains(response, reverse("client:project_detail", args=[self.locked_project.slug]))
 
-    def test_project_detail_uses_requested_slug(self):
+    def test_project_detail_renders_workspace_modules(self):
         self.client.force_login(self.user)
 
         response = self.client.get(reverse("client:project_detail", args=["brand-campaign"]))
 
-        self.assertRedirects(response, f"{reverse('client:files')}?project=brand-campaign")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Client Workspace")
+        self.assertContains(response, "Project milestones")
+        self.assertContains(response, "Project brief")
+        self.assertContains(response, "Project conversation")
+        self.assertContains(response, "Change requests")
+        self.assertContains(response, "Prepared files")
+        self.assertContains(response, "Campaign assets prepared for review.")
+        self.assertContains(response, "50% complete")
+
+    def test_existing_project_becomes_a_workspace_when_opened(self):
+        existing_project = Project.objects.create(
+            client=self.user,
+            title="Existing Portrait Session",
+            slug="existing-portrait-session",
+            service_type="Photography",
+            status=Project.Status.PENDING,
+            description="A project created before workspace tracking was available.",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("client:project_detail", args=[existing_project.slug]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(ProjectBrief.objects.filter(project=existing_project).exists())
+        self.assertEqual(ProjectMilestone.objects.filter(project=existing_project).count(), 7)
+        self.assertTrue(ProjectApproval.objects.filter(project=existing_project).exists())
+        self.assertTrue(FinalDelivery.objects.filter(project=existing_project).exists())
+        self.assertContains(response, "Brief received")
+
+    def test_client_can_save_project_brief(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("client:update_brief", args=[self.locked_project.slug]),
+            {
+                "objective": "Refresh a product brand for launch.",
+                "audience": "Nairobi retail customers",
+                "deliverables": "Logo, deck, and social templates",
+                "creative_direction": "Warm, minimal, and premium.",
+                "reference_links": "https://example.com/reference",
+            },
+        )
+
+        self.assertRedirects(response, f"{self.locked_project.get_absolute_url()}#brief")
+        self.brief.refresh_from_db()
+        self.assertEqual(self.brief.audience, "Nairobi retail customers")
+        self.assertIn("social templates", self.brief.deliverables)
+
+    def test_client_can_submit_feedback(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("client:add_feedback", args=[self.locked_project.slug]),
+            {"area": ProjectFeedback.Area.GALLERY, "message": "Please crop the cover for mobile use."},
+        )
+
+        self.assertRedirects(response, f"{self.locked_project.get_absolute_url()}#feedback")
+        self.assertTrue(
+            ProjectFeedback.objects.filter(
+                project=self.locked_project,
+                author=self.user,
+                message="Please crop the cover for mobile use.",
+            ).exists()
+        )
+
+    def test_revision_request_updates_project_approval_state(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("client:request_revision", args=[self.locked_project.slug]),
+            {
+                "media_asset": self.locked_photo.id,
+                "title": "Alternate cover crop",
+                "details": "Please provide a vertical crop for the launch story.",
+            },
+        )
+
+        self.assertRedirects(response, f"{self.locked_project.get_absolute_url()}#revisions")
+        revision = RevisionRequest.objects.get(project=self.locked_project)
+        self.assertEqual(revision.media_asset, self.locked_photo)
+        approval = ProjectApproval.objects.get(project=self.locked_project)
+        self.assertEqual(approval.decision, ProjectApproval.Decision.REVISIONS_REQUESTED)
+
+    def test_client_can_approve_project_delivery(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("client:approve_project", args=[self.locked_project.slug]),
+            {"note": "Approved for final export."},
+        )
+
+        self.assertRedirects(response, f"{self.locked_project.get_absolute_url()}#approval")
+        approval = ProjectApproval.objects.get(project=self.locked_project)
+        self.assertEqual(approval.decision, ProjectApproval.Decision.APPROVED)
+        self.assertEqual(approval.decided_by, self.user)
+        self.assertIsNotNone(approval.decided_at)
+
+    def test_workspace_actions_are_scoped_to_project_owner(self):
+        other_user = get_user_model().objects.create_user(
+            username="workspace-outsider",
+            email="workspace-outsider@example.com",
+            password="testpass123",
+        )
+        self.client.force_login(other_user)
+
+        response = self.client.post(
+            reverse("client:approve_project", args=[self.locked_project.slug]),
+            {"note": "Unauthorized"},
+        )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(ProjectApproval.objects.filter(project=self.locked_project).exists())
+
+    def test_design_deliverable_is_available_in_secured_library(self):
+        design = MediaAsset.objects.create(
+            project=self.locked_project,
+            title="Logo Lockup.svg",
+            kind=MediaAsset.Kind.DESIGN,
+            file=SimpleUploadedFile("logo-lockup.svg", b"<svg></svg>", content_type="image/svg+xml"),
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("client:files"), {"project": self.locked_project.slug, "kind": "design"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, design.title)
+        self.assertContains(response, "Design Files")
 
     def test_unknown_project_slug_returns_404(self):
         self.client.force_login(self.user)
@@ -214,10 +375,18 @@ class ClientPortalTests(TestCase):
 
     def test_select_and_remove_routes_manage_cart_items(self):
         self.client.force_login(self.user)
+        selection_milestone = ProjectMilestone.objects.create(
+            project=self.locked_project,
+            title="Client selections made",
+            status=ProjectMilestone.Status.ACTIVE,
+            display_order=3,
+        )
 
         select_response = self.client.post(reverse("client:select_file", args=[self.locked_photo.id]))
         self.assertRedirects(select_response, reverse("client:files"))
         self.assertTrue(CartItem.objects.filter(user=self.user, media_asset=self.locked_photo).exists())
+        selection_milestone.refresh_from_db()
+        self.assertEqual(selection_milestone.status, ProjectMilestone.Status.COMPLETED)
 
         remove_response = self.client.post(reverse("client:remove_file", args=[self.locked_photo.id]))
         self.assertRedirects(remove_response, reverse("client:files"))
@@ -239,6 +408,8 @@ class ClientPortalTests(TestCase):
                 "selected_files_count": 1,
                 "selected_photo_count": 1,
                 "selected_video_count": 0,
+                "selected_design_count": 0,
+                "selected_document_count": 0,
                 "created": True,
             },
         )

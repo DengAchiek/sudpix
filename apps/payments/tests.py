@@ -8,14 +8,17 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
+from django.utils import timezone
 
+from apps.downloads.models import Download
 from apps.media_management.models import MediaAsset
-from apps.projects.models import Project
+from apps.projects.models import FinalDelivery, Project, ProjectMilestone
 
 from .models import Payment
 from .services import (
     MpesaConfigurationError,
     initiate_stk_push,
+    lock_downloads_for_payment,
     normalize_phone_number,
     prepare_stk_push_request,
 )
@@ -83,6 +86,25 @@ class MpesaPaymentTests(TestCase):
             phone_number="0712345678",
         )
         self.payment.media_assets.add(self.media_asset)
+        self.payment_completed = ProjectMilestone.objects.create(
+            project=self.project,
+            title="Payment completed",
+            status=ProjectMilestone.Status.ACTIVE,
+            display_order=6,
+        )
+        self.downloads_unlocked = ProjectMilestone.objects.create(
+            project=self.project,
+            title="Final downloads unlocked",
+            status=ProjectMilestone.Status.UPCOMING,
+            display_order=7,
+        )
+        self.delivery = FinalDelivery.objects.create(project=self.project)
+        self.download = Download.objects.create(
+            user=self.user,
+            project=self.project,
+            payment=self.payment,
+            title="Prompt Portrait Final.jpg",
+        )
 
     def test_normalize_phone_number_converts_local_format(self):
         self.assertEqual(normalize_phone_number("0712345678"), "254712345678")
@@ -168,3 +190,34 @@ class MpesaPaymentTests(TestCase):
         self.assertEqual(self.payment.reference, "QWE123ABC")
         self.assertEqual(self.payment.result_code, 0)
         self.assertEqual(self.payment.phone_number, "254712345678")
+        self.payment_completed.refresh_from_db()
+        self.downloads_unlocked.refresh_from_db()
+        self.delivery.refresh_from_db()
+        self.download.refresh_from_db()
+        self.assertEqual(self.payment_completed.status, ProjectMilestone.Status.COMPLETED)
+        self.assertEqual(self.downloads_unlocked.status, ProjectMilestone.Status.COMPLETED)
+        self.assertEqual(self.delivery.status, FinalDelivery.Status.RELEASED)
+        self.assertEqual(self.download.status, Download.Status.READY)
+
+    def test_locking_payment_reopens_delivery_when_no_other_payment_is_confirmed(self):
+        self.payment_completed.status = ProjectMilestone.Status.COMPLETED
+        self.payment_completed.completed_at = timezone.now()
+        self.payment_completed.save(update_fields=("status", "completed_at"))
+        self.downloads_unlocked.status = ProjectMilestone.Status.COMPLETED
+        self.downloads_unlocked.completed_at = timezone.now()
+        self.downloads_unlocked.save(update_fields=("status", "completed_at"))
+        self.delivery.status = FinalDelivery.Status.RELEASED
+        self.delivery.release_note = "Files unlocked."
+        self.delivery.released_at = timezone.now()
+        self.delivery.save(update_fields=("status", "release_note", "released_at", "updated_at"))
+
+        lock_downloads_for_payment(self.payment)
+
+        self.payment_completed.refresh_from_db()
+        self.downloads_unlocked.refresh_from_db()
+        self.delivery.refresh_from_db()
+        self.assertEqual(self.payment_completed.status, ProjectMilestone.Status.ACTIVE)
+        self.assertEqual(self.downloads_unlocked.status, ProjectMilestone.Status.UPCOMING)
+        self.assertEqual(self.delivery.status, FinalDelivery.Status.PREPARING)
+        self.assertEqual(self.delivery.release_note, "")
+        self.assertIsNone(self.delivery.released_at)

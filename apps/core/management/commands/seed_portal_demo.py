@@ -12,7 +12,15 @@ from apps.cart.models import CartItem
 from apps.downloads.models import Download
 from apps.media_management.models import MediaAsset
 from apps.payments.models import Payment
-from apps.projects.models import Project
+from apps.projects.models import (
+    FinalDelivery,
+    Project,
+    ProjectApproval,
+    ProjectBrief,
+    ProjectFeedback,
+    ProjectMilestone,
+    RevisionRequest,
+)
 
 TINY_GIF = base64.b64decode("R0lGODdhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==")
 
@@ -45,6 +53,7 @@ class Command(BaseCommand):
         self.seed_cart(user, media_assets)
         payments = self.seed_payments(user, projects, media_assets)
         downloads = self.seed_downloads(user, projects, payments)
+        self.seed_workspaces(user, projects, media_assets)
 
         self.stdout.write(self.style.SUCCESS("SudPix demo portal data is ready."))
         self.stdout.write(f"Username: {username}")
@@ -53,6 +62,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Media files: {len(media_assets)}")
         self.stdout.write(f"Payments: {len(payments)}")
         self.stdout.write(f"Downloads: {len(downloads)}")
+        self.stdout.write("Workspaces: briefs, milestones, review, and delivery seeded")
 
     def get_or_create_demo_user(self, *, username, password, email):
         user_model = get_user_model()
@@ -272,6 +282,142 @@ class Command(BaseCommand):
             downloads.append(download)
 
         return downloads
+
+    def seed_workspaces(self, user, projects, media_assets):
+        project_map = {project.slug: project for project in projects}
+        asset_map = {asset.title: asset for asset in media_assets}
+        now = timezone.now()
+
+        brief_specs = {
+            "wedding-shoot": {
+                "objective": "Capture an elegant, documentary-led wedding story for the couple and family archive.",
+                "audience": "Couple, family, and invited guests",
+                "deliverables": "Curated JPG photo gallery, highlight reel, and downloadable archive.",
+                "creative_direction": "Warm light, natural moments, refined portraits, and a cinematic reception finish.",
+                "reference_links": "Golden-hour portraits and editorial reception details.",
+            },
+            "brand-campaign": {
+                "objective": "Create a confident visual identity launch pack for a Nairobi lifestyle brand.",
+                "audience": "Launch customers and retail partners",
+                "deliverables": "Logo lockups, launch poster set, brand deck, and social templates.",
+                "creative_direction": "Premium minimal layouts with bold accent colour and strong product focus.",
+                "reference_links": "Reference board approved during discovery.",
+            },
+            "event-recap-film": {
+                "objective": "Deliver an energetic recap film for post-event social promotion.",
+                "audience": "Attendees and online event community",
+                "deliverables": "Master MP4 film and vertical reel cutdowns.",
+                "creative_direction": "Fast opening sequence, speaker moments, and audience energy.",
+                "reference_links": "",
+            },
+        }
+        for slug, defaults in brief_specs.items():
+            ProjectBrief.objects.update_or_create(project=project_map[slug], defaults=defaults)
+
+        milestone_specs = {
+            "wedding-shoot": [
+                ("Brief received", ProjectMilestone.Status.COMPLETED),
+                ("Date confirmed", ProjectMilestone.Status.COMPLETED),
+                ("Shoot completed", ProjectMilestone.Status.COMPLETED),
+                ("Gallery uploaded", ProjectMilestone.Status.COMPLETED),
+                ("Client selections made", ProjectMilestone.Status.COMPLETED),
+                ("Payment completed", ProjectMilestone.Status.COMPLETED),
+                ("Final downloads unlocked", ProjectMilestone.Status.COMPLETED),
+            ],
+            "brand-campaign": [
+                ("Brief received", ProjectMilestone.Status.COMPLETED),
+                ("Concept direction prepared", ProjectMilestone.Status.COMPLETED),
+                ("Logo presentation uploaded", ProjectMilestone.Status.ACTIVE),
+                ("Client approval", ProjectMilestone.Status.UPCOMING),
+                ("Final brand files delivered", ProjectMilestone.Status.UPCOMING),
+            ],
+            "event-recap-film": [
+                ("Brief received", ProjectMilestone.Status.COMPLETED),
+                ("Shoot completed", ProjectMilestone.Status.COMPLETED),
+                ("First edit in progress", ProjectMilestone.Status.ACTIVE),
+                ("Client review", ProjectMilestone.Status.UPCOMING),
+                ("Final downloads unlocked", ProjectMilestone.Status.UPCOMING),
+            ],
+        }
+        for slug, entries in milestone_specs.items():
+            for display_order, (title, status) in enumerate(entries, start=1):
+                ProjectMilestone.objects.update_or_create(
+                    project=project_map[slug],
+                    title=title,
+                    defaults={
+                        "display_order": display_order,
+                        "status": status,
+                        "completed_at": now if status == ProjectMilestone.Status.COMPLETED else None,
+                    },
+                )
+
+        ProjectApproval.objects.update_or_create(
+            project=project_map["wedding-shoot"],
+            defaults={
+                "decision": ProjectApproval.Decision.APPROVED,
+                "note": "The final wedding gallery and reel are approved for delivery.",
+                "decided_by": user,
+                "decided_at": now,
+            },
+        )
+        ProjectApproval.objects.update_or_create(
+            project=project_map["brand-campaign"],
+            defaults={
+                "decision": ProjectApproval.Decision.REVISIONS_REQUESTED,
+                "note": "Please explore a more compact logo lockup for social avatars.",
+                "decided_by": user,
+                "decided_at": now,
+            },
+        )
+        ProjectApproval.objects.update_or_create(
+            project=project_map["event-recap-film"],
+            defaults={"decision": ProjectApproval.Decision.PENDING},
+        )
+
+        FinalDelivery.objects.update_or_create(
+            project=project_map["wedding-shoot"],
+            defaults={
+                "status": FinalDelivery.Status.RELEASED,
+                "summary": "High-resolution photos and the reception highlight film are ready for secure download.",
+                "release_note": "Payment confirmed through M-PESA. Final files are unlocked.",
+                "released_at": now,
+            },
+        )
+        FinalDelivery.objects.update_or_create(
+            project=project_map["brand-campaign"],
+            defaults={
+                "status": FinalDelivery.Status.READY,
+                "summary": "Brand concepts are ready for client review and approval.",
+            },
+        )
+        FinalDelivery.objects.update_or_create(
+            project=project_map["event-recap-film"],
+            defaults={
+                "status": FinalDelivery.Status.PREPARING,
+                "summary": "The master recap film is in post-production.",
+            },
+        )
+
+        ProjectFeedback.objects.update_or_create(
+            project=project_map["brand-campaign"],
+            author=user,
+            message="The direction feels premium. Could the mark remain readable in a smaller social icon?",
+            defaults={
+                "area": ProjectFeedback.Area.GALLERY,
+                "studio_reply": "Yes. We will prepare a compact lockup in the next revision round.",
+            },
+        )
+        RevisionRequest.objects.update_or_create(
+            project=project_map["brand-campaign"],
+            requested_by=user,
+            title="Compact social logo lockup",
+            defaults={
+                "media_asset": asset_map["Brand Cover Mockup.png"],
+                "details": "Provide a reduced version optimized for profile images and mobile headers.",
+                "status": RevisionRequest.Status.IN_PROGRESS,
+                "studio_response": "Revision is underway and will be added to final delivery.",
+            },
+        )
 
     def attach_demo_preview(self, asset):
         if asset.preview_image:

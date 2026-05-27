@@ -424,7 +424,7 @@
     <div class="mt-6">
       <div class="flex items-center justify-between gap-4">
         <div>
-          <p class="text-sm text-soft/58">Send multiple photos or videos into a client folder from the studio side.</p>
+          <p class="text-sm text-soft/58">Send photos, videos, design files, and brand documents into a client workspace.</p>
         </div>
         <span class="rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">Staff only</span>
       </div>
@@ -437,10 +437,18 @@
           <p class="mt-2 text-sm text-red-300">{{ form.client.errors|join:", " }}</p>
           {% endif %}
         </div>
+        <div>
+          <label for="{{ form.project.id_for_label }}" class="mb-2 block text-sm font-medium text-soft/80">{{ form.project.label }}</label>
+          {{ form.project }}
+          <p class="mt-2 text-xs text-soft/55">{{ form.project.help_text }}</p>
+          {% if form.project.errors %}
+          <p class="mt-2 text-sm text-red-300">{{ form.project.errors|join:", " }}</p>
+          {% endif %}
+        </div>
         <div class="rounded-[1.75rem] border border-dashed border-gold/30 bg-gradient-to-br from-gold/10 to-accent/10 p-5 transition hover:border-accent/70 hover:shadow-glow" data-batch-dropzone tabindex="0" role="button" aria-label="Drag and drop files to upload">
           <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Batch Upload</p>
-          <h3 class="mt-3 text-xl font-bold text-white">Drag and drop photos or videos here</h3>
-          <p class="mt-3 max-w-lg text-sm leading-6 text-soft/65">Choose the client once and SudPix will place each file inside that client’s assigned folder automatically.</p>
+          <h3 class="mt-3 text-xl font-bold text-white">Drag and drop client deliverables here</h3>
+          <p class="mt-3 max-w-lg text-sm leading-6 text-soft/65">Choose the related project workspace above to connect these deliverables to its review and final delivery flow.</p>
           <div class="mt-4 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-semibold text-white/85" data-batch-upload-meta>No files selected yet.</div>
           {{ form.batch_files }}
         </div>

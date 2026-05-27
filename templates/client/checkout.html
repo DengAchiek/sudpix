@@ -22,7 +22,7 @@
         <div class="rounded-3xl border border-white/10 bg-primary p-5">
           <p class="text-sm font-semibold text-gold">Selection Overview</p>
           <h2 class="mt-3 text-2xl font-bold">{{ selected_file_count }} file{{ selected_file_count|pluralize }} selected</h2>
-          <p class="mt-2 text-sm text-soft/70">{{ selected_photo_count }} photo{{ selected_photo_count|pluralize }} • {{ selected_video_count }} video{{ selected_video_count|pluralize }} • Total due {{ selected_total }}</p>
+          <p class="mt-2 text-sm text-soft/70">{{ selected_file_count }} deliverable{{ selected_file_count|pluralize }} selected &bull; Total due {{ selected_total }}</p>
         </div>
 
         <p class="mt-6 text-sm font-semibold text-gold">Payment Method</p>
@@ -76,10 +76,18 @@
           <span>Photos selected</span>
           <span>{{ selected_photo_count }}</span>
         </div>
-        <div class="flex items-center justify-between">
-          <span>Videos selected</span>
-          <span>{{ selected_video_count }}</span>
-        </div>
+          <div class="flex items-center justify-between">
+            <span>Videos selected</span>
+            <span>{{ selected_video_count }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Design files selected</span>
+            <span>{{ selected_design_count }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>Documents selected</span>
+            <span>{{ selected_document_count }}</span>
+          </div>
         <div class="flex items-center justify-between">
           <span>Total files</span>
           <span>{{ selected_file_count }}</span>

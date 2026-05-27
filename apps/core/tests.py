@@ -11,7 +11,15 @@ from apps.core.models import AboutTeamMember, HeroCarousel, HeroCarouselSlide, H
 from apps.downloads.models import Download
 from apps.media_management.models import MediaAsset
 from apps.payments.models import Payment
-from apps.projects.models import Project
+from apps.projects.models import (
+    FinalDelivery,
+    Project,
+    ProjectApproval,
+    ProjectBrief,
+    ProjectFeedback,
+    ProjectMilestone,
+    RevisionRequest,
+)
 
 ONE_PIXEL_GIF = (
     b"GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00"
@@ -259,6 +267,12 @@ class SeedPortalDemoCommandTests(TestCase):
         self.assertEqual(CartItem.objects.filter(user=user).count(), 2)
         self.assertEqual(Payment.objects.filter(user=user).count(), 2)
         self.assertEqual(Download.objects.filter(user=user).count(), 2)
+        self.assertEqual(ProjectBrief.objects.filter(project__client=user).count(), 3)
+        self.assertEqual(ProjectMilestone.objects.filter(project__client=user).count(), 17)
+        self.assertEqual(ProjectApproval.objects.filter(project__client=user).count(), 3)
+        self.assertEqual(FinalDelivery.objects.filter(project__client=user).count(), 3)
+        self.assertEqual(ProjectFeedback.objects.filter(project__client=user).count(), 1)
+        self.assertEqual(RevisionRequest.objects.filter(project__client=user).count(), 1)
         self.assertEqual(
             Download.objects.filter(user=user).exclude(file="").count(),
             1,

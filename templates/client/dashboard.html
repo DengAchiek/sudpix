@@ -19,6 +19,7 @@
 
     <nav class="mt-8 space-y-2 text-sm">
       <a href="{% url 'client:dashboard' %}" class="block rounded-2xl bg-gold/10 px-4 py-3 font-semibold text-gold">Dashboard</a>
+      <a href="{% url 'client:projects' %}" class="block rounded-2xl px-4 py-3 text-soft/80 transition hover:bg-white/5">Projects</a>
       <a href="{% url 'client:files' %}" class="block rounded-2xl px-4 py-3 text-soft/80 transition hover:bg-white/5">My Files</a>
       <a href="{% url 'client:payments' %}" class="block rounded-2xl px-4 py-3 text-soft/80 transition hover:bg-white/5">Payments</a>
       <a href="{% url 'client:downloads' %}" class="block rounded-2xl px-4 py-3 text-soft/80 transition hover:bg-white/5">Downloads</a>
@@ -41,10 +42,10 @@
       <div>
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-gold">Welcome back</p>
         <h1 class="mt-2 text-3xl font-bold">{{ request.user.get_full_name|default:request.user.username }}</h1>
-        <p class="mt-2 text-sm text-soft/70">View your files, make payment to unlock downloads, and book new services from one place.</p>
+        <p class="mt-2 text-sm text-soft/70">Manage briefs, reviews, approvals, payment, and final downloads from one workspace.</p>
       </div>
       <div class="flex flex-wrap gap-3">
-        <a href="{% url 'client:files' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">View Files</a>
+        <a href="{% url 'client:projects' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">Open Projects</a>
         <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-5 py-3 font-semibold text-white shadow-glow">Book a Service</a>
       </div>
     </div>
@@ -73,7 +74,7 @@
         {% if recent_project %}
         <div class="flex items-center justify-between gap-4">
           <div>
-            <p class="text-sm font-semibold text-gold">Latest File Group</p>
+            <p class="text-sm font-semibold text-gold">Latest Workspace</p>
             <h2 class="mt-1 text-xl font-bold">{{ recent_project.title }}</h2>
             <p class="mt-2 text-sm text-soft/70">
               {{ recent_project.shoot_date|date:"d F Y"|default:"Date to be confirmed" }}
@@ -108,10 +109,10 @@
         <div class="mt-6 rounded-3xl border border-white/10 bg-primary p-5">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-sm font-semibold text-gold">Files</p>
-              <p class="mt-1 text-sm text-soft/70">Open your file library to view previews, pay to unlock downloads, and access approved files.</p>
+              <p class="text-sm font-semibold text-gold">Project Workspace</p>
+              <p class="mt-1 text-sm text-soft/70">Review your brief, timeline, feedback, approval, and delivery status.</p>
             </div>
-            <a href="{{ recent_project.get_absolute_url }}" class="text-sm font-semibold text-gold">Open files -></a>
+            <a href="{{ recent_project.get_absolute_url }}" class="text-sm font-semibold text-gold">Open workspace -&gt;</a>
           </div>
         </div>
         {% else %}

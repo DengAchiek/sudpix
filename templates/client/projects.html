@@ -8,7 +8,7 @@
     <div>
       <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Client Portal</p>
       <h1 class="mt-2 font-display text-3xl font-bold sm:text-4xl">My Projects</h1>
-      <p class="mt-3 text-soft/75">Access your active work, open project folders, and track delivery progress from one place.</p>
+      <p class="mt-3 text-soft/75">Manage every brief, milestone, review decision, and final delivery from one secure workspace.</p>
     </div>
     <a href="{% url 'bookings:create' %}" class="rounded-full bg-accent px-6 py-3 text-center font-semibold text-white shadow-glow">Book Another Service</a>
   </div>
@@ -29,11 +29,13 @@
           {% endif %}
         </p>
         <p class="mt-4 text-sm leading-6 text-soft/75">{{ project.description|default:"Project details will appear here once your creative brief is saved." }}</p>
-        <div class="mt-5 flex items-center justify-between gap-3 text-sm text-soft/70">
-          <span>{{ project.photo_count }} photo{{ project.photo_count|pluralize }}</span>
-          <span>{{ project.video_count }} video{{ project.video_count|pluralize }}</span>
+        <div class="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-soft/70">
+          {% if project.photo_count %}<span class="rounded-full border border-white/10 px-3 py-1">{{ project.photo_count }} photo{{ project.photo_count|pluralize }}</span>{% endif %}
+          {% if project.video_count %}<span class="rounded-full border border-white/10 px-3 py-1">{{ project.video_count }} video{{ project.video_count|pluralize }}</span>{% endif %}
+          {% if project.design_count %}<span class="rounded-full border border-white/10 px-3 py-1">{{ project.design_count }} design</span>{% endif %}
+          {% if project.document_count %}<span class="rounded-full border border-white/10 px-3 py-1">{{ project.document_count }} document</span>{% endif %}
         </div>
-        <a href="{{ project.get_absolute_url }}" class="mt-5 inline-block text-sm font-semibold text-gold">Open project -></a>
+        <a href="{{ project.get_absolute_url }}" class="mt-5 inline-block text-sm font-semibold text-gold">Open workspace -&gt;</a>
       </div>
     </article>
     {% empty %}
@@ -41,7 +43,7 @@
       <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">No Projects Yet</p>
       <h2 class="mt-3 text-2xl font-bold">Your portal is ready for its first project.</h2>
       <p class="mt-4 max-w-2xl text-sm leading-7 text-soft/75">
-        Once the SudPix team creates your project and uploads files, you will see every deliverable here with progress, previews, and download status.
+        Once the SudPix team creates your project, its brief, production timeline, feedback, approvals, and delivered files will appear here.
       </p>
       <a href="{% url 'bookings:create' %}" class="mt-6 inline-flex rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-glow">Book a Service</a>
     </div>

@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from apps.bookings.models import BookingRequest
 from apps.notifications.models import AdminNotification
-from apps.projects.models import Project
+from apps.projects.models import FinalDelivery, Project, ProjectApproval, ProjectBrief, ProjectMilestone
 
 
 class BookingPageTests(TestCase):
@@ -155,6 +155,10 @@ class BookingPageTests(TestCase):
         self.assertEqual(project.status, Project.Status.PENDING)
         self.assertEqual(project.client.email, "mary@example.com")
         self.assertTrue(project.client.has_usable_password() is False)
+        self.assertTrue(ProjectBrief.objects.filter(project=project).exists())
+        self.assertEqual(ProjectMilestone.objects.filter(project=project).count(), 7)
+        self.assertTrue(ProjectApproval.objects.filter(project=project).exists())
+        self.assertTrue(FinalDelivery.objects.filter(project=project).exists())
 
     def test_confirmed_booking_uses_existing_user_by_email_when_converted(self):
         existing_user = get_user_model().objects.create_user(

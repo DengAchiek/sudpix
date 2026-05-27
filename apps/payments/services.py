@@ -8,10 +8,12 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 from django.conf import settings
+from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
 
 from apps.downloads.models import Download
+from apps.projects.models import FinalDelivery, ProjectMilestone, complete_project_milestone, release_final_delivery
 
 from .models import Payment
 
@@ -211,13 +213,50 @@ def unlock_downloads_for_payment(payment):
         status=Download.Status.READY,
         available_at=timezone.now(),
     )
+    for project in get_payment_projects(payment):
+        complete_project_milestone(project, "Payment completed")
+        complete_project_milestone(project, "Final downloads unlocked")
+        release_final_delivery(project)
 
 
-def lock_downloads_for_payment(payment):
+def lock_downloads_for_payment(payment, download_status=Download.Status.LOCKED):
     Download.objects.filter(payment=payment).update(
-        status=Download.Status.LOCKED,
+        status=download_status,
         available_at=None,
     )
+    for project in get_payment_projects(payment):
+        has_other_confirmed_payment = (
+            Payment.objects.filter(status=Payment.Status.CONFIRMED)
+            .exclude(pk=payment.pk)
+            .filter(Q(project=project) | Q(media_assets__project=project))
+            .distinct()
+            .exists()
+        )
+        if has_other_confirmed_payment:
+            continue
+        ProjectMilestone.objects.filter(project=project, title="Payment completed").update(
+            status=ProjectMilestone.Status.ACTIVE,
+            completed_at=None,
+        )
+        ProjectMilestone.objects.filter(project=project, title="Final downloads unlocked").update(
+            status=ProjectMilestone.Status.UPCOMING,
+            completed_at=None,
+        )
+        FinalDelivery.objects.filter(project=project).update(
+            status=FinalDelivery.Status.PREPARING,
+            release_note="",
+            released_at=None,
+        )
+
+
+def get_payment_projects(payment):
+    projects = {
+        asset.project_id: asset.project
+        for asset in payment.media_assets.select_related("project")
+    }
+    if payment.project_id:
+        projects[payment.project_id] = payment.project
+    return projects.values()
 
 
 def validate_mpesa_configuration():

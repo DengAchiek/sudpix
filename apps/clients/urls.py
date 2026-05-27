@@ -2,6 +2,8 @@ from django.urls import path
 
 from .views import (
     AddToCartView,
+    AddProjectFeedbackView,
+    ApproveProjectView,
     CartView,
     CheckoutView,
     DashboardView,
@@ -15,7 +17,9 @@ from .views import (
     ProjectDetailView,
     ProjectsView,
     RemoveFromCartView,
+    RequestProjectRevisionView,
     RetryPaymentPromptView,
+    UpdateProjectBriefView,
 )
 
 app_name = "client"
@@ -24,6 +28,10 @@ urlpatterns = [
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("projects/", ProjectsView.as_view(), name="projects"),
     path("projects/<slug:slug>/", ProjectDetailView.as_view(), name="project_detail"),
+    path("projects/<slug:slug>/brief/", UpdateProjectBriefView.as_view(), name="update_brief"),
+    path("projects/<slug:slug>/feedback/", AddProjectFeedbackView.as_view(), name="add_feedback"),
+    path("projects/<slug:slug>/revisions/", RequestProjectRevisionView.as_view(), name="request_revision"),
+    path("projects/<slug:slug>/approval/", ApproveProjectView.as_view(), name="approve_project"),
     path("files/", FilesView.as_view(), name="files"),
     path("files/<int:file_id>/preview/", PreviewAssetView.as_view(), name="preview_file"),
     path("files/<int:file_id>/download/", DownloadAssetView.as_view(), name="download_file"),

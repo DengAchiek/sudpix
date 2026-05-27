@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.utils.text import slugify
 
-from apps.projects.models import Project, ensure_client_upload_folder
+from apps.projects.models import Project, ensure_client_upload_folder, initialize_project_workspace
 
 
 class BookingRequest(models.Model):
@@ -87,6 +87,7 @@ class BookingRequest(models.Model):
             shoot_date=self.event_date,
             description=self.notes,
         )
+        initialize_project_workspace(project)
 
         self.client_account = client_account
         self.converted_project = project

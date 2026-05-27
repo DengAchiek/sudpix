@@ -6,13 +6,18 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from PIL import Image, ImageDraw, ImageFont, ImageOps, UnidentifiedImageError
 
-from apps.projects.models import Project, ensure_client_upload_folder
+from apps.projects.models import Project, complete_project_milestone, ensure_client_upload_folder
 
 from .models import MediaAsset
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"}
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"}
-DOCUMENT_EXTENSIONS = {".pdf", ".doc", ".docx", ".txt"}
+DESIGN_EXTENSIONS = {".svg", ".ai", ".eps", ".psd", ".indd", ".fig", ".sketch"}
+DOCUMENT_EXTENSIONS = {".pdf", ".doc", ".docx", ".txt", ".ppt", ".pptx", ".key", ".zip"}
+ACCEPTED_UPLOAD_TYPES = (
+    "image/*,video/*,.svg,.ai,.eps,.psd,.indd,.fig,.sketch,"
+    ".pdf,.doc,.docx,.txt,.ppt,.pptx,.key,.zip"
+)
 PROTECTED_PREVIEW_MAX_SIZE = (1400, 1400)
 
 
@@ -20,6 +25,8 @@ def infer_media_kind(uploaded_file, fallback_kind=MediaAsset.Kind.PHOTO):
     content_type = getattr(uploaded_file, "content_type", "") or ""
     suffix = Path(uploaded_file.name).suffix.lower()
 
+    if suffix in DESIGN_EXTENSIONS:
+        return MediaAsset.Kind.DESIGN
     if content_type.startswith("image/") or suffix in IMAGE_EXTENSIONS:
         return MediaAsset.Kind.PHOTO
     if content_type.startswith("video/") or suffix in VIDEO_EXTENSIONS:
@@ -108,6 +115,7 @@ def save_uploaded_media_file(media_asset, uploaded_file):
     uploaded_file.seek(0)
     media_asset.file.save(filename, uploaded_file, save=False)
     media_asset.save()
+    complete_project_milestone(media_asset.project, "Gallery uploaded")
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -118,7 +126,7 @@ class MultipleFileInput(forms.ClearableFileInput):
         attrs = attrs or {}
         existing_class = attrs.get("class", "")
         attrs["class"] = f"{existing_class} admin-batch-upload__input".strip()
-        attrs.setdefault("accept", "image/*,video/*")
+        attrs.setdefault("accept", ACCEPTED_UPLOAD_TYPES)
         attrs.setdefault("data-batch-upload-input", "true")
         return super().get_context(name, value, attrs)
 
@@ -152,11 +160,17 @@ class MediaAssetAdminForm(forms.ModelForm):
     client = ClientChoiceField(
         queryset=get_user_model().objects.none(),
         label="Client name",
-        help_text="Choose the client and SudPix will use that client's assigned folder automatically.",
+        help_text="Choose the client who owns the files.",
+    )
+    project = ProjectChoiceField(
+        queryset=Project.objects.none(),
+        required=False,
+        label="Project workspace",
+        help_text="Optional. Choose the booked project, or leave blank to use the client's general file folder.",
     )
     batch_files = MultipleFileField(
         required=True,
-        help_text="Drag and drop many local images or videos here, or click to browse. One media item will be created for each file.",
+        help_text="Upload photos, videos, design files, decks, or packaged delivery files. One item is created for each file.",
     )
 
     class Meta:
@@ -170,11 +184,13 @@ class MediaAssetAdminForm(forms.ModelForm):
             "first_name",
             "last_name",
         )
+        self.fields["project"].queryset = Project.objects.select_related("client").order_by(
+            "client__username",
+            "-updated_at",
+        )
         self.fields["batch_files"].required = not self.instance.pk
 
         if not self.instance.pk:
-            if "project" in self.fields:
-                self.fields["project"].required = False
             hidden_add_fields = (
                 "title",
                 "kind",
@@ -199,7 +215,11 @@ class MediaAssetAdminForm(forms.ModelForm):
             if not client:
                 self.add_error("client", "Choose the client who should receive these files.")
             else:
-                cleaned_data["project"] = ensure_client_upload_folder(client)
+                project = cleaned_data.get("project")
+                if project and project.client_id != client.pk:
+                    self.add_error("project", "Choose a project owned by the selected client.")
+                else:
+                    cleaned_data["project"] = project or ensure_client_upload_folder(client)
             if not batch_files:
                 self.add_error("batch_files", "Upload one or more files.")
 

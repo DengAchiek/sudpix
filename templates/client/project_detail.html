@@ -1,79 +1,286 @@
 {% extends 'base.html' %}
 
-{% block title %}Project Details SudPix{% endblock %}
+{% block title %}{{ project.title }} Workspace SudPix{% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-  <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-    <div>
-      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">Project Details</p>
-      <h1 class="mt-2 font-display text-3xl font-bold sm:text-4xl">{{ project.title }}</h1>
-      <p class="mt-3 text-soft/75">{{ project.description|default:"Browse your photos and videos, then complete payment to unlock downloads for this group." }}</p>
+<section class="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+  <div class="flex flex-wrap items-center gap-3 text-sm text-soft/65">
+    <a href="{% url 'client:projects' %}" class="transition hover:text-gold">Projects</a>
+    <span>/</span>
+    <span class="text-white">{{ project.title }}</span>
+  </div>
+
+  <div class="relative mt-6 overflow-hidden rounded-[2rem] border border-white/10 bg-secondary p-7 sm:p-9">
+    <div class="pointer-events-none absolute -right-20 -top-28 h-72 w-72 rounded-full bg-gold/10 blur-3xl"></div>
+    <div class="relative flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
+      <div class="max-w-3xl">
+        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-gold">Client Workspace</p>
+        <h1 class="mt-4 font-display text-3xl font-bold sm:text-5xl">{{ project.title }}</h1>
+        <p class="mt-4 max-w-2xl text-sm leading-7 text-soft/75 sm:text-base">
+          {{ project.description|default:"Your brief, timeline, reviews, approvals, and delivered files are organized here." }}
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href="{% url 'client:files' %}?project={{ project.slug }}" class="rounded-full border border-white/15 px-5 py-3 text-sm font-semibold transition hover:border-gold/50 hover:text-gold">Open Gallery</a>
+        <a href="{% url 'client:downloads' %}" class="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-glow">Final Downloads</a>
+      </div>
     </div>
-    <div class="flex flex-wrap gap-3">
-      <a href="{% url 'client:projects' %}" class="rounded-full border border-white/15 px-5 py-3 font-semibold hover:border-gold/50 hover:text-gold">Back to Projects</a>
-      <a href="{% url 'client:checkout' %}?project={{ project.slug }}" class="rounded-full bg-accent px-5 py-3 font-semibold text-white shadow-glow">Unlock Downloads</a>
+
+    <div class="relative mt-9 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div class="rounded-3xl border border-white/10 bg-primary/70 p-5">
+        <p class="text-xs uppercase tracking-[0.18em] text-soft/55">Service</p>
+        <p class="mt-3 font-semibold">{{ project.service_type|default:"Creative project" }}</p>
+      </div>
+      <div class="rounded-3xl border border-white/10 bg-primary/70 p-5">
+        <p class="text-xs uppercase tracking-[0.18em] text-soft/55">Shoot Date</p>
+        <p class="mt-3 font-semibold">{{ project.shoot_date|date:"d M Y"|default:"To be confirmed" }}</p>
+      </div>
+      <div class="rounded-3xl border border-white/10 bg-primary/70 p-5">
+        <p class="text-xs uppercase tracking-[0.18em] text-soft/55">Project</p>
+        <span class="mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ project.status_badge_class }}">{{ project.get_status_display }}</span>
+      </div>
+      <div class="rounded-3xl border border-white/10 bg-primary/70 p-5">
+        <p class="text-xs uppercase tracking-[0.18em] text-soft/55">Approval</p>
+        {% if approval %}
+        <span class="mt-3 inline-flex rounded-full border px-3 py-1 text-xs font-semibold {{ approval.status_badge_class }}">{{ approval.get_decision_display }}</span>
+        {% else %}
+        <span class="mt-3 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-soft/70">Not submitted</span>
+        {% endif %}
+      </div>
+      <div class="rounded-3xl border border-white/10 bg-primary/70 p-5">
+        <p class="text-xs uppercase tracking-[0.18em] text-soft/55">Payment</p>
+        {% if latest_project_payment %}
+        <span class="mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ latest_project_payment.status_badge_class }}">{{ latest_project_payment.get_status_display }}</span>
+        {% else %}
+        <p class="mt-3 text-sm font-semibold text-soft/70">No checkout yet</p>
+        {% endif %}
+      </div>
     </div>
   </div>
 
-  <div class="mt-10 grid gap-8 lg:grid-cols-[320px_1fr]">
-    <aside class="rounded-[1.75rem] border border-white/10 bg-secondary p-6">
-      <p class="text-sm font-semibold text-gold">Project Overview</p>
-      <div class="mt-5 space-y-4 text-sm text-soft/75">
-        <p><span class="font-semibold text-soft">Status:</span> {{ project.get_status_display }}</p>
-        <p><span class="font-semibold text-soft">Date:</span> {{ project.shoot_date|date:"d F Y"|default:"Date to be confirmed" }}</p>
-        <p><span class="font-semibold text-soft">Photos:</span> {{ project.photo_count }}</p>
-        <p><span class="font-semibold text-soft">Videos:</span> {{ project.video_count }}</p>
-      </div>
-
-      <div class="mt-8 rounded-3xl border border-white/10 bg-primary p-5">
-        <p class="text-sm font-semibold text-gold">Quick Filters</p>
-        <div class="mt-4 space-y-3 text-sm">
-          <a href="{% url 'client:files' %}?project={{ project.slug }}" class="block rounded-2xl bg-gold/10 px-4 py-3 font-semibold text-gold">All Files</a>
-          <a href="{% url 'client:files' %}?project={{ project.slug }}&kind=photo" class="block rounded-2xl bg-white/5 px-4 py-3 text-soft/80 hover:bg-white/10">Photos</a>
-          <a href="{% url 'client:files' %}?project={{ project.slug }}&kind=video" class="block rounded-2xl bg-white/5 px-4 py-3 text-soft/80 hover:bg-white/10">Videos</a>
-          <a href="{% url 'client:files' %}?project={{ project.slug }}&kind=design" class="block rounded-2xl bg-white/5 px-4 py-3 text-soft/80 hover:bg-white/10">Design</a>
+  <div class="mt-8 grid gap-7 xl:grid-cols-[1.25fr_0.75fr]">
+    <div class="space-y-7">
+      <section class="rounded-[1.75rem] border border-white/10 bg-secondary p-6 sm:p-7">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Timeline</p>
+            <h2 class="mt-2 text-2xl font-bold">Project milestones</h2>
+          </div>
+          <p class="text-sm text-soft/70">{{ milestones_complete }} of {{ milestones|length }} complete</p>
         </div>
-      </div>
-    </aside>
+        <div class="mt-6 h-2 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100" aria-label="Project completion">
+          <div class="h-full rounded-full bg-gold" style="width: {{ progress_percent }}%"></div>
+        </div>
+        <p class="mt-3 text-right text-sm font-semibold text-gold">{{ progress_percent }}% complete</p>
 
-    <div>
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 class="text-2xl font-bold">Available Files</h2>
-        <a href="{% url 'client:files' %}?project={{ project.slug }}" class="text-sm font-semibold text-gold">Open full library -></a>
-      </div>
-
-      <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {% for media_file in files %}
-        <article class="overflow-hidden rounded-[1.5rem] border border-white/10 bg-secondary">
-          <img class="h-52 w-full object-cover" src="{{ media_file.protected_preview_url }}" alt="{{ media_file.title }}" />
-          <div class="p-5">
-            <div class="flex items-center justify-between gap-3">
-              <h3 class="font-semibold">{{ media_file.title }}</h3>
-              <span class="text-sm font-semibold text-gold">{{ media_file.formatted_price }}</span>
+        <ol class="mt-7 space-y-4">
+          {% for milestone in milestones %}
+          <li class="flex gap-4 rounded-3xl border border-white/10 bg-primary/55 p-4">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full {% if milestone.status == 'completed' %}bg-green-500/15 text-green-300{% elif milestone.status == 'active' %}bg-gold/15 text-gold{% else %}bg-white/5 text-soft/60{% endif %}">
+              {% if milestone.status == 'completed' %}&#10003;{% else %}{{ forloop.counter|stringformat:"02d" }}{% endif %}
             </div>
-            <p class="mt-2 text-sm text-soft/70">{{ media_file.get_kind_display }}</p>
-            <div class="mt-4 flex gap-3">
-              <a href="{% url 'client:files' %}?project={{ project.slug }}" class="flex-1 rounded-full border border-white/10 px-4 py-2 text-center text-sm font-semibold text-soft/80">Browse More</a>
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <h3 class="font-semibold">{{ milestone.title }}</h3>
+                <span class="rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] {{ milestone.status_badge_class }}">{{ milestone.get_status_display }}</span>
+              </div>
+              {% if milestone.description %}<p class="mt-2 text-sm leading-6 text-soft/68">{{ milestone.description }}</p>{% endif %}
+              {% if milestone.due_date %}<p class="mt-2 text-xs uppercase tracking-[0.18em] text-soft/45">{{ milestone.due_date|date:"d M Y" }}</p>{% endif %}
+            </div>
+          </li>
+          {% empty %}
+          <li class="rounded-3xl border border-dashed border-white/10 bg-primary/40 p-6 text-sm leading-7 text-soft/70">
+            Your project timeline will appear as soon as the SudPix team confirms the production plan.
+          </li>
+          {% endfor %}
+        </ol>
+      </section>
+
+      <section class="rounded-[1.75rem] border border-white/10 bg-secondary p-6 sm:p-7" id="delivery">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Final Delivery</p>
+            <h2 class="mt-2 text-2xl font-bold">Prepared files</h2>
+            <p class="mt-3 text-sm leading-7 text-soft/70">
+              {% if delivery and delivery.summary %}{{ delivery.summary }}{% else %}Approved deliverables and secured downloads appear here as the project progresses.{% endif %}
+            </p>
+          </div>
+          {% if delivery %}
+          <span class="shrink-0 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] {{ delivery.status_badge_class }}">{{ delivery.get_status_display }}</span>
+          {% endif %}
+        </div>
+
+        {% if delivery and delivery.release_note %}
+        <div class="mt-6 rounded-3xl border border-green-400/20 bg-green-500/[0.06] p-5 text-sm leading-7 text-green-100">{{ delivery.release_note }}</div>
+        {% endif %}
+
+        <div class="mt-7 grid gap-4 sm:grid-cols-2">
+          {% for media_file in files %}
+          <article class="overflow-hidden rounded-3xl border border-white/10 bg-primary">
+            <img src="{{ media_file.protected_preview_url }}" alt="{{ media_file.title }}" class="h-40 w-full object-cover" />
+            <div class="p-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate font-semibold">{{ media_file.title }}</p>
+                  <p class="mt-1 text-sm text-soft/60">{{ media_file.get_kind_display }}</p>
+                </div>
+                {% if media_file.is_download_unlocked %}
+                <span class="rounded-full border border-green-400/25 bg-green-500/10 px-2.5 py-1 text-[11px] font-semibold text-green-300">Ready</span>
+                {% endif %}
+              </div>
               {% if media_file.is_download_unlocked and media_file.has_downloadable_file %}
-              <a href="{% url 'client:download_file' media_file.id %}?next={{ request.get_full_path|urlencode }}" class="flex-1 rounded-full border border-green-400/25 bg-green-500/10 px-4 py-2 text-center text-sm font-semibold text-green-300">Download</a>
-              {% elif media_file.has_pending_payment %}
-              <a href="{% url 'client:payments' %}" class="flex-1 rounded-full border border-amber-400/25 bg-amber-500/10 px-4 py-2 text-center text-sm font-semibold text-amber-200">Payment Pending</a>
+              <a href="{% url 'client:download_file' media_file.id %}" class="mt-4 block rounded-full bg-accent px-4 py-2 text-center text-sm font-semibold text-white">Download</a>
               {% else %}
-              <a href="{% url 'client:checkout' %}?project={{ project.slug }}" class="flex-1 rounded-full bg-accent px-4 py-2 text-center text-sm font-semibold text-white">Pay to Unlock</a>
+              <a href="{% url 'client:files' %}?project={{ project.slug }}" class="mt-4 block rounded-full border border-white/10 px-4 py-2 text-center text-sm font-semibold text-soft/80">Select / Unlock</a>
               {% endif %}
             </div>
-          </div>
-        </article>
-        {% empty %}
-        <div class="rounded-[1.5rem] border border-dashed border-white/10 bg-secondary p-8 md:col-span-2 xl:col-span-3">
-          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-gold">No Files Yet</p>
-          <h2 class="mt-3 text-2xl font-bold">This project does not have files yet.</h2>
-          <p class="mt-4 text-sm leading-7 text-soft/75">Once the SudPix team prepares files for your portal, they will appear here for viewing and project payment.</p>
+          </article>
+          {% empty %}
+          <div class="rounded-3xl border border-dashed border-white/10 bg-primary/40 p-6 text-sm text-soft/70 sm:col-span-2">No deliverable files have been uploaded yet.</div>
+          {% endfor %}
         </div>
-        {% endfor %}
-      </div>
+      </section>
+
+      <section class="rounded-[1.75rem] border border-white/10 bg-secondary p-6 sm:p-7" id="feedback">
+        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Feedback</p>
+        <h2 class="mt-2 text-2xl font-bold">Project conversation</h2>
+        <div class="mt-6 space-y-4">
+          {% for entry in feedback_entries %}
+          <article class="rounded-3xl border border-white/10 bg-primary/55 p-5">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <p class="font-semibold">{{ entry.author.get_full_name|default:entry.author.username }}</p>
+              <div class="flex items-center gap-2 text-xs text-soft/55">
+                <span class="rounded-full border border-white/10 px-3 py-1">{{ entry.get_area_display }}</span>
+                <span>{{ entry.created_at|date:"d M Y" }}</span>
+              </div>
+            </div>
+            <p class="mt-3 text-sm leading-7 text-soft/80">{{ entry.message }}</p>
+            {% if entry.studio_reply %}
+            <div class="mt-4 rounded-2xl border border-gold/20 bg-gold/[0.06] p-4">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gold">SudPix Reply</p>
+              <p class="mt-2 text-sm leading-6 text-soft/80">{{ entry.studio_reply }}</p>
+            </div>
+            {% endif %}
+          </article>
+          {% empty %}
+          <div class="rounded-3xl border border-dashed border-white/10 bg-primary/40 p-5 text-sm text-soft/70">No feedback yet. Start the conversation below.</div>
+          {% endfor %}
+        </div>
+
+        <form action="{% url 'client:add_feedback' project.slug %}" method="post" class="mt-6 rounded-3xl border border-white/10 bg-primary/45 p-5">
+          {% csrf_token %}
+          <div class="grid gap-4 sm:grid-cols-[180px_1fr]">
+            <div>
+              <label class="text-sm font-semibold text-soft" for="{{ feedback_form.area.id_for_label }}">Area</label>
+              {{ feedback_form.area }}
+              {{ feedback_form.area.errors }}
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-soft" for="{{ feedback_form.message.id_for_label }}">Comment</label>
+              {{ feedback_form.message }}
+              {{ feedback_form.message.errors }}
+            </div>
+          </div>
+          <button type="submit" class="mt-4 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-glow">Send Feedback</button>
+        </form>
+      </section>
     </div>
+
+    <aside class="space-y-7">
+      <section class="rounded-[1.75rem] border border-white/10 bg-secondary p-6" id="brief">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Brief</p>
+            <h2 class="mt-2 text-xl font-bold">Project brief</h2>
+          </div>
+          {% if brief %}<span class="text-xs text-soft/50">Updated {{ brief.updated_at|date:"d M" }}</span>{% endif %}
+        </div>
+        <form action="{% url 'client:update_brief' project.slug %}" method="post" class="mt-5 space-y-4">
+          {% csrf_token %}
+          <div>
+            <label class="text-sm font-semibold text-soft" for="{{ brief_form.objective.id_for_label }}">Objective</label>
+            {{ brief_form.objective }}
+            {{ brief_form.objective.errors }}
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-soft" for="{{ brief_form.audience.id_for_label }}">Audience</label>
+            {{ brief_form.audience }}
+            {{ brief_form.audience.errors }}
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-soft" for="{{ brief_form.deliverables.id_for_label }}">Deliverables</label>
+            {{ brief_form.deliverables }}
+            {{ brief_form.deliverables.errors }}
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-soft" for="{{ brief_form.creative_direction.id_for_label }}">Creative Direction</label>
+            {{ brief_form.creative_direction }}
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-soft" for="{{ brief_form.reference_links.id_for_label }}">References</label>
+            {{ brief_form.reference_links }}
+          </div>
+          <button type="submit" class="w-full rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-glow">Save Brief</button>
+        </form>
+      </section>
+
+      <section class="rounded-[1.75rem] border border-white/10 bg-secondary p-6" id="approval">
+        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Approval</p>
+        <h2 class="mt-2 text-xl font-bold">Sign off on the work</h2>
+        {% if approval %}
+        <div class="mt-5 rounded-3xl border px-4 py-4 {{ approval.status_badge_class }}">
+          <p class="text-sm font-semibold">{{ approval.get_decision_display }}</p>
+          {% if approval.note %}<p class="mt-2 text-sm leading-6">{{ approval.note }}</p>{% endif %}
+        </div>
+        {% else %}
+        <p class="mt-4 text-sm leading-7 text-soft/70">Approve the current delivery or submit focused revisions below.</p>
+        {% endif %}
+        <form action="{% url 'client:approve_project' project.slug %}" method="post" class="mt-5">
+          {% csrf_token %}
+          <label class="text-sm font-semibold text-soft" for="{{ approval_form.note.id_for_label }}">Approval Note</label>
+          {{ approval_form.note }}
+          <button type="submit" class="mt-4 w-full rounded-full border border-green-400/30 bg-green-500/10 px-5 py-3 text-sm font-semibold text-green-200">Approve Project</button>
+        </form>
+      </section>
+
+      <section class="rounded-[1.75rem] border border-white/10 bg-secondary p-6" id="revisions">
+        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Revisions</p>
+        <h2 class="mt-2 text-xl font-bold">Change requests</h2>
+        <div class="mt-5 space-y-3">
+          {% for revision in revision_requests %}
+          <div class="rounded-3xl border border-white/10 bg-primary/55 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <p class="font-semibold">{{ revision.title }}</p>
+              <span class="shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-semibold {{ revision.status_badge_class }}">{{ revision.get_status_display }}</span>
+            </div>
+            {% if revision.media_asset %}<p class="mt-2 text-xs text-gold">{{ revision.media_asset.title }}</p>{% endif %}
+            <p class="mt-2 text-sm leading-6 text-soft/70">{{ revision.details }}</p>
+            {% if revision.studio_response %}<p class="mt-3 border-t border-white/10 pt-3 text-sm text-soft/80">{{ revision.studio_response }}</p>{% endif %}
+          </div>
+          {% empty %}
+          <p class="rounded-3xl border border-dashed border-white/10 bg-primary/40 p-4 text-sm text-soft/70">No revision requests submitted.</p>
+          {% endfor %}
+        </div>
+        <form action="{% url 'client:request_revision' project.slug %}" method="post" class="mt-5 space-y-4">
+          {% csrf_token %}
+          <div>
+            <label class="text-sm font-semibold text-soft" for="{{ revision_form.media_asset.id_for_label }}">Related File</label>
+            {{ revision_form.media_asset }}
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-soft" for="{{ revision_form.title.id_for_label }}">Request Title</label>
+            {{ revision_form.title }}
+            {{ revision_form.title.errors }}
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-soft" for="{{ revision_form.details.id_for_label }}">Details</label>
+            {{ revision_form.details }}
+            {{ revision_form.details.errors }}
+          </div>
+          <button type="submit" class="w-full rounded-full border border-amber-400/25 bg-amber-500/10 px-5 py-3 text-sm font-semibold text-amber-100">Request Revision</button>
+        </form>
+      </section>
+    </aside>
   </div>
 </section>
 {% endblock %}

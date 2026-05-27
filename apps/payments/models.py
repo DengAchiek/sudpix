@@ -76,7 +76,9 @@ class Payment(models.Model):
         if selected_count:
             return selected_count
         if self.project_id:
-            return self.project.media_files.filter(kind__in=("photo", "video")).count()
+            return self.project.media_files.filter(
+                kind__in=("photo", "video", "design", "document")
+            ).count()
         return 0
 
     @property

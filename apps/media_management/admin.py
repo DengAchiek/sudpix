@@ -55,6 +55,7 @@ class MediaAssetAdmin(admin.ModelAdmin):
             )
         return (
             "client",
+            "project",
             "batch_files",
         )
 

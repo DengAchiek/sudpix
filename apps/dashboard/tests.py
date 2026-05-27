@@ -12,7 +12,7 @@ from apps.cart.models import CartItem
 from apps.media_management.models import MediaAsset
 from apps.notifications.models import AdminNotification
 from apps.payments.models import Payment
-from apps.projects.models import Project, ensure_client_upload_folder
+from apps.projects.models import Project, ProjectMilestone
 
 from .models import DownloadEvent
 
@@ -124,6 +124,7 @@ class StaffDashboardTests(TestCase):
         self.assertContains(response, "Pending")
         self.assertContains(response, "Batch Upload")
         self.assertContains(response, "Client name")
+        self.assertContains(response, "Project workspace")
 
     def test_staff_dashboard_can_export_csv(self):
         self.client.force_login(self.staff_user)
@@ -149,11 +150,17 @@ class StaffDashboardTests(TestCase):
 
     def test_staff_can_upload_files_from_site_dashboard(self):
         self.client.force_login(self.staff_user)
+        gallery_milestone = ProjectMilestone.objects.create(
+            project=self.project,
+            title="Gallery uploaded",
+            status=ProjectMilestone.Status.ACTIVE,
+        )
 
         response = self.client.post(
             reverse("dashboard:home"),
             {
                 "client": self.client_user.pk,
+                "project": self.project.pk,
                 "batch_files": [
                     SimpleUploadedFile(
                         "gallery-01.jpg",
@@ -170,12 +177,13 @@ class StaffDashboardTests(TestCase):
         )
 
         self.assertRedirects(response, reverse("dashboard:home"))
-        upload_folder = ensure_client_upload_folder(self.client_user)
-        self.assertTrue(MediaAsset.objects.filter(project=upload_folder, title="gallery 01").exists())
-        self.assertTrue(MediaAsset.objects.filter(project=upload_folder, title="gallery 02").exists())
+        self.assertTrue(MediaAsset.objects.filter(project=self.project, title="gallery 01").exists())
+        self.assertTrue(MediaAsset.objects.filter(project=self.project, title="gallery 02").exists())
+        gallery_milestone.refresh_from_db()
+        self.assertEqual(gallery_milestone.status, ProjectMilestone.Status.COMPLETED)
 
         self.client.logout()
         self.client.force_login(self.client_user)
-        portal_response = self.client.get(f"{reverse('client:files')}?project={upload_folder.slug}")
+        portal_response = self.client.get(f"{reverse('client:files')}?project={self.project.slug}")
         self.assertContains(portal_response, "gallery 01")
         self.assertContains(portal_response, "gallery 02")

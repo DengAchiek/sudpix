@@ -1,13 +1,14 @@
 import mimetypes
 from decimal import Decimal
-from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.db.models import Count, Q
 from django.http import FileResponse, Http404, JsonResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 from django.views.generic import TemplateView
@@ -24,11 +25,30 @@ from apps.payments.services import (
     initiate_stk_push,
     prepare_stk_push_request,
 )
-from apps.projects.models import Project
+from apps.projects.models import (
+    FinalDelivery,
+    Project,
+    ProjectApproval,
+    ProjectBrief,
+    ProjectFeedback,
+    ProjectMilestone,
+    RevisionRequest,
+    complete_project_milestone,
+    ensure_project_workspace,
+)
+
+from .forms import (
+    ProjectApprovalForm,
+    ProjectBriefForm,
+    ProjectFeedbackForm,
+    RevisionRequestForm,
+)
 
 CLIENT_VISIBLE_MEDIA_KINDS = (
     MediaAsset.Kind.PHOTO,
     MediaAsset.Kind.VIDEO,
+    MediaAsset.Kind.DESIGN,
+    MediaAsset.Kind.DOCUMENT,
 )
 CLIENT_CHECKOUT_PAYMENT_METHODS = (Payment.Method.MPESA,)
 
@@ -50,15 +70,98 @@ class DashboardView(PortalAccessMixin, TemplateView):
 
 
 class ProjectsView(PortalAccessMixin, TemplateView):
-    def get(self, request, *args, **kwargs):
-        return redirect("client:files")
+    template_name = "client/projects.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.get_portal_context())
+        context["projects"] = list(get_project_queryset(self.request.user))
+        return context
 
 
 class ProjectDetailView(PortalAccessMixin, TemplateView):
-    def get(self, request, *args, **kwargs):
-        project = get_project_by_slug(request.user, self.kwargs["slug"])
-        query_string = urlencode({"project": project.slug})
-        return redirect(f"{reverse('client:files')}?{query_string}")
+    template_name = "client/project_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.get_portal_context())
+        project = get_project_by_slug(self.request.user, self.kwargs["slug"])
+        context.update(build_workspace_context(self.request.user, project))
+        return context
+
+
+class UpdateProjectBriefView(PortalAccessMixin, View):
+    def post(self, request, slug):
+        project = get_project_by_slug(request.user, slug)
+        ensure_project_workspace(project)
+        brief = ProjectBrief.objects.filter(project=project).first()
+        form = ProjectBriefForm(request.POST, instance=brief)
+        if not form.is_valid():
+            return render_workspace_error(request, project, brief_form=form)
+
+        brief = form.save(commit=False)
+        brief.project = project
+        brief.save()
+        messages.success(request, "Your project brief has been saved.")
+        return redirect(f"{project.get_absolute_url()}#brief")
+
+
+class AddProjectFeedbackView(PortalAccessMixin, View):
+    def post(self, request, slug):
+        project = get_project_by_slug(request.user, slug)
+        ensure_project_workspace(project)
+        form = ProjectFeedbackForm(request.POST)
+        if not form.is_valid():
+            return render_workspace_error(request, project, feedback_form=form)
+
+        feedback = form.save(commit=False)
+        feedback.project = project
+        feedback.author = request.user
+        feedback.save()
+        messages.success(request, "Your feedback has been shared with the SudPix team.")
+        return redirect(f"{project.get_absolute_url()}#feedback")
+
+
+class RequestProjectRevisionView(PortalAccessMixin, View):
+    def post(self, request, slug):
+        project = get_project_by_slug(request.user, slug)
+        ensure_project_workspace(project)
+        form = RevisionRequestForm(request.POST, project=project)
+        if not form.is_valid():
+            return render_workspace_error(request, project, revision_form=form)
+
+        with transaction.atomic():
+            revision = form.save(commit=False)
+            revision.project = project
+            revision.requested_by = request.user
+            revision.save()
+            ProjectApproval.objects.update_or_create(
+                project=project,
+                defaults={
+                    "decision": ProjectApproval.Decision.REVISIONS_REQUESTED,
+                    "note": revision.details,
+                    "decided_by": request.user,
+                    "decided_at": timezone.now(),
+                },
+            )
+
+        messages.success(request, "Revision request sent. SudPix can now track it in this workspace.")
+        return redirect(f"{project.get_absolute_url()}#revisions")
+
+
+class ApproveProjectView(PortalAccessMixin, View):
+    def post(self, request, slug):
+        project = get_project_by_slug(request.user, slug)
+        ensure_project_workspace(project)
+        form = ProjectApprovalForm(request.POST)
+        if not form.is_valid():
+            return render_workspace_error(request, project, approval_form=form)
+
+        approval, _ = ProjectApproval.objects.get_or_create(project=project)
+        approval.approve(request.user, form.cleaned_data["note"])
+        approval.save()
+        messages.success(request, "Project approved. Your delivery status remains visible below.")
+        return redirect(f"{project.get_absolute_url()}#approval")
 
 
 class FilesView(PortalAccessMixin, TemplateView):
@@ -97,10 +200,14 @@ class FilesView(PortalAccessMixin, TemplateView):
         context["projects"] = list(get_project_queryset(self.request.user))
         context["photo_files_count"] = library_files.filter(kind=MediaAsset.Kind.PHOTO).count()
         context["video_files_count"] = library_files.filter(kind=MediaAsset.Kind.VIDEO).count()
+        context["design_files_count"] = library_files.filter(kind=MediaAsset.Kind.DESIGN).count()
+        context["document_files_count"] = library_files.filter(kind=MediaAsset.Kind.DOCUMENT).count()
         context["downloadable_files_count"] = downloadable_files_count
         context["selected_files_count"] = payment_context["selected_file_count"]
         context["selected_photos_count"] = payment_context["selected_photo_count"]
         context["selected_videos_count"] = payment_context["selected_video_count"]
+        context["selected_designs_count"] = payment_context["selected_design_count"]
+        context["selected_documents_count"] = payment_context["selected_document_count"]
         return context
 
 
@@ -119,6 +226,8 @@ class CartView(PortalAccessMixin, TemplateView):
         context["cart_items"] = cart_items
         context["photos_selected"] = payment_context["selected_photo_count"]
         context["videos_selected"] = payment_context["selected_video_count"]
+        context["designs_selected"] = payment_context["selected_design_count"]
+        context["documents_selected"] = payment_context["selected_document_count"]
         context["total_files"] = payment_context["selected_file_count"]
         context["pending_total"] = format_currency(payment_context["selected_total"])
         context["can_checkout"] = bool(cart_items)
@@ -206,6 +315,8 @@ class CheckoutView(PortalAccessMixin, TemplateView):
         context["selected_file_count"] = payment_context["selected_file_count"]
         context["selected_photo_count"] = payment_context["selected_photo_count"]
         context["selected_video_count"] = payment_context["selected_video_count"]
+        context["selected_design_count"] = payment_context["selected_design_count"]
+        context["selected_document_count"] = payment_context["selected_document_count"]
         context["payment_methods"] = [
             (value, label)
             for value, label in Payment.Method.choices
@@ -363,6 +474,8 @@ class AddToCartView(PortalAccessMixin, View):
             user=request.user,
             media_asset=media_file,
         )
+        if created:
+            complete_project_milestone(media_file.project, "Client selections made")
         if is_async_gallery_request(request):
             return JsonResponse(build_selection_response_payload(request.user, selected=True, created=created))
         if created:
@@ -444,6 +557,16 @@ def get_project_queryset(user):
             filter=Q(media_files__kind=MediaAsset.Kind.VIDEO),
             distinct=True,
         ),
+        design_count=Count(
+            "media_files",
+            filter=Q(media_files__kind=MediaAsset.Kind.DESIGN),
+            distinct=True,
+        ),
+        document_count=Count(
+            "media_files",
+            filter=Q(media_files__kind=MediaAsset.Kind.DOCUMENT),
+            distinct=True,
+        ),
         file_count=Count(
             "media_files",
             filter=visible_files_filter,
@@ -523,6 +646,8 @@ def build_selection_response_payload(user, *, selected, created=None):
         "selected_files_count": payment_context["selected_file_count"],
         "selected_photo_count": payment_context["selected_photo_count"],
         "selected_video_count": payment_context["selected_video_count"],
+        "selected_design_count": payment_context["selected_design_count"],
+        "selected_document_count": payment_context["selected_document_count"],
     }
     if created is not None:
         payload["created"] = created
@@ -562,6 +687,8 @@ def build_payment_context(user):
         "selected_file_count": len(selected_assets),
         "selected_photo_count": sum(1 for media_file in selected_assets if media_file.kind == MediaAsset.Kind.PHOTO),
         "selected_video_count": sum(1 for media_file in selected_assets if media_file.kind == MediaAsset.Kind.VIDEO),
+        "selected_design_count": sum(1 for media_file in selected_assets if media_file.kind == MediaAsset.Kind.DESIGN),
+        "selected_document_count": sum(1 for media_file in selected_assets if media_file.kind == MediaAsset.Kind.DOCUMENT),
         "selected_total": selected_total,
         "cart_items": cart_items,
     }
@@ -622,6 +749,8 @@ def build_portal_context(user):
         "downloads_ready": len(downloadable_files),
         "photos_available": get_media_queryset(user).filter(kind=MediaAsset.Kind.PHOTO).count(),
         "videos_available": get_media_queryset(user).filter(kind=MediaAsset.Kind.VIDEO).count(),
+        "designs_available": get_media_queryset(user).filter(kind=MediaAsset.Kind.DESIGN).count(),
+        "documents_available": get_media_queryset(user).filter(kind=MediaAsset.Kind.DOCUMENT).count(),
         "selected_files_count": payment_context["selected_file_count"],
         "recent_project": recent_project,
         "recent_files": recent_files,
@@ -671,3 +800,59 @@ def get_recent_payment_phone(user):
         .values_list("phone_number", flat=True)
         .first()
     )
+
+
+def build_workspace_context(
+    user,
+    project,
+    *,
+    brief_form=None,
+    feedback_form=None,
+    revision_form=None,
+    approval_form=None,
+):
+    ensure_project_workspace(project)
+    payment_context = build_payment_context(user)
+    files = list(
+        get_media_queryset(user)
+        .filter(project=project)
+        .order_by("-is_highlight", "-uploaded_at")
+    )
+    attach_media_access_state(files, payment_context)
+    milestones = list(project.milestones.all())
+    completed_milestones = sum(
+        1 for milestone in milestones if milestone.status == ProjectMilestone.Status.COMPLETED
+    )
+    progress_percent = round((completed_milestones / len(milestones)) * 100) if milestones else 0
+    brief = ProjectBrief.objects.filter(project=project).first()
+    approval = ProjectApproval.objects.filter(project=project).first()
+    delivery = FinalDelivery.objects.filter(project=project).first()
+
+    return {
+        "project": project,
+        "files": files,
+        "brief": brief,
+        "brief_form": brief_form or ProjectBriefForm(instance=brief),
+        "milestones": milestones,
+        "milestones_complete": completed_milestones,
+        "progress_percent": progress_percent,
+        "feedback_entries": list(project.feedback_entries.select_related("author")),
+        "feedback_form": feedback_form or ProjectFeedbackForm(),
+        "revision_requests": list(project.revision_requests.select_related("media_asset", "requested_by")),
+        "revision_form": revision_form or RevisionRequestForm(project=project),
+        "approval": approval,
+        "approval_form": approval_form or ProjectApprovalForm(),
+        "delivery": delivery,
+        "latest_project_payment": get_payment_queryset(user).filter(project=project).first(),
+        "downloadable_files": [
+            media_file
+            for media_file in files
+            if media_file.id in payment_context["confirmed_asset_ids"] and media_file.has_downloadable_file
+        ],
+    }
+
+
+def render_workspace_error(request, project, **form_overrides):
+    context = build_portal_context(request.user)
+    context.update(build_workspace_context(request.user, project, **form_overrides))
+    return render(request, "client/project_detail.html", context, status=400)
