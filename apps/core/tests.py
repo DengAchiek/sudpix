@@ -22,7 +22,7 @@ ONE_PIXEL_GIF = (
 
 class CorePageTests(TestCase):
     def test_core_pages_render(self):
-        for route_name in ("core:home", "core:about", "core:contact", "core:faq"):
+        for route_name in ("core:home", "core:about", "core:contact", "core:workspace_demo", "core:faq"):
             with self.subTest(route_name=route_name):
                 response = self.client.get(reverse(route_name))
                 self.assertEqual(response.status_code, 200)
@@ -68,6 +68,22 @@ class CorePageTests(TestCase):
         self.assertContains(response, ">About<", html=False)
         self.assertContains(response, f'href="{reverse("bookings:create")}"', html=False)
         self.assertContains(response, "Book a Service")
+
+    def test_workspace_demo_shows_portal_flow_and_actions(self):
+        response = self.client.get(reverse("core:workspace_demo"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Your entire creative project, organized in one workspace.")
+        self.assertContains(response, "Nairobi Launch Campaign")
+        self.assertContains(response, "Final downloads unlocked")
+        self.assertContains(response, "M-PESA payment status")
+        self.assertContains(response, "Print-ready files")
+        self.assertContains(response, reverse("bookings:create"))
+        self.assertContains(
+            response,
+            f'{reverse("bookings:create")}?service=Client+Portal+Demo',
+            html=False,
+        )
 
     def test_home_gallery_section_shows_photo_and_video_media(self):
         response = self.client.get(reverse("core:home"))

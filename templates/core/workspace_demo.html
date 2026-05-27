@@ -1,0 +1,821 @@
+{% extends 'base.html' %}
+
+{% block title %}Client Workspace Demo | SudPix{% endblock %}
+
+{% block extra_head %}
+<style>
+  .sud-workspace-page {
+    overflow: hidden;
+  }
+
+  .sud-workspace-hero {
+    padding-top: 68px;
+  }
+
+  .sud-workspace-hero__grid {
+    display: grid;
+    grid-template-columns: minmax(360px, 0.88fr) minmax(470px, 1.12fr);
+    align-items: center;
+    gap: 58px;
+  }
+
+  .sud-workspace-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--sud-gold);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .sud-workspace-eyebrow::before {
+    content: "";
+    width: 34px;
+    height: 1px;
+    background: var(--sud-gold);
+  }
+
+  .sud-workspace-hero h1 {
+    margin-top: 20px;
+    max-width: 590px;
+    color: var(--sud-text);
+    font-size: clamp(2.6rem, 4.7vw, 4.25rem);
+    font-weight: 800;
+    line-height: 1.09;
+    letter-spacing: -0.045em;
+  }
+
+  .sud-workspace-hero__text {
+    margin-top: 24px;
+    max-width: 540px;
+    color: rgba(245, 245, 245, 0.76);
+    font-size: 16px;
+    line-height: 30px;
+  }
+
+  .sud-workspace-actions {
+    margin-top: 35px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .sud-workspace-trust {
+    margin-top: 42px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .sud-workspace-trust span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    border: 1px solid var(--sud-line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.025);
+    padding: 0 15px;
+    color: rgba(245, 245, 245, 0.68);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .sud-workspace-dashboard {
+    position: relative;
+    border: 1px solid rgba(212, 163, 115, 0.2);
+    border-radius: 30px;
+    background:
+      radial-gradient(circle at 90% 0%, rgba(232, 93, 4, 0.13), transparent 34%),
+      linear-gradient(145deg, rgba(30, 30, 30, 0.98), rgba(15, 15, 15, 0.96));
+    padding: 22px;
+    box-shadow: 0 28px 76px rgba(0, 0, 0, 0.34);
+  }
+
+  .sud-workspace-dashboard::after {
+    content: "";
+    position: absolute;
+    right: -90px;
+    bottom: -80px;
+    z-index: -1;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    background: rgba(232, 93, 4, 0.16);
+    filter: blur(60px);
+  }
+
+  .sud-workspace-dashboard__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--sud-line-soft);
+    padding: 0 0 18px;
+  }
+
+  .sud-workspace-dashboard__window {
+    display: flex;
+    gap: 7px;
+  }
+
+  .sud-workspace-dashboard__window span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(245, 245, 245, 0.22);
+  }
+
+  .sud-workspace-dashboard__bar p {
+    color: rgba(245, 245, 245, 0.48);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .sud-workspace-dashboard__title {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 22px 0 20px;
+  }
+
+  .sud-workspace-dashboard__title span {
+    display: block;
+    color: rgba(245, 245, 245, 0.5);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .sud-workspace-dashboard__title h2 {
+    margin-top: 8px;
+    color: var(--sud-text);
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .sud-workspace-status {
+    flex: 0 0 auto;
+    border: 1px solid rgba(80, 200, 130, 0.28);
+    border-radius: 999px;
+    background: rgba(80, 200, 130, 0.11);
+    padding: 9px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .sud-workspace-status span {
+    display: block;
+    color: rgba(245, 245, 245, 0.48);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+  }
+
+  .sud-workspace-status strong {
+    display: block;
+    margin-top: 5px;
+    color: #8de2ad;
+  }
+
+  .sud-workspace-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .sud-workspace-metric {
+    min-height: 90px;
+    border: 1px solid var(--sud-line-soft);
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.025);
+    padding: 15px;
+  }
+
+  .sud-workspace-metric dt {
+    color: rgba(245, 245, 245, 0.48);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .sud-workspace-metric dd {
+    margin-top: 10px;
+    color: rgba(245, 245, 245, 0.9);
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.35;
+  }
+
+  .sud-workspace-metric dd.sud-workspace-positive {
+    color: #8de2ad;
+  }
+
+  .sud-workspace-delivery {
+    margin-top: 13px;
+    border: 1px solid var(--sud-line-soft);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.025);
+    padding: 16px;
+  }
+
+  .sud-workspace-delivery__heading {
+    display: flex;
+    justify-content: space-between;
+    color: rgba(245, 245, 245, 0.82);
+    font-size: 13px;
+    font-weight: 650;
+  }
+
+  .sud-workspace-delivery__track {
+    height: 6px;
+    margin-top: 14px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .sud-workspace-delivery__track span {
+    display: block;
+    width: 92%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--sud-accent), var(--sud-gold));
+  }
+
+  .sud-workspace-download {
+    margin-top: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border-radius: 18px;
+    background: rgba(232, 93, 4, 0.1);
+    padding: 16px;
+  }
+
+  .sud-workspace-download span {
+    color: rgba(245, 245, 245, 0.56);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+  }
+
+  .sud-workspace-download strong {
+    display: block;
+    margin-top: 5px;
+    color: var(--sud-text);
+    font-size: 14px;
+  }
+
+  .sud-workspace-download a {
+    border-radius: 11px;
+    background: var(--sud-accent);
+    padding: 11px 14px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .sud-workspace-section {
+    margin-top: 112px;
+  }
+
+  .sud-workspace-section .sud-section-heading {
+    margin-bottom: 45px;
+  }
+
+  .sud-workspace-flow {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 12px;
+    list-style: none;
+  }
+
+  .sud-workspace-flow::before {
+    content: "";
+    position: absolute;
+    top: 22px;
+    left: 5%;
+    right: 5%;
+    height: 1px;
+    background: rgba(212, 163, 115, 0.24);
+  }
+
+  .sud-workspace-flow li {
+    position: relative;
+    z-index: 1;
+  }
+
+  .sud-workspace-flow__dot {
+    width: 45px;
+    height: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(212, 163, 115, 0.38);
+    border-radius: 50%;
+    background: var(--sud-bg);
+    color: var(--sud-gold);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .sud-workspace-flow li:last-child .sud-workspace-flow__dot {
+    border-color: var(--sud-accent);
+    background: var(--sud-accent);
+    color: #fff;
+    box-shadow: 0 8px 30px rgba(232, 93, 4, 0.32);
+  }
+
+  .sud-workspace-flow h3 {
+    margin-top: 19px;
+    color: var(--sud-text);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .sud-workspace-flow p {
+    margin-top: 8px;
+    color: rgba(245, 245, 245, 0.55);
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
+  .sud-workspace-features {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 17px;
+  }
+
+  .sud-workspace-feature {
+    min-height: 190px;
+    border: 1px solid var(--sud-line);
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.018));
+    padding: 23px;
+    transition: border-color 0.25s ease, transform 0.25s ease;
+  }
+
+  .sud-workspace-feature:hover {
+    transform: translateY(-3px);
+    border-color: rgba(212, 163, 115, 0.32);
+  }
+
+  .sud-workspace-feature__number {
+    color: var(--sud-gold);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+  }
+
+  .sud-workspace-feature h3 {
+    margin-top: 22px;
+    color: var(--sud-text);
+    font-size: 18px;
+    font-weight: 750;
+  }
+
+  .sud-workspace-feature p {
+    margin-top: 11px;
+    color: rgba(245, 245, 245, 0.63);
+    font-size: 13px;
+    line-height: 23px;
+  }
+
+  .sud-workspace-assets {
+    display: grid;
+    grid-template-columns: minmax(290px, 0.78fr) minmax(480px, 1.22fr);
+    gap: 42px;
+    align-items: center;
+    border: 1px solid var(--sud-line);
+    border-radius: 32px;
+    background:
+      radial-gradient(circle at 5% 15%, rgba(212, 163, 115, 0.1), transparent 28%),
+      rgba(255, 255, 255, 0.02);
+    padding: 46px;
+  }
+
+  .sud-workspace-assets__intro h2 {
+    margin-top: 14px;
+    color: var(--sud-text);
+    font-size: clamp(2rem, 3.7vw, 2.7rem);
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .sud-workspace-assets__copy {
+    margin-top: 18px;
+    color: rgba(245, 245, 245, 0.7);
+    font-size: 15px;
+    line-height: 29px;
+  }
+
+  .sud-workspace-file-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .sud-workspace-file {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid var(--sud-line-soft);
+    border-radius: 16px;
+    background: rgba(15, 15, 15, 0.6);
+    padding: 14px;
+  }
+
+  .sud-workspace-file__type {
+    flex: 0 0 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(232, 93, 4, 0.13);
+    padding: 11px 5px;
+    color: var(--sud-gold);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+  }
+
+  .sud-workspace-file h3 {
+    color: var(--sud-text);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .sud-workspace-file p {
+    margin-top: 3px;
+    color: rgba(245, 245, 245, 0.5);
+    font-size: 11px;
+  }
+
+  .sud-workspace-cta {
+    border: 1px solid rgba(212, 163, 115, 0.2);
+    border-radius: 34px;
+    background:
+      radial-gradient(circle at 50% 105%, rgba(232, 93, 4, 0.2), transparent 40%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.018));
+    padding: 72px 28px;
+    text-align: center;
+  }
+
+  .sud-workspace-cta h2 {
+    margin: 18px auto 0;
+    max-width: 760px;
+    color: var(--sud-text);
+    font-size: clamp(2.1rem, 4.4vw, 3.25rem);
+    font-weight: 800;
+    line-height: 1.18;
+  }
+
+  .sud-workspace-cta .sud-workspace-actions {
+    justify-content: center;
+  }
+
+  @media (max-width: 1100px) {
+    .sud-workspace-hero__grid,
+    .sud-workspace-assets {
+      grid-template-columns: 1fr;
+    }
+
+    .sud-workspace-dashboard {
+      max-width: 680px;
+    }
+
+    .sud-workspace-flow {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 30px 14px;
+    }
+
+    .sud-workspace-flow::before {
+      display: none;
+    }
+
+    .sud-workspace-features {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 700px) {
+    .sud-workspace-hero {
+      padding-top: 44px;
+    }
+
+    .sud-workspace-hero__grid {
+      gap: 44px;
+    }
+
+    .sud-workspace-actions {
+      flex-direction: column;
+    }
+
+    .sud-workspace-section {
+      margin-top: 84px;
+    }
+
+    .sud-workspace-dashboard {
+      border-radius: 23px;
+      padding: 17px;
+    }
+
+    .sud-workspace-dashboard__title {
+      flex-direction: column;
+    }
+
+    .sud-workspace-metrics,
+    .sud-workspace-flow,
+    .sud-workspace-features,
+    .sud-workspace-file-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sud-workspace-feature {
+      min-height: 0;
+      padding: 20px;
+    }
+
+    .sud-workspace-feature h3 {
+      margin-top: 13px;
+    }
+
+    .sud-workspace-flow {
+      gap: 18px;
+    }
+
+    .sud-workspace-flow li {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      column-gap: 17px;
+    }
+
+    .sud-workspace-flow h3 {
+      margin-top: 4px;
+    }
+
+    .sud-workspace-flow p {
+      grid-column: 2;
+    }
+
+    .sud-workspace-assets {
+      padding: 27px 18px;
+      gap: 28px;
+    }
+
+    .sud-workspace-cta {
+      padding: 54px 18px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sud-workspace-page">
+  <section class="sud-workspace-hero">
+    <div class="sud-container">
+      <div class="sud-workspace-hero__grid">
+        <div>
+          <p class="sud-workspace-eyebrow">Client Workspace Demo</p>
+          <h1>Your entire creative project, organized in one workspace.</h1>
+          <p class="sud-workspace-hero__text">
+            Brief, book, preview, select, pay, approve, and download your SudPix files from one secure client dashboard.
+          </p>
+          <div class="sud-workspace-actions">
+            <a href="{% url 'bookings:create' %}" class="sud-btn">Book a Service</a>
+            <a href="{% url 'bookings:create' %}?service=Client+Portal+Demo" class="sud-btn-ghost">Request Portal Demo</a>
+          </div>
+          <div class="sud-workspace-trust" aria-label="Workspace benefits">
+            <span>Private access</span>
+            <span>M-PESA ready</span>
+            <span>Secure delivery</span>
+          </div>
+        </div>
+
+        <article class="sud-workspace-dashboard" aria-label="Client project dashboard preview">
+          <div class="sud-workspace-dashboard__bar">
+            <div class="sud-workspace-dashboard__window" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <p>Client Dashboard / Project 024</p>
+          </div>
+          <div class="sud-workspace-dashboard__title">
+            <div>
+              <span>Project Name</span>
+              <h2>Nairobi Launch Campaign</h2>
+            </div>
+            <div class="sud-workspace-status">
+              <span>Project Status</span>
+              <strong>In final review</strong>
+            </div>
+          </div>
+          <dl class="sud-workspace-metrics">
+            <div class="sud-workspace-metric">
+              <dt>Service Type</dt>
+              <dd>Branding + Videography</dd>
+            </div>
+            <div class="sud-workspace-metric">
+              <dt>Shoot Date</dt>
+              <dd>14 June 2026</dd>
+            </div>
+            <div class="sud-workspace-metric">
+              <dt>Payment Status</dt>
+              <dd class="sud-workspace-positive">Paid via M-PESA</dd>
+            </div>
+            <div class="sud-workspace-metric">
+              <dt>Selections</dt>
+              <dd>18 files approved</dd>
+            </div>
+          </dl>
+          <div class="sud-workspace-delivery">
+            <div class="sud-workspace-delivery__heading">
+              <span>Delivery progress</span>
+              <strong>92%</strong>
+            </div>
+            <div class="sud-workspace-delivery__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="92" aria-label="Delivery progress">
+              <span></span>
+            </div>
+          </div>
+          <div class="sud-workspace-download">
+            <div>
+              <span>Download Availability</span>
+              <strong>18 final files unlocked</strong>
+            </div>
+            <a href="{% url 'accounts:client_login' %}">Open files</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sud-workspace-section">
+    <div class="sud-container">
+      <div class="sud-section-heading">
+        <span class="sud-section-heading__eyebrow">Project Workflow</span>
+        <h2>One clear path from enquiry to delivery</h2>
+        <p>Every milestone stays visible, so clients know what is complete and what is ready for action.</p>
+      </div>
+      <ol class="sud-workspace-flow">
+        <li>
+          <span class="sud-workspace-flow__dot">01</span>
+          <h3>Brief received</h3>
+          <p>Scope and creative direction logged.</p>
+        </li>
+        <li>
+          <span class="sud-workspace-flow__dot">02</span>
+          <h3>Date confirmed</h3>
+          <p>Schedule locked with the studio.</p>
+        </li>
+        <li>
+          <span class="sud-workspace-flow__dot">03</span>
+          <h3>Shoot completed</h3>
+          <p>Capture and production complete.</p>
+        </li>
+        <li>
+          <span class="sud-workspace-flow__dot">04</span>
+          <h3>Gallery uploaded</h3>
+          <p>Secure previews are available.</p>
+        </li>
+        <li>
+          <span class="sud-workspace-flow__dot">05</span>
+          <h3>Client selections made</h3>
+          <p>Preferred assets are approved.</p>
+        </li>
+        <li>
+          <span class="sud-workspace-flow__dot">06</span>
+          <h3>Payment completed</h3>
+          <p>M-PESA checkout confirmed.</p>
+        </li>
+        <li>
+          <span class="sud-workspace-flow__dot">07</span>
+          <h3>Final downloads unlocked</h3>
+          <p>Finished files are ready.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sud-workspace-section">
+    <div class="sud-container">
+      <div class="sud-section-heading sud-section-heading--center">
+        <span class="sud-section-heading__eyebrow">Inside Your Workspace</span>
+        <h2>Everything your project needs, neatly together</h2>
+      </div>
+      <div class="sud-workspace-features">
+        <article class="sud-workspace-feature">
+          <span class="sud-workspace-feature__number">01 / PLAN</span>
+          <h3>Project brief</h3>
+          <p>Keep goals, deliverables, locations, and contacts in a single agreed brief.</p>
+        </article>
+        <article class="sud-workspace-feature">
+          <span class="sud-workspace-feature__number">02 / STYLE</span>
+          <h3>Moodboard</h3>
+          <p>Review the chosen visual direction and references before production begins.</p>
+        </article>
+        <article class="sud-workspace-feature">
+          <span class="sud-workspace-feature__number">03 / STATUS</span>
+          <h3>Timeline</h3>
+          <p>Follow every project milestone with dates and clear next actions.</p>
+        </article>
+        <article class="sud-workspace-feature">
+          <span class="sud-workspace-feature__number">04 / PREVIEW</span>
+          <h3>Private gallery</h3>
+          <p>Browse protected previews prepared only for your project team.</p>
+        </article>
+        <article class="sud-workspace-feature">
+          <span class="sud-workspace-feature__number">05 / SELECT</span>
+          <h3>File selection</h3>
+          <p>Choose the stills, clips, or designs you want carried into final delivery.</p>
+        </article>
+        <article class="sud-workspace-feature">
+          <span class="sud-workspace-feature__number">06 / REVIEW</span>
+          <h3>Revision comments</h3>
+          <p>Share focused feedback next to assets without losing context in chat threads.</p>
+        </article>
+        <article class="sud-workspace-feature">
+          <span class="sud-workspace-feature__number">07 / PAY</span>
+          <h3>M-PESA payment status</h3>
+          <p>See when checkout is pending, verified, or complete before download access.</p>
+        </article>
+        <article class="sud-workspace-feature">
+          <span class="sud-workspace-feature__number">08 / DELIVER</span>
+          <h3>Final downloads</h3>
+          <p>Retrieve approved high-resolution media and design files securely.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sud-workspace-section">
+    <div class="sud-container">
+      <div class="sud-workspace-assets">
+        <div class="sud-workspace-assets__intro">
+          <p class="sud-workspace-eyebrow">Brand Asset Delivery</p>
+          <h2>More than a photo gallery.</h2>
+          <p class="sud-workspace-assets__copy">
+            SudPix packages photography, video, identity, social, and print deliverables in the same polished handoff.
+          </p>
+        </div>
+        <div class="sud-workspace-file-grid">
+          <article class="sud-workspace-file">
+            <span class="sud-workspace-file__type">JPG</span>
+            <div><h3>JPG / RAW photos</h3><p>Retouched and source captures</p></div>
+          </article>
+          <article class="sud-workspace-file">
+            <span class="sud-workspace-file__type">MP4</span>
+            <div><h3>MP4 videos</h3><p>Full-length final edits</p></div>
+          </article>
+          <article class="sud-workspace-file">
+            <span class="sud-workspace-file__type">9:16</span>
+            <div><h3>Reels</h3><p>Vertical social-ready cuts</p></div>
+          </article>
+          <article class="sud-workspace-file">
+            <span class="sud-workspace-file__type">SVG</span>
+            <div><h3>Logo files</h3><p>Identity exports and marks</p></div>
+          </article>
+          <article class="sud-workspace-file">
+            <span class="sud-workspace-file__type">PDF</span>
+            <div><h3>Brand decks</h3><p>Guidelines and presentations</p></div>
+          </article>
+          <article class="sud-workspace-file">
+            <span class="sud-workspace-file__type">PSD</span>
+            <div><h3>Social templates</h3><p>Reusable campaign layouts</p></div>
+          </article>
+          <article class="sud-workspace-file">
+            <span class="sud-workspace-file__type">CMYK</span>
+            <div><h3>Print-ready files</h3><p>Production-approved artwork</p></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sud-workspace-section">
+    <div class="sud-container">
+      <div class="sud-workspace-cta">
+        <p class="sud-section-heading__eyebrow">Work With SudPix</p>
+        <h2>Give your clients a better way to receive creative work.</h2>
+        <div class="sud-workspace-actions">
+          <a href="{% url 'bookings:create' %}" class="sud-btn">Book a Service</a>
+          <a href="{% url 'core:contact' %}" class="sud-btn-ghost">Contact SudPix</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

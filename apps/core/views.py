@@ -267,6 +267,10 @@ class ContactView(TemplateView):
         return context
 
 
+class WorkspaceDemoView(TemplateView):
+    template_name = "core/workspace_demo.html"
+
+
 class AboutView(TemplateView):
     template_name = "core/about.html"
 
