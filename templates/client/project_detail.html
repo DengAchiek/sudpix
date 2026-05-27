@@ -46,7 +46,7 @@
       <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {% for media_file in files %}
         <article class="overflow-hidden rounded-[1.5rem] border border-white/10 bg-secondary">
-          <img class="h-52 w-full object-cover" src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" />
+          <img class="h-52 w-full object-cover" src="{{ media_file.protected_preview_url }}" alt="{{ media_file.title }}" />
           <div class="p-5">
             <div class="flex items-center justify-between gap-3">
               <h3 class="font-semibold">{{ media_file.title }}</h3>

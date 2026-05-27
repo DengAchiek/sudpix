@@ -1,8 +1,10 @@
+from io import BytesIO
 from pathlib import Path
 
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
+from PIL import Image, ImageDraw, ImageFont, ImageOps, UnidentifiedImageError
 
 from apps.projects.models import Project, ensure_client_upload_folder
 
@@ -11,6 +13,7 @@ from .models import MediaAsset
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"}
 VIDEO_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"}
 DOCUMENT_EXTENSIONS = {".pdf", ".doc", ".docx", ".txt"}
+PROTECTED_PREVIEW_MAX_SIZE = (1400, 1400)
 
 
 def infer_media_kind(uploaded_file, fallback_kind=MediaAsset.Kind.PHOTO):
@@ -35,15 +38,75 @@ def build_media_title(base_title, uploaded_file, index=1, total=1):
     return Path(uploaded_file.name).stem.replace("_", " ").replace("-", " ")
 
 
+def build_protected_photo_preview(source_file):
+    try:
+        source_file.seek(0)
+        with Image.open(source_file) as source_image:
+            image = ImageOps.exif_transpose(source_image).convert("RGB")
+            image.thumbnail(PROTECTED_PREVIEW_MAX_SIZE)
+    except (OSError, UnidentifiedImageError, ValueError):
+        return None
+    finally:
+        source_file.seek(0)
+
+    overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(overlay)
+    font = ImageFont.load_default(size=max(16, min(image.size) // 26))
+    label = "SUDPIX PREVIEW"
+    padding_x = max(10, image.width // 40)
+    padding_y = max(8, image.height // 55)
+    text_box = draw.textbbox((0, 0), label, font=font)
+    label_width = text_box[2] - text_box[0]
+    label_height = text_box[3] - text_box[1]
+    left = max(padding_x, image.width - label_width - (padding_x * 3))
+    top = max(padding_y, image.height - label_height - (padding_y * 3))
+    draw.rounded_rectangle(
+        (
+            left - padding_x,
+            top - padding_y,
+            left + label_width + padding_x,
+            top + label_height + padding_y,
+        ),
+        radius=max(8, padding_y),
+        fill=(0, 0, 0, 135),
+    )
+    draw.text((left, top), label, font=font, fill=(255, 255, 255, 210))
+
+    watermarked = Image.alpha_composite(image.convert("RGBA"), overlay).convert("RGB")
+    output = BytesIO()
+    watermarked.save(output, format="JPEG", quality=78, optimize=True)
+    return ContentFile(output.getvalue())
+
+
+def attach_protected_photo_preview(media_asset, source_file, filename):
+    preview = build_protected_photo_preview(source_file)
+    if preview is None:
+        return False
+
+    preview_filename = f"{Path(filename).stem}-preview.jpg"
+    if media_asset.preview_image:
+        media_asset.preview_image.delete(save=False)
+    media_asset.preview_image.save(preview_filename, preview, save=False)
+    media_asset.preview_is_protected = True
+    return True
+
+
+def ensure_protected_photo_preview(media_asset):
+    if media_asset.preview_is_protected or media_asset.kind != MediaAsset.Kind.PHOTO or not media_asset.file:
+        return
+
+    with media_asset.file.open("rb") as source_file:
+        if attach_protected_photo_preview(media_asset, source_file, media_asset.download_name):
+            media_asset.save(update_fields=("preview_image", "preview_is_protected"))
+
+
 def save_uploaded_media_file(media_asset, uploaded_file):
     filename = Path(uploaded_file.name).name
-    uploaded_file.seek(0)
-    content = uploaded_file.read()
-
-    media_asset.file.save(filename, ContentFile(content), save=False)
     if infer_media_kind(uploaded_file, media_asset.kind) == MediaAsset.Kind.PHOTO:
-        media_asset.preview_image.save(filename, ContentFile(content), save=False)
+        attach_protected_photo_preview(media_asset, uploaded_file, filename)
 
+    uploaded_file.seek(0)
+    media_asset.file.save(filename, uploaded_file, save=False)
     media_asset.save()
 
 

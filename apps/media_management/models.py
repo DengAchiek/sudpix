@@ -3,6 +3,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from django.db import models
+from django.urls import reverse
 
 from apps.core.utils import format_currency
 
@@ -36,6 +37,7 @@ class MediaAsset(models.Model):
         upload_to="previews/%Y/%m/%d/",
         blank=True,
     )
+    preview_is_protected = models.BooleanField(default=False, editable=False)
     preview_image_url = models.URLField(blank=True)
     file = models.FileField(
         upload_to="project_assets/%Y/%m/%d/",
@@ -80,17 +82,15 @@ class MediaAsset(models.Model):
             self.Kind.DESIGN: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80",
             self.Kind.DOCUMENT: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
         }
-        if self.preview_image:
+        if self.preview_image and self.preview_is_protected:
             return self.preview_image.url
-        if self.is_previewable_image and self.file:
-            return self.file.url
         return self.preview_image_url or default_previews[self.kind]
 
     @property
-    def asset_url(self):
-        if self.file:
-            return self.file.url
-        return self.file_url
+    def protected_preview_url(self):
+        if not self.pk:
+            return self.preview_url
+        return reverse("client:preview_file", args=[self.pk])
 
     @property
     def is_previewable_image(self):
@@ -100,7 +100,7 @@ class MediaAsset(models.Model):
 
     @property
     def has_downloadable_file(self):
-        return bool(self.asset_url)
+        return bool(self.file or self.file_url)
 
     @property
     def download_name(self):

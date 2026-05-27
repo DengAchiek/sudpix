@@ -74,22 +74,16 @@
         {% if media_file.is_download_unlocked and media_file.has_downloadable_file %}
         <article class="group relative overflow-hidden rounded-[1.75rem] bg-secondary {% if media_file.is_download_unlocked and media_file.has_downloadable_file %}border border-green-400/30{% elif media_file.has_pending_payment %}border border-amber-400/30{% elif media_file.is_selected %}border border-gold/40 shadow-glow{% else %}border border-white/10{% endif %}">
           <div class="relative h-72 overflow-hidden">
-            {% if media_file.kind == 'video' and media_file.has_downloadable_file %}
-            <video class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" preload="metadata" muted playsinline poster="{{ media_file.preview_url }}">
-              <source src="{{ media_file.asset_url }}" />
-            </video>
-            {% else %}
-            <img class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" />
-            {% endif %}
+            <img class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" src="{{ media_file.protected_preview_url }}" alt="{{ media_file.title }}" />
 
             <button
               type="button"
               class="absolute inset-0 z-[1]"
               data-client-preview-trigger
               data-file-id="{{ media_file.id }}"
-              data-preview-kind="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}video{% else %}image{% endif %}"
-              data-preview-url="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}{{ media_file.asset_url }}{% else %}{{ media_file.preview_url }}{% endif %}"
-              data-preview-poster="{{ media_file.preview_url }}"
+              data-preview-kind="image"
+              data-preview-url="{{ media_file.protected_preview_url }}"
+              data-preview-poster="{{ media_file.protected_preview_url }}"
               data-preview-title="{{ media_file.title }}"
               data-preview-subtitle="{{ media_file.project.title }} • {{ media_file.get_kind_display }}"
               data-preview-state="download"
@@ -128,22 +122,16 @@
         {% elif media_file.has_pending_payment %}
         <article class="group relative overflow-hidden rounded-[1.75rem] border border-amber-400/30 bg-secondary">
           <div class="relative h-72 overflow-hidden">
-            {% if media_file.kind == 'video' and media_file.has_downloadable_file %}
-            <video class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" preload="metadata" muted playsinline poster="{{ media_file.preview_url }}">
-              <source src="{{ media_file.asset_url }}" />
-            </video>
-            {% else %}
-            <img class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" />
-            {% endif %}
+            <img class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" src="{{ media_file.protected_preview_url }}" alt="{{ media_file.title }}" />
 
             <button
               type="button"
               class="absolute inset-0 z-[1]"
               data-client-preview-trigger
               data-file-id="{{ media_file.id }}"
-              data-preview-kind="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}video{% else %}image{% endif %}"
-              data-preview-url="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}{{ media_file.asset_url }}{% else %}{{ media_file.preview_url }}{% endif %}"
-              data-preview-poster="{{ media_file.preview_url }}"
+              data-preview-kind="image"
+              data-preview-url="{{ media_file.protected_preview_url }}"
+              data-preview-poster="{{ media_file.protected_preview_url }}"
               data-preview-title="{{ media_file.title }}"
               data-preview-subtitle="{{ media_file.project.title }} • {{ media_file.get_kind_display }}"
               data-preview-state="pending"
@@ -193,22 +181,16 @@
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}" />
           <div class="relative h-72 overflow-hidden">
-            {% if media_file.kind == 'video' and media_file.has_downloadable_file %}
-            <video class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" preload="metadata" muted playsinline poster="{{ media_file.preview_url }}">
-              <source src="{{ media_file.asset_url }}" />
-            </video>
-            {% else %}
-            <img class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" />
-            {% endif %}
+            <img class="h-72 w-full object-cover transition duration-300 group-hover:scale-[1.02]" src="{{ media_file.protected_preview_url }}" alt="{{ media_file.title }}" />
 
             <button
               type="button"
               class="absolute inset-0 z-[1]"
               data-client-preview-trigger
               data-file-id="{{ media_file.id }}"
-              data-preview-kind="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}video{% else %}image{% endif %}"
-              data-preview-url="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}{{ media_file.asset_url }}{% else %}{{ media_file.preview_url }}{% endif %}"
-              data-preview-poster="{{ media_file.preview_url }}"
+              data-preview-kind="image"
+              data-preview-url="{{ media_file.protected_preview_url }}"
+              data-preview-poster="{{ media_file.protected_preview_url }}"
               data-preview-title="{{ media_file.title }}"
               data-preview-subtitle="{{ media_file.project.title }} • {{ media_file.get_kind_display }}"
               data-preview-state="{% if media_file.is_selected %}selected{% else %}available{% endif %}"

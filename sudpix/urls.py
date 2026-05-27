@@ -18,8 +18,14 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import Http404
 from django.urls import include, path
 from django.views.generic import RedirectView
+
+
+def private_portal_media_not_found(request, path):
+    raise Http404("Private client media is not publicly available.")
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -39,4 +45,15 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+    media_prefix = settings.MEDIA_URL.lstrip("/")
+    urlpatterns += [
+        path(
+            f"{media_prefix}project_assets/<path:path>",
+            private_portal_media_not_found,
+        ),
+        path(
+            f"{media_prefix}previews/<path:path>",
+            private_portal_media_not_found,
+        ),
+    ]
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

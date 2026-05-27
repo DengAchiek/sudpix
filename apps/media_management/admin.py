@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.contrib import messages
+from django.http import FileResponse, Http404
+from django.urls import path, reverse
 from django.utils.html import format_html
 
 from .forms import MediaAssetAdminForm, infer_media_kind, save_uploaded_media_file
@@ -13,6 +15,26 @@ class MediaAssetAdmin(admin.ModelAdmin):
     list_filter = ("kind",)
     readonly_fields = ("preview_image_tag", "file_link", "uploaded_at")
     search_fields = ("title", "project__title", "project__client__username")
+
+    def get_urls(self):
+        custom_urls = [
+            path(
+                "<path:object_id>/original/",
+                self.admin_site.admin_view(self.download_original),
+                name="media_management_mediaasset_original",
+            ),
+        ]
+        return custom_urls + super().get_urls()
+
+    def download_original(self, request, object_id):
+        obj = self.get_object(request, object_id)
+        if obj is None or not obj.file:
+            raise Http404("Uploaded file not found.")
+        return FileResponse(
+            obj.file.open("rb"),
+            as_attachment=True,
+            filename=obj.download_name,
+        )
 
     def get_fields(self, request, obj=None):
         if obj:
@@ -79,7 +101,7 @@ class MediaAssetAdmin(admin.ModelAdmin):
         if obj.preview_image or obj.is_previewable_image:
             return format_html(
                 '<img src="{}" alt="{}" style="max-height: 120px; border-radius: 12px;" />',
-                obj.preview_url,
+                obj.protected_preview_url,
                 obj.title,
             )
         return "-"
@@ -87,7 +109,8 @@ class MediaAssetAdmin(admin.ModelAdmin):
     @admin.display(description="Asset file")
     def file_link(self, obj):
         if obj.file:
-            return format_html('<a href="{}" target="_blank">Open uploaded file</a>', obj.file.url)
+            url = reverse("admin:media_management_mediaasset_original", args=[obj.pk])
+            return format_html('<a href="{}" target="_blank">Download uploaded file</a>', url)
         if obj.file_url:
             return format_html('<a href="{}" target="_blank">Open external file</a>', obj.file_url)
         return "-"

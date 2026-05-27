@@ -91,7 +91,7 @@
       <div class="mt-5 space-y-4">
         {% for media_file in selected_assets %}
         <div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-primary p-4">
-          <img src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" class="h-16 w-16 rounded-2xl object-cover">
+          <img src="{{ media_file.protected_preview_url }}" alt="{{ media_file.title }}" class="h-16 w-16 rounded-2xl object-cover">
           <div class="min-w-0 flex-1">
             <p class="truncate font-semibold">{{ media_file.title }}</p>
             <p class="mt-1 text-sm text-soft/65">{{ media_file.project.title }} • {{ media_file.get_kind_display }}</p>

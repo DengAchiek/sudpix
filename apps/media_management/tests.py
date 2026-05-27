@@ -1,3 +1,4 @@
+from io import BytesIO
 import tempfile
 from datetime import date
 from decimal import Decimal
@@ -6,10 +7,17 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
+from PIL import Image
 
 from apps.projects.models import Project, ensure_client_upload_folder
 
 from .models import MediaAsset
+
+
+def uploaded_jpeg(name, size=(1800, 1200)):
+    output = BytesIO()
+    Image.new("RGB", size, color=(142, 98, 45)).save(output, format="JPEG")
+    return SimpleUploadedFile(name, output.getvalue(), content_type="image/jpeg")
 
 
 class MediaAssetModelTests(TestCase):
@@ -37,7 +45,7 @@ class MediaAssetModelTests(TestCase):
             shoot_date=date(2026, 3, 20),
         )
 
-    def test_preview_url_uses_uploaded_image_when_preview_image_is_blank(self):
+    def test_preview_url_never_falls_back_to_unprotected_original(self):
         media_asset = MediaAsset.objects.create(
             project=self.project,
             title="Ceremony Portrait",
@@ -51,7 +59,8 @@ class MediaAssetModelTests(TestCase):
         )
 
         self.assertTrue(media_asset.is_previewable_image)
-        self.assertEqual(media_asset.preview_url, media_asset.file.url)
+        self.assertNotEqual(media_asset.preview_url, media_asset.file.url)
+        self.assertFalse(media_asset.preview_is_protected)
 
 
 class MediaAssetAdminTests(TestCase):
@@ -105,12 +114,12 @@ class MediaAssetAdminTests(TestCase):
                 "batch_files": [
                     SimpleUploadedFile(
                         "wedding-01.jpg",
-                        b"image-one",
+                        uploaded_jpeg("source-01.jpg").read(),
                         content_type="image/jpeg",
                     ),
                     SimpleUploadedFile(
                         "wedding-02.jpg",
-                        b"image-two",
+                        uploaded_jpeg("source-02.jpg").read(),
                         content_type="image/jpeg",
                     ),
                 ],
@@ -127,6 +136,10 @@ class MediaAssetAdminTests(TestCase):
         self.assertTrue(all(asset.price == Decimal("80.00") for asset in assets))
         self.assertTrue(all(asset.file for asset in assets))
         self.assertTrue(all(asset.preview_image for asset in assets))
+        self.assertTrue(all(asset.preview_is_protected for asset in assets))
+        for asset in assets:
+            with asset.file.open("rb") as original, asset.preview_image.open("rb") as preview:
+                self.assertNotEqual(original.read(), preview.read())
 
         self.client.logout()
         self.client.force_login(self.portal_user)
@@ -138,3 +151,9 @@ class MediaAssetAdminTests(TestCase):
             'aria-label="Select wedding 01 for download"',
             html=False,
         )
+        self.assertContains(
+            portal_response,
+            reverse("client:preview_file", args=[assets[0].pk]),
+            html=False,
+        )
+        self.assertNotContains(portal_response, assets[0].file.url, html=False)

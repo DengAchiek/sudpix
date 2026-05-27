@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from io import BytesIO
 import tempfile
 from unittest.mock import patch
 
@@ -7,12 +8,19 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
+from PIL import Image
 
 from apps.cart.models import CartItem
 from apps.dashboard.models import DownloadEvent
 from apps.media_management.models import MediaAsset
 from apps.payments.models import Payment
 from apps.projects.models import Project
+
+
+def uploaded_jpeg(name, size=(1800, 1200)):
+    output = BytesIO()
+    Image.new("RGB", size, color=(142, 98, 45)).save(output, format="JPEG")
+    return SimpleUploadedFile(name, output.getvalue(), content_type="image/jpeg")
 
 
 class ClientPortalTests(TestCase):
@@ -126,7 +134,7 @@ class ClientPortalTests(TestCase):
         self.assertNotContains(response, "KES 80")
         self.assertNotContains(response, "KES 500")
 
-    def test_files_page_supports_video_preview_and_forward_modal(self):
+    def test_files_page_uses_protected_previews_without_original_asset_urls(self):
         self.client.force_login(self.user)
 
         response = self.client.get(reverse("client:files"))
@@ -134,10 +142,54 @@ class ClientPortalTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, f'aria-label="Preview {self.locked_photo.title}"', html=False)
         self.assertContains(response, f'aria-label="Preview {self.locked_video.title}"', html=False)
-        self.assertContains(response, 'data-preview-kind="video"', html=False)
-        self.assertContains(response, self.locked_video.file.url, html=False)
+        self.assertContains(response, reverse("client:preview_file", args=[self.locked_video.id]), html=False)
+        self.assertNotContains(response, self.locked_photo.file.url, html=False)
+        self.assertNotContains(response, self.locked_video.file.url, html=False)
+        self.assertNotContains(response, self.unlocked_photo.file.url, html=False)
         self.assertContains(response, "data-file-preview-modal", html=False)
         self.assertContains(response, "Select for Download")
+
+    def test_preview_route_generates_watermarked_derivative_for_owned_photo(self):
+        original_file = uploaded_jpeg("secure-proof.jpg")
+        original_bytes = original_file.read()
+        original_file.seek(0)
+        photo = MediaAsset.objects.create(
+            project=self.locked_project,
+            title="Secure Proof.jpg",
+            kind=MediaAsset.Kind.PHOTO,
+            file=original_file,
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("client:preview_file", args=[photo.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "image/jpeg")
+        self.assertNotEqual(b"".join(response.streaming_content), original_bytes)
+        photo.refresh_from_db()
+        self.assertTrue(photo.preview_is_protected)
+        self.assertTrue(photo.preview_image)
+
+    def test_public_media_path_does_not_serve_project_original(self):
+        response = self.client.get(self.locked_photo.file.url)
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_public_media_path_does_not_serve_legacy_full_size_preview(self):
+        legacy_preview = MediaAsset.objects.create(
+            project=self.locked_project,
+            title="Legacy Preview.jpg",
+            kind=MediaAsset.Kind.PHOTO,
+            preview_image=SimpleUploadedFile(
+                "legacy-preview.jpg",
+                b"legacy-full-size-preview",
+                content_type="image/jpeg",
+            ),
+        )
+
+        response = self.client.get(legacy_preview.preview_image.url)
+
+        self.assertEqual(response.status_code, 404)
 
     def test_projects_route_redirects_to_uploaded_media_library(self):
         self.client.force_login(self.user)

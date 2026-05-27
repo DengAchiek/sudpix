@@ -471,7 +471,7 @@
     <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {% for media_file in gallery_uploads %}
       <article data-dashboard-searchable="{{ media_file.title }} {{ media_file.project.title }} {{ media_file.project.client.username }}" class="group relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20">
-        <img src="{{ media_file.preview_url }}" alt="{{ media_file.title }}" class="h-52 w-full object-cover transition duration-300 group-hover:scale-[1.03]">
+        <img src="{{ media_file.protected_preview_url }}" alt="{{ media_file.title }}" class="h-52 w-full object-cover transition duration-300 group-hover:scale-[1.03]">
         <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
           <div class="flex flex-wrap gap-2">
             <span class="rounded-full border border-white/10 bg-black/55 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-soft">{{ media_file.get_kind_display }}</span>
@@ -481,8 +481,8 @@
             type="button"
             class="rounded-full bg-black/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-accent"
             data-preview-trigger
-            data-preview-url="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}{{ media_file.asset_url }}{% else %}{{ media_file.preview_url }}{% endif %}"
-            data-preview-kind="{% if media_file.kind == 'video' and media_file.has_downloadable_file %}video{% else %}image{% endif %}"
+            data-preview-url="{{ media_file.protected_preview_url }}"
+            data-preview-kind="image"
             data-preview-title="{{ media_file.title }}"
             data-preview-subtitle="{{ media_file.project.title }} • {{ media_file.project.client.username }}"
           >
@@ -554,7 +554,7 @@
     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {% for item in recent_selections %}
       <article data-dashboard-searchable="{{ item.media_asset.title }} {{ item.media_asset.project.title }} {{ item.user.username }}" class="group relative overflow-hidden rounded-[1.5rem] border border-gold/25 bg-black/20 shadow-gold">
-        <img src="{{ item.media_asset.preview_url }}" alt="{{ item.media_asset.title }}" class="h-56 w-full object-cover transition duration-300 group-hover:scale-[1.03]">
+        <img src="{{ item.media_asset.protected_preview_url }}" alt="{{ item.media_asset.title }}" class="h-56 w-full object-cover transition duration-300 group-hover:scale-[1.03]">
         <div class="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
           <div class="flex flex-wrap gap-2">
             <span class="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">Selected</span>
@@ -564,8 +564,8 @@
             type="button"
             class="rounded-full bg-black/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-accent"
             data-preview-trigger
-            data-preview-url="{% if item.media_asset.kind == 'video' and item.media_asset.has_downloadable_file %}{{ item.media_asset.asset_url }}{% else %}{{ item.media_asset.preview_url }}{% endif %}"
-            data-preview-kind="{% if item.media_asset.kind == 'video' and item.media_asset.has_downloadable_file %}video{% else %}image{% endif %}"
+            data-preview-url="{{ item.media_asset.protected_preview_url }}"
+            data-preview-kind="image"
             data-preview-title="{{ item.media_asset.title }}"
             data-preview-subtitle="{{ item.media_asset.project.title }} • {{ item.user.username }}"
           >

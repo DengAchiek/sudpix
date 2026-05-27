@@ -1,3 +1,4 @@
+import mimetypes
 from decimal import Decimal
 from urllib.parse import urlencode
 
@@ -15,6 +16,7 @@ from apps.cart.models import CartItem
 from apps.core.utils import format_currency
 from apps.dashboard.models import DownloadEvent
 from apps.media_management.models import MediaAsset
+from apps.media_management.forms import ensure_protected_photo_preview
 from apps.payments.models import Payment
 from apps.payments.services import (
     MpesaConfigurationError,
@@ -417,6 +419,18 @@ class DownloadAssetView(PortalAccessMixin, View):
         return redirect(get_next_url(request, reverse("client:files")))
 
 
+class PreviewAssetView(PortalAccessMixin, View):
+    def get(self, request, file_id):
+        media_file = get_object_or_404(get_preview_media_queryset(request.user), pk=file_id)
+        ensure_protected_photo_preview(media_file)
+
+        if media_file.preview_image and media_file.preview_is_protected:
+            content_type = mimetypes.guess_type(media_file.preview_image.name)[0] or "image/jpeg"
+            return FileResponse(media_file.preview_image.open("rb"), content_type=content_type)
+
+        return redirect(media_file.preview_url)
+
+
 def get_project_queryset(user):
     visible_files_filter = Q(media_files__kind__in=CLIENT_VISIBLE_MEDIA_KINDS)
     return Project.objects.filter(client=user).annotate(
@@ -450,6 +464,16 @@ def get_media_queryset(user):
         project__client=user,
         kind__in=CLIENT_VISIBLE_MEDIA_KINDS,
     ).select_related("project")
+
+
+def get_preview_media_queryset(user):
+    files = MediaAsset.objects.select_related("project")
+    if user.is_staff:
+        return files
+    return files.filter(
+        project__client=user,
+        kind__in=CLIENT_VISIBLE_MEDIA_KINDS,
+    )
 
 
 def get_payment_queryset(user):

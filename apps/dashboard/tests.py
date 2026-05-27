@@ -116,7 +116,7 @@ class StaffDashboardTests(TestCase):
         self.assertContains(response, "Admin Notifications")
         self.assertContains(response, "Recent Upload Activity")
         self.assertContains(response, "Ceremony Frame.jpg")
-        self.assertContains(response, self.media_asset.preview_url)
+        self.assertContains(response, self.media_asset.protected_preview_url)
         self.assertContains(response, "data-preview-modal")
         self.assertContains(response, 'data-dashboard-window="uploads"', html=False)
         self.assertContains(response, "Close preview")
