@@ -214,11 +214,13 @@ class HomeView(TemplateView):
                 "portfolio_preview": get_featured_portfolio_projects(limit=3),
                 "home_media_gallery": build_home_media_gallery(),
                 "process_steps": [
-                    {"number": "01", "title": "Choose a service", "description": "Pick photo, video, branding, or design."},
-                    {"number": "02", "title": "Book your slot", "description": "Send the date and creative brief."},
-                    {"number": "03", "title": "Capture or design", "description": "SudPix creates the working files."},
-                    {"number": "04", "title": "Preview assets", "description": "Open the gallery or project files online."},
-                    {"number": "05", "title": "Pay and download", "description": "Unlock the selected files instantly."},
+                    {"number": "01", "title": "Book", "description": "Choose the service, date, and project direction."},
+                    {"number": "02", "title": "Brief", "description": "Confirm the objective, mood, audience, and deliverables."},
+                    {"number": "03", "title": "Shoot/Create", "description": "SudPix captures, edits, designs, or builds the brand assets."},
+                    {"number": "04", "title": "Preview", "description": "Review protected galleries, video cuts, and design files."},
+                    {"number": "05", "title": "Select", "description": "Choose preferred files and give focused feedback."},
+                    {"number": "06", "title": "Pay", "description": "Confirm payment status with M-PESA-supported checkout."},
+                    {"number": "07", "title": "Download", "description": "Receive final files from the secure client workspace."},
                 ],
                 "portal_activity": [
                     {"label": "Gallery previews", "value": "Photos, videos, design files"},

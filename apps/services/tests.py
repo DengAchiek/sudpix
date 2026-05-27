@@ -11,6 +11,9 @@ class ServicesPageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, reverse("services:detail", args=["photography"]))
         self.assertContains(response, "Photography Services")
+        self.assertContains(response, "Service Outcomes")
+        self.assertContains(response, "Portal Delivery")
+        self.assertContains(response, "Production Path")
 
     def test_specific_service_route_renders_selected_service_details(self):
         response = self.client.get(reverse("services:detail", args=["videography"]))

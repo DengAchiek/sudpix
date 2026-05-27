@@ -108,6 +108,10 @@ class CorePageTests(TestCase):
         response = self.client.get(reverse("core:home"))
 
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Premium creative work, delivered through a workspace clients can trust.")
+        self.assertContains(response, "Creative Outcomes")
+        self.assertContains(response, "Client Workspace")
+        self.assertContains(response, "M-PESA confirmed")
         self.assertContains(
             response,
             f'{reverse("bookings:create")}?service=Client+Portal+Demo',

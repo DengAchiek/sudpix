@@ -2,16 +2,260 @@
 
 {% block title %}Services SudPix{% endblock %}
 
+{% block extra_head %}
+<style>
+  .sud-service-hero::before {
+    background:
+      radial-gradient(circle at 80% 22%, rgba(232, 93, 4, 0.22), transparent 28%),
+      linear-gradient(180deg, rgba(10, 10, 10, 0.36), rgba(10, 10, 10, 0.9));
+  }
+
+  .sud-service-hero .sud-banner__buttons {
+    justify-content: center;
+  }
+
+  .sud-service-proof {
+    margin-top: 34px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .sud-service-proof__item,
+  .sud-service-outcome,
+  .sud-service-process,
+  .sud-service-fit {
+    border-radius: 22px;
+    border: 1px solid var(--sud-line);
+    background: rgba(255, 255, 255, 0.025);
+    padding: 22px;
+  }
+
+  .sud-service-proof__item strong,
+  .sud-service-process strong {
+    display: block;
+    color: var(--sud-gold);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .sud-service-proof__item span,
+  .sud-service-outcome p,
+  .sud-service-process p,
+  .sud-service-fit p {
+    display: block;
+    margin-top: 10px;
+    color: rgba(245, 245, 245, 0.72);
+    font-size: 14px;
+    line-height: 26px;
+  }
+
+  .sud-service-outcome-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .sud-service-outcome {
+    min-height: 220px;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .sud-service-outcome:hover,
+  .sud-service-process:hover,
+  .sud-service-fit:hover {
+    transform: translateY(-5px);
+    border-color: rgba(212, 163, 115, 0.34);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+  }
+
+  .sud-service-outcome h3,
+  .sud-service-process h3,
+  .sud-service-fit h3 {
+    margin-top: 16px;
+    color: var(--sud-text);
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+
+  .sud-service-preview-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.7fr);
+    gap: 28px;
+    align-items: stretch;
+  }
+
+  .sud-service-preview-card {
+    overflow: hidden;
+    border-radius: 30px;
+    border: 1px solid var(--sud-line);
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .sud-service-preview-card img,
+  .sud-service-preview-card video {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .sud-service-preview-card__body {
+    padding: 28px;
+  }
+
+  .sud-service-sample-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .sud-service-sample-card {
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid var(--sud-line);
+    background: rgba(255, 255, 255, 0.025);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .sud-service-sample-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(212, 163, 115, 0.34);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+  }
+
+  .sud-service-sample-card img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+  }
+
+  .sud-service-sample-card:hover img {
+    transform: scale(1.04);
+  }
+
+  .sud-service-sample-card__body {
+    padding: 20px;
+  }
+
+  .sud-service-sample-card h3 {
+    margin-top: 12px;
+    color: var(--sud-text);
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  .sud-service-sample-card p {
+    margin-top: 8px;
+    color: rgba(245, 245, 245, 0.66);
+    font-size: 14px;
+    line-height: 25px;
+  }
+
+  .sud-mini-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 14px;
+  }
+
+  .sud-mini-row strong {
+    color: var(--sud-text);
+    font-size: 14px;
+  }
+
+  .sud-mini-row span {
+    color: rgba(245, 245, 245, 0.56);
+    font-size: 12px;
+  }
+
+  .sud-service-process-grid,
+  .sud-service-fit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .sud-package-card {
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .sud-package-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(212, 163, 115, 0.34);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+  }
+
+  @media (max-width: 1120px) {
+    .sud-service-outcome-grid,
+    .sud-service-sample-grid,
+    .sud-service-preview-grid,
+    .sud-service-process-grid,
+    .sud-service-fit-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .sud-service-proof,
+    .sud-service-outcome-grid,
+    .sud-service-sample-grid,
+    .sud-service-preview-grid,
+    .sud-service-process-grid,
+    .sud-service-fit-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sud-service-preview-card img,
+    .sud-service-preview-card video {
+      height: 300px;
+    }
+
+    .sud-service-sample-card img {
+      height: 280px;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="sud-section">
   <div class="sud-container">
     {% if active_service %}
-    <div class="sud-page-heading sud-hero-carousel">
+    <div class="sud-page-heading sud-hero-carousel sud-service-hero">
       {% include "includes/hero_carousel_slides.html" with hero=services_active_hero %}
       <div class="sud-page-heading__content">
         <div class="sud-banner__eyebrow">{{ active_service.badge }}</div>
         <h1>{{ active_service.heading }}</h1>
         <p>{{ active_service.description }}</p>
+        <div class="sud-banner__buttons">
+          <a href="{% url 'bookings:create' %}?service={{ active_service.booking_service|urlencode }}" class="sud-btn">{{ active_service.book_label }}</a>
+          <a href="{% url 'portfolio:list' %}" class="sud-btn-ghost">View Portfolio</a>
+          <a href="{% url 'core:workspace_demo' %}" class="sud-btn-ghost">See Delivery Workspace</a>
+        </div>
+        <div class="sud-service-proof">
+          <div class="sud-service-proof__item">
+            <strong>Brief-led</strong>
+            <span>Every project starts with clear goals, audience, mood, and deliverables.</span>
+          </div>
+          <div class="sud-service-proof__item">
+            <strong>Portal-ready</strong>
+            <span>Files move into a private workspace for review, approvals, payment, and download.</span>
+          </div>
+          <div class="sud-service-proof__item">
+            <strong>Nairobi-based</strong>
+            <span>Local creative direction with a premium digital delivery experience.</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -56,36 +300,86 @@
 {% if active_service %}
 <section class="sud-section" id="service-detail">
   <div class="sud-container">
-    <div class="sud-section-heading sud-section-heading--center">
-      <div class="sud-section-heading__eyebrow">Photos &amp; Videos</div>
-      <h2>Featured SudPix service previews</h2>
+    <div class="sud-section-heading">
+      <div class="sud-section-heading__eyebrow">Service Outcomes</div>
+      <h2>Each SudPix service has a clear business result.</h2>
+      <p>Pick the category by what you need to receive: a gallery, a film, a brand system, or print-ready campaign assets.</p>
     </div>
 
-    <div class="sud-gallery-grid sud-gallery-grid--two">
+    <div class="sud-service-outcome-grid">
       {% for service in service_categories %}
-      <article class="sud-showcase-item">
-        <a href="{% url 'services:detail' service.slug %}#service-detail" class="block">
-          <div class="sud-showcase-item__thumb">
-            {% if service.showcase_media.type == 'video' %}
-            <video autoplay muted loop playsinline poster="{{ service.showcase_media.poster|default:service.showcase_media.url }}">
-              <source src="{{ service.showcase_media.url }}" type="video/mp4" />
-            </video>
-            {% else %}
-            <img src="{{ service.showcase_media.url }}" alt="{{ service.name }}" />
-            {% endif %}
-            <span class="sud-tag">{{ service.showcase_media.type }}</span>
+      <a href="{% url 'services:detail' service.slug %}#service-detail" class="sud-service-outcome">
+        <span class="sud-tag">{{ service.showcase_media.type }}</span>
+        <h3>{{ service.name }}</h3>
+        <p>{{ service.teaser }}</p>
+        <div class="sud-showcase-item__action">Explore {{ service.name }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-service-preview-grid">
+      <article class="sud-service-preview-card">
+        {% if active_service.showcase_media.type == 'video' %}
+        <video autoplay muted loop playsinline poster="{{ active_service.showcase_media.poster|default:active_service.showcase_media.url }}">
+          <source src="{{ active_service.showcase_media.url }}" type="video/mp4" />
+        </video>
+        {% else %}
+        <img src="{{ active_service.showcase_media.url }}" alt="{{ active_service.name }}" />
+        {% endif %}
+        <div class="sud-service-preview-card__body">
+          <span class="sud-tag">{{ active_service.showcase_media.eyebrow }}</span>
+          <h2 class="mt-4 text-3xl font-bold">{{ active_service.showcase_media.title }}</h2>
+          <p class="mt-4 text-soft/75 leading-7">{{ active_service.showcase_media.description }}</p>
+        </div>
+      </article>
+
+      <aside class="sud-service-preview-card">
+        <div class="sud-service-preview-card__body">
+          <span class="sud-tag">Portal Delivery</span>
+          <h2 class="mt-4 text-3xl font-bold">The work does not disappear into chat threads.</h2>
+          <p class="mt-4 text-soft/75 leading-7">
+            Your {{ active_service.name }} project can be organized inside SudPix client workspace tools for briefs, milestones, feedback, M-PESA payment status, approvals, and final downloads.
+          </p>
+          <div class="mt-6 grid gap-3">
+            <div class="sud-mini-row"><strong>Private gallery</strong><span>Protected previews</span></div>
+            <div class="sud-mini-row"><strong>Revision comments</strong><span>Tracked clearly</span></div>
+            <div class="sud-mini-row"><strong>Final downloads</strong><span>Unlocked after checkout</span></div>
           </div>
-          <div class="sud-showcase-item__body">
-            <h3>{{ service.name }}</h3>
-            <p>{{ service.teaser }}</p>
-            <div class="sud-showcase-item__action">Open {{ service.name }} →</div>
-          </div>
-        </a>
+          <a href="{% url 'core:workspace_demo' %}" class="sud-btn mt-6">Preview Workspace</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% if active_service.showcase_media.samples %}
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-section-heading">
+      <div class="sud-section-heading__eyebrow">Signature Samples</div>
+      <h2>{{ active_service.name }} styles clients can recognize quickly.</h2>
+      <p>Use these sample directions to choose the kind of mood, framing, and final delivery you want SudPix to prepare.</p>
+    </div>
+
+    <div class="sud-service-sample-grid">
+      {% for sample in active_service.showcase_media.samples %}
+      <article class="sud-service-sample-card">
+        <img src="{{ sample.url }}" alt="{{ active_service.name }} {{ sample.label }}" />
+        <div class="sud-service-sample-card__body">
+          <span class="sud-tag">{{ active_service.name }}</span>
+          <h3>{{ sample.label }}</h3>
+          <p>Preview a polished {{ sample.label|lower }} direction before confirming the brief and delivery workflow.</p>
+        </div>
       </article>
       {% endfor %}
     </div>
   </div>
 </section>
+{% endif %}
 
 <section class="sud-section">
   <div class="sud-container">
@@ -124,32 +418,79 @@
 <section class="sud-section">
   <div class="sud-container">
     <div class="sud-section-heading sud-section-heading--center">
+      <div class="sud-section-heading__eyebrow">Production Path</div>
+      <h2>From enquiry to delivered files.</h2>
+    </div>
+    <div class="sud-service-process-grid">
+      <article class="sud-service-process">
+        <strong>01</strong>
+        <h3>Brief and booking</h3>
+        <p>Share the project direction, date, audience, and required deliverables.</p>
+      </article>
+      <article class="sud-service-process">
+        <strong>02</strong>
+        <h3>Create and review</h3>
+        <p>SudPix captures or designs the work, then uploads previews for feedback and selection.</p>
+      </article>
+      <article class="sud-service-process">
+        <strong>03</strong>
+        <h3>Approve and download</h3>
+        <p>Confirm revisions, complete payment, and receive final files from the workspace.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-section-heading sud-section-heading--center">
       <div class="sud-section-heading__eyebrow">Best Fit</div>
       <h2>Where this service works best</h2>
     </div>
 
-    <div class="sud-stat-row">
+    <div class="sud-service-fit-grid">
       {% if active_service.best_for_list %}
       {% for item in active_service.best_for_list|slice:":3" %}
-      <div class="sud-stat">
-        <strong>{{ forloop.counter }}</strong>
-        <span>{{ item }}</span>
+      <div class="sud-service-fit">
+        <span class="sud-tag">Use Case {{ forloop.counter }}</span>
+        <h3>{{ item }}</h3>
+        <p>Built for a premium handoff with project status, review notes, payment, and final delivery kept clear.</p>
       </div>
       {% endfor %}
       {% else %}
-      <div class="sud-stat">
-        <strong>1</strong>
-        <span>Flexible creative briefs</span>
+      <div class="sud-service-fit">
+        <span class="sud-tag">Use Case 1</span>
+        <h3>Flexible creative briefs</h3>
+        <p>Useful for projects where direction and deliverables need to stay organized.</p>
       </div>
-      <div class="sud-stat">
-        <strong>2</strong>
-        <span>Brand-aligned visual direction</span>
+      <div class="sud-service-fit">
+        <span class="sud-tag">Use Case 2</span>
+        <h3>Brand-aligned visual direction</h3>
+        <p>Ideal when consistency matters across campaign, web, social, and print assets.</p>
       </div>
-      <div class="sud-stat">
-        <strong>3</strong>
-        <span>Portal-ready delivery</span>
+      <div class="sud-service-fit">
+        <span class="sud-tag">Use Case 3</span>
+        <h3>Portal-ready delivery</h3>
+        <p>Best for clients who want previews, approvals, payment, and downloads in one place.</p>
       </div>
       {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="sud-section">
+  <div class="sud-container">
+    <div class="sud-page-heading sud-hero-carousel">
+      {% include "includes/hero_carousel_slides.html" with hero=services_active_hero %}
+      <div class="sud-page-heading__content">
+        <div class="sud-banner__eyebrow">Ready to start?</div>
+        <h1>Book {{ active_service.name }} with a clearer delivery experience.</h1>
+        <p>SudPix will guide the brief, production, review, payment, and final download flow.</p>
+        <div class="sud-banner__buttons">
+          <a href="{% url 'bookings:create' %}?service={{ active_service.booking_service|urlencode }}" class="sud-btn">Book {{ active_service.name }}</a>
+          <a href="{% url 'core:contact' %}" class="sud-btn-ghost">Contact SudPix</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
