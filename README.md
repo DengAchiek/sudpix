@@ -136,6 +136,14 @@ python manage.py collectstatic --noinput
 gunicorn sudpix.wsgi:application
 ```
 
+If Render shows a database error like `no such table: core_homegalleryitem`, open the Render Shell and run:
+
+```bash
+python manage.py migrate --noinput
+```
+
+For long-term stability, make the deployment process run migrations before starting Gunicorn after reviewing production database backup and rollback needs.
+
 Production checklist:
 
 - Set `DEBUG=False`.

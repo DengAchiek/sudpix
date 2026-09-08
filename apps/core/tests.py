@@ -1,8 +1,10 @@
 import tempfile
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
-from django.core.management import call_command
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
+from django.db import OperationalError
 from django.test import TestCase
 from django.urls import reverse
 
@@ -146,6 +148,39 @@ class CorePageTests(TestCase):
         self.assertContains(response, "Our Process")
         self.assertContains(response, "Discussion")
         self.assertContains(response, "Follow Up")
+
+    def test_home_uses_fallback_gallery_when_gallery_table_is_missing(self):
+        with patch(
+            "apps.core.views.HomeGalleryItem.objects.filter",
+            side_effect=OperationalError("no such table: core_homegalleryitem"),
+        ):
+            response = self.client.get(reverse("core:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Photography Gallery")
+        self.assertContains(response, "Videography Gallery")
+        self.assertContains(response, reverse("portfolio:detail", args=["wedding-story"]))
+        self.assertContains(response, reverse("portfolio:detail", args=["live-event-film"]))
+
+    def test_home_uses_fallback_hero_when_carousel_table_is_missing(self):
+        with patch(
+            "apps.core.utils.HeroCarousel.objects.filter",
+            side_effect=OperationalError("no such table: core_herocarousel"),
+        ):
+            response = self.client.get(reverse("core:home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Premium creative work")
+
+    def test_about_uses_fallback_team_when_team_table_is_missing(self):
+        with patch(
+            "apps.core.views.AboutTeamMember.objects.filter",
+            side_effect=OperationalError("no such table: core_aboutteammember"),
+        ):
+            response = self.client.get(reverse("core:about"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Simon Lado")
 
 
 class HeroCarouselAdminTests(TestCase):

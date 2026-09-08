@@ -1,5 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
 
+from django.db import OperationalError, ProgrammingError
+
 from .models import HeroCarousel
 
 
@@ -17,11 +19,14 @@ HERO_CAROUSEL_STEP_SECONDS = 6
 
 def build_hero_carousel(section_key, fallback_urls):
     fallback_slide_urls = [url for url in fallback_urls if url]
-    carousel = (
-        HeroCarousel.objects.filter(section_key=section_key, is_active=True)
-        .prefetch_related("slides")
-        .first()
-    )
+    try:
+        carousel = (
+            HeroCarousel.objects.filter(section_key=section_key, is_active=True)
+            .prefetch_related("slides")
+            .first()
+        )
+    except (OperationalError, ProgrammingError):
+        carousel = None
 
     slide_urls = []
     if carousel:

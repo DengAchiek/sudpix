@@ -1,3 +1,4 @@
+from django.db import OperationalError, ProgrammingError
 from django.views.generic import TemplateView
 
 from apps.portfolio.data import get_featured_portfolio_projects, get_portfolio_projects
@@ -59,6 +60,9 @@ ABOUT_TEAM_MEMBER_FALLBACKS = [
 ]
 
 
+MISSING_TABLE_ERRORS = (OperationalError, ProgrammingError)
+
+
 def build_media_grid(slug, title, images):
     return [
         {
@@ -71,10 +75,13 @@ def build_media_grid(slug, title, images):
 
 
 def build_admin_home_gallery(section, default_slug, fallback_images, fallback_title):
-    gallery_items = list(
-        HomeGalleryItem.objects.filter(section=section, is_active=True)
-        .order_by("display_order", "id")[:6]
-    )
+    try:
+        gallery_items = list(
+            HomeGalleryItem.objects.filter(section=section, is_active=True)
+            .order_by("display_order", "id")[:6]
+        )
+    except MISSING_TABLE_ERRORS:
+        gallery_items = []
 
     if gallery_items:
         return [
@@ -122,9 +129,13 @@ def build_home_media_gallery():
 
 
 def build_about_team_members():
-    team_members = list(
-        AboutTeamMember.objects.filter(is_active=True).order_by("display_order", "id")
-    )
+    try:
+        team_members = list(
+            AboutTeamMember.objects.filter(is_active=True)
+            .order_by("display_order", "id")
+        )
+    except MISSING_TABLE_ERRORS:
+        team_members = []
 
     if team_members:
         return [
