@@ -7,7 +7,6 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.cart.models import CartItem
-from apps.core.models import AboutTeamMember, HeroCarousel, HeroCarouselSlide
 from apps.downloads.models import Download
 from apps.media_management.models import MediaAsset
 from apps.payments.models import Payment
@@ -120,37 +119,13 @@ class CorePageTests(TestCase):
         self.assertContains(response, "Follow Up")
 
 
-class HeroCarouselAdminTests(TestCase):
-    def setUp(self):
-        super().setUp()
-        self.temp_media = tempfile.TemporaryDirectory()
-        self.media_override = self.settings(
-            MEDIA_ROOT=self.temp_media.name,
-            MEDIA_URL="/media/",
-        )
-        self.media_override.enable()
-
-    def tearDown(self):
-        self.media_override.disable()
-        self.temp_media.cleanup()
-        super().tearDown()
-
-    def _uploaded_slide(self, name="hero.gif"):
-        return SimpleUploadedFile(name, ONE_PIXEL_GIF, content_type="image/gif")
-
-    def test_homepage_hero_uses_admin_uploaded_carousel_slide(self):
-        carousel = HeroCarousel.objects.create(section_key=HeroCarousel.Section.HOME_MAIN)
-        HeroCarouselSlide.objects.create(
-            carousel=carousel,
-            image=self._uploaded_slide(),
-            alt_text="Homepage hero",
-            display_order=0,
-        )
-
+class CoreFallbackBypassTests(TestCase):
+    def test_homepage_hero_uses_static_fallback_while_admin_carousel_is_disabled(self):
         response = self.client.get(reverse("core:home"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "/media/hero_carousels/")
+        self.assertNotContains(response, "/media/hero_carousels/")
+        self.assertContains(response, "Premium")
 
     def test_homepage_gallery_uses_static_fallback_gallery_while_admin_gallery_is_disabled(self):
         response = self.client.get(reverse("core:home"))
@@ -160,21 +135,12 @@ class HeroCarouselAdminTests(TestCase):
         self.assertContains(response, reverse("portfolio:detail", args=["wedding-story"]))
         self.assertContains(response, reverse("portfolio:detail", args=["live-event-film"]))
 
-    def test_about_page_team_uses_admin_uploaded_members(self):
-        AboutTeamMember.objects.create(
-            name="Mary Studio",
-            role="Studio Producer",
-            image=self._uploaded_slide("about-team.gif"),
-            alt_text="Mary Studio at SudPix",
-            display_order=0,
-        )
-
+    def test_about_page_team_uses_static_fallback_team_while_admin_team_is_disabled(self):
         response = self.client.get(reverse("core:about"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Mary Studio")
-        self.assertContains(response, "/media/about_team/")
-        self.assertNotContains(response, "Simon Lado")
+        self.assertContains(response, "Simon Lado")
+        self.assertNotContains(response, "/media/about_team/")
 
 
 class SeedPortalDemoCommandTests(TestCase):

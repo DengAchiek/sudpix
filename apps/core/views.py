@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 
 from apps.portfolio.data import get_featured_portfolio_projects, get_portfolio_projects
-from apps.core.models import AboutTeamMember, HeroCarousel
+from apps.core.models import HeroCarousel
 from apps.core.utils import build_hero_carousel
 
 
@@ -109,22 +109,8 @@ def build_home_media_gallery():
 
 
 def build_about_team_members():
-    team_members = list(
-        AboutTeamMember.objects.filter(is_active=True).order_by("display_order", "id")
-    )
-
-    if team_members:
-        return [
-            {
-                "name": member.name,
-                "role": member.role,
-                "image": member.image.url,
-                "alt_text": member.alt_text or f"{member.name} at SudPix",
-            }
-            for member in team_members
-            if member.image
-        ]
-
+    # Temporary production bypass: Render is missing the admin team table.
+    # Keep the public about page live with curated fallback team members.
     return ABOUT_TEAM_MEMBER_FALLBACKS
 
 
