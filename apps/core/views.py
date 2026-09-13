@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 
 from apps.portfolio.data import get_featured_portfolio_projects, get_portfolio_projects
-from apps.core.models import AboutTeamMember, HeroCarousel, HomeGalleryItem
+from apps.core.models import AboutTeamMember, HeroCarousel
 from apps.core.utils import build_hero_carousel
 
 
@@ -71,22 +71,9 @@ def build_media_grid(slug, title, images):
 
 
 def build_admin_home_gallery(section, default_slug, fallback_images, fallback_title):
-    gallery_items = list(
-        HomeGalleryItem.objects.filter(section=section, is_active=True)
-        .order_by("display_order", "id")[:6]
-    )
-
-    if gallery_items:
-        return [
-            {
-                "slug": item.project_slug or default_slug,
-                "title": item.alt_text or item.title or f"{fallback_title} {index}",
-                "image": item.image.url,
-            }
-            for index, item in enumerate(gallery_items, start=1)
-            if item.image
-        ]
-
+    # Temporary production bypass: Render is missing the admin gallery table.
+    # Keep the public homepage alive with curated fallback media until migrations
+    # are safely applied in production.
     return build_media_grid(default_slug, fallback_title, fallback_images)
 
 
@@ -107,13 +94,13 @@ def build_home_media_gallery():
 
     return {
         "photos": build_admin_home_gallery(
-            HomeGalleryItem.Section.PHOTOGRAPHY,
+            "photography",
             photo_project["slug"],
             photo_images,
             photo_project["title"],
         ),
         "videos": build_admin_home_gallery(
-            HomeGalleryItem.Section.VIDEOGRAPHY,
+            "videography",
             video_project["slug"],
             video_images,
             video_project["title"],
